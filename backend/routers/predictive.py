@@ -71,7 +71,7 @@ async def forecast_memory(
             toStartOfInterval(TimeUnix, INTERVAL 5 MINUTE) AS ds,
             avg(Value) AS y
         FROM otel.otel_metrics_gauge
-        WHERE MetricName = 'demo_node_memory_MemAvailable_bytes'
+        WHERE MetricName = 'node_memory_MemAvailable_bytes'
           AND TimeUnix >= now() - INTERVAL {hours_history} HOUR
         GROUP BY ds ORDER BY ds ASC
     """
@@ -84,7 +84,7 @@ async def forecast_memory(
     total_df = query_df("""
         SELECT avg(Value) / (1024*1024*1024) AS total_gb
         FROM otel.otel_metrics_gauge
-        WHERE MetricName = 'demo_node_memory_MemTotal_bytes'
+        WHERE MetricName = 'node_memory_MemTotal_bytes'
           AND TimeUnix >= now() - INTERVAL 1 HOUR
     """)
     total_gb = float(total_df.iloc[0]["total_gb"]) if not total_df.empty else None
@@ -108,7 +108,7 @@ async def forecast_cpu(
             toStartOfInterval(TimeUnix, INTERVAL 5 MINUTE) AS ds,
             avg(Value) AS idle_seconds
         FROM otel.otel_metrics_sum
-        WHERE MetricName = 'demo_node_cpu_seconds_total'
+        WHERE MetricName = 'node_cpu_seconds_total'
           AND Attributes['mode'] = 'idle'
           AND TimeUnix >= now() - INTERVAL {hours_history} HOUR
         GROUP BY ds ORDER BY ds ASC
@@ -177,10 +177,10 @@ async def forecast_summary():
                 avg(Value) / (1024*1024*1024) AS available_gb,
                 (SELECT avg(Value) / (1024*1024*1024)
                  FROM otel.otel_metrics_gauge
-                 WHERE MetricName = 'demo_node_memory_MemTotal_bytes'
+                 WHERE MetricName = 'node_memory_MemTotal_bytes'
                    AND TimeUnix >= now() - INTERVAL 5 MINUTE) AS total_gb
             FROM otel.otel_metrics_gauge
-            WHERE MetricName = 'demo_node_memory_MemAvailable_bytes'
+            WHERE MetricName = 'node_memory_MemAvailable_bytes'
               AND TimeUnix >= now() - INTERVAL 5 MINUTE
         """)
         if not mem_df.empty:
@@ -198,7 +198,7 @@ async def forecast_summary():
     try:
         load_df = query_df("""
             SELECT avg(Value) AS load1 FROM otel.otel_metrics_gauge
-            WHERE MetricName = 'demo_node_load1'
+            WHERE MetricName = 'node_load1'
               AND TimeUnix >= now() - INTERVAL 5 MINUTE
         """)
         if not load_df.empty:

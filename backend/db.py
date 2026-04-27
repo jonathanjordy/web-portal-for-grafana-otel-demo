@@ -163,7 +163,7 @@ def get_error_rate(hours: int = 1, interval_minutes: int = 1) -> pd.DataFrame:
             toStartOfInterval(TimeUnix, INTERVAL {interval_minutes} MINUTE) AS timestamp,
             sum(Value) AS failures
         FROM otel.otel_metrics_sum
-        WHERE MetricName = 'demo_payment_failures_total'
+        WHERE MetricName = 'payment_failures_total'
           AND TimeUnix >= now() - INTERVAL {hours} HOUR
         GROUP BY timestamp
         ORDER BY timestamp ASC
@@ -213,19 +213,19 @@ You have access to a ClickHouse database called `otel` with the following tables
    - ResourceAttributes Map(String, String) -- includes service.name
 
 3. otel.otel_metrics_sum  (counters)
-   - MetricName String        -- e.g. 'demo_orders_total', 'demo_payment_failures_total'
+   - MetricName String        -- e.g. 'orders_total', 'payment_failures_total'
    - TimeUnix DateTime
    - Value Float64
    - Attributes Map(String, String) -- labels like item_id, status, reason
 
 4. otel.otel_metrics_gauge  (current values)
-   - MetricName String        -- e.g. 'demo_node_memory_MemAvailable_bytes', 'demo_node_load1'
+   - MetricName String        -- e.g. 'node_memory_MemAvailable_bytes', 'node_load1'
    - TimeUnix DateTime
    - Value Float64
    - Attributes Map(String, String)
 
 5. otel.otel_metrics_histogram  (distributions)
-   - MetricName String        -- e.g. 'demo_order_duration_seconds'
+   - MetricName String        -- e.g. 'order_duration_seconds'
    - TimeUnix DateTime
    - Count UInt64
    - Sum Float64

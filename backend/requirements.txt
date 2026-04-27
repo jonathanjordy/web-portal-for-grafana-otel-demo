@@ -9,5 +9,9 @@ pydantic==2.6.4
 pydantic-settings==2.2.1
 
 # Phase 2 — Predictive
+# Pin these together to avoid Prophet/stan compatibility issues
 prophet==1.1.5
 numpy==1.26.4
+cmdstanpy==1.2.1
+pystan==3.7.0
+holidays==0.46

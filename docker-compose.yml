@@ -21,7 +21,7 @@ services:
   aiops-frontend:
     image: nginx:alpine
     ports:
-      - "3001:80"
+      - "80:80"
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
     restart: unless-stopped

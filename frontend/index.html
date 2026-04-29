@@ -5,30 +5,42 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AIOps Portal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:         #fafaf8;
-    --surface:    #ffffff;
-    --surface2:   #f5f4f1;
-    --border:     rgba(0,0,0,0.08);
-    --border-md:  rgba(0,0,0,0.13);
-    --text:       #1a1916;
-    --text-2:     #5a5851;
-    --text-3:     #9b9890;
-    --blue:       #2a5caa;
-    --blue-bg:    #eef3fb;
-    --green:      #1e7a4a;
-    --green-bg:   #eaf4ee;
-    --amber:      #a05c10;
-    --amber-bg:   #fdf3e5;
-    --red:        #b83030;
-    --red-bg:     #fdf0f0;
-    --purple:     #5a3d9a;
-    --purple-bg:  #f3f0fb;
-    --serif:      'Crimson Pro', Georgia, serif;
-    --sans:       'DM Sans', system-ui, sans-serif;
-    --radius:     10px;
+    /* Indosat Theme Colors */
+    --indosat-magenta: #EB008C;
+    --indosat-yellow:  #FFCA09;
+    --indosat-teal:    #24BCAD;
+    --indosat-white:   #FFFFFF;
+
+    --bg:         #f8f9fb;
+    --surface:    var(--indosat-white);
+    --surface2:   #f1f3f5;
+    --border:     rgba(0,0,0,0.06);
+    --border-md:  rgba(0,0,0,0.12);
+    
+    --text:       #2b2b2b;
+    --text-2:     #5e5e5e;
+    --text-3:     #8f8f8f;
+    
+    /* Semantic mappings to Indosat palette */
+    --blue:       var(--indosat-teal);
+    --blue-bg:    rgba(36, 188, 173, 0.12);
+    --green:      var(--indosat-teal);
+    --green-bg:   rgba(36, 188, 173, 0.12);
+    --amber:      #d4a000; /* Slightly darkened yellow for text legibility */
+    --amber-bg:   rgba(255, 202, 9, 0.2);
+    --red:        var(--indosat-magenta);
+    --red-bg:     rgba(235, 0, 140, 0.08);
+    --purple:     var(--indosat-magenta);
+    --purple-bg:  rgba(235, 0, 140, 0.08);
+    
+    /* Font Update */
+    --sans:       'Nunito', system-ui, sans-serif;
+    --serif:      'Nunito', system-ui, sans-serif; /* Replacing serif with the casual sans */
+    --radius:     14px; /* Slightly rounder for a casual feel */
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -37,7 +49,7 @@
     background: var(--bg);
     color: var(--text);
     font-family: var(--sans);
-    font-size: 14px;
+    font-size: 14.5px;
     line-height: 1.6;
     min-height: 100vh;
   }
@@ -45,7 +57,7 @@
   .shell { display: flex; height: 100vh; overflow: hidden; }
 
   aside {
-    width: 240px;
+    width: 250px;
     background: var(--surface);
     border-right: 1px solid var(--border);
     display: flex;
@@ -60,58 +72,57 @@
   }
 
   .wordmark {
-    font-family: var(--serif);
-    font-size: 1.35rem;
-    font-weight: 400;
-    color: var(--text);
-    letter-spacing: -0.01em;
+    font-family: var(--sans);
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: var(--indosat-magenta);
+    letter-spacing: -0.02em;
     line-height: 1.2;
   }
 
   .wordmark span {
     display: block;
-    font-size: 0.72rem;
-    font-family: var(--sans);
-    font-weight: 400;
+    font-size: 0.75rem;
+    font-weight: 600;
     color: var(--text-3);
-    letter-spacing: 0.04em;
-    margin-top: 3px;
+    letter-spacing: 0.02em;
+    margin-top: 2px;
   }
 
   .nav-group { padding: 1.25rem 1rem 0.5rem; }
 
   .nav-label {
-    font-size: 0.68rem;
-    font-weight: 500;
+    font-size: 0.7rem;
+    font-weight: 700;
     color: var(--text-3);
     letter-spacing: 0.08em;
     text-transform: uppercase;
     padding: 0 0.5rem;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.4rem;
   }
 
   .nav-item {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.45rem 0.5rem;
-    border-radius: 6px;
+    padding: 0.55rem 0.65rem;
+    border-radius: 8px;
     cursor: pointer;
     color: var(--text-2);
-    font-size: 0.875rem;
-    font-weight: 400;
-    transition: background 0.1s, color 0.1s;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.15s ease;
     text-decoration: none;
     user-select: none;
   }
 
   .nav-item:hover { background: var(--surface2); color: var(--text); }
 
-  .nav-item.active { background: var(--text); color: #fff; }
+  .nav-item.active { background: var(--indosat-magenta); color: #fff; box-shadow: 0 4px 12px var(--red-bg); }
 
   .nav-icon {
-    width: 16px; height: 16px;
-    opacity: 0.65; flex-shrink: 0;
+    width: 18px; height: 18px;
+    opacity: 0.7; flex-shrink: 0;
   }
 
   .nav-item.active .nav-icon { opacity: 1; }
@@ -124,12 +135,12 @@
 
   .health-row {
     display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.75rem; color: var(--text-3);
+    font-size: 0.8rem; font-weight: 600; color: var(--text-3);
   }
 
-  .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
-  .dot.ok    { background: var(--green); }
-  .dot.error { background: var(--red); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+  .dot.ok    { background: var(--green); box-shadow: 0 0 6px var(--green-bg); }
+  .dot.error { background: var(--red); box-shadow: 0 0 6px var(--red-bg); }
 
   main { flex: 1; overflow-y: auto; background: var(--bg); }
 
@@ -137,54 +148,56 @@
     display: none;
     padding: 2.5rem 3rem;
     max-width: 1100px;
-    animation: fade 0.15s ease;
+    animation: fade 0.2s ease;
   }
 
   .page.active { display: block; }
 
   @keyframes fade {
-    from { opacity: 0; transform: translateY(4px); }
+    from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
 
   .page-eyebrow {
-    font-size: 0.72rem; font-weight: 500;
-    color: var(--text-3); letter-spacing: 0.07em;
+    font-size: 0.75rem; font-weight: 700;
+    color: var(--indosat-teal); letter-spacing: 0.07em;
     text-transform: uppercase; margin-bottom: 0.4rem;
   }
 
   .page-title {
-    font-family: var(--serif);
-    font-size: 2rem; font-weight: 400;
+    font-family: var(--sans);
+    font-size: 2.2rem; font-weight: 800;
     color: var(--text); letter-spacing: -0.02em;
     line-height: 1.15; margin-bottom: 0.6rem;
   }
 
   .page-desc {
-    font-size: 0.9rem; color: var(--text-2);
-    max-width: 520px; line-height: 1.65; margin-bottom: 2rem;
+    font-size: 0.95rem; font-weight: 500; color: var(--text-2);
+    max-width: 560px; line-height: 1.65; margin-bottom: 2rem;
   }
 
   .stat-row {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 12px; margin-bottom: 1.5rem;
+    gap: 16px; margin-bottom: 1.5rem;
   }
 
   .stat {
-    background: var(--surface2);
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1rem 1.15rem;
+    padding: 1.25rem 1.15rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   }
 
   .stat-label {
-    font-size: 0.72rem; font-weight: 500;
+    font-size: 0.75rem; font-weight: 700;
     color: var(--text-3); letter-spacing: 0.04em; margin-bottom: 0.35rem;
   }
 
   .stat-value {
-    font-family: var(--serif);
-    font-size: 1.65rem; font-weight: 400;
+    font-family: var(--sans);
+    font-size: 1.8rem; font-weight: 800;
     color: var(--text); line-height: 1;
   }
 
@@ -193,44 +206,47 @@
   .stat-value.red   { color: var(--red); }
   .stat-value.amber { color: var(--amber); }
 
-  .stat-sub { font-size: 0.72rem; color: var(--text-3); margin-top: 0.25rem; }
+  .stat-sub { font-size: 0.75rem; font-weight: 600; color: var(--text-3); margin-top: 0.4rem; }
 
   .panel {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden; margin-bottom: 1rem;
+    border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
   }
 
   .panel-head {
-    padding: 0.85rem 1.25rem; border-bottom: 1px solid var(--border);
+    padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    background: #fcfdfe;
   }
 
-  .panel-title { font-size: 0.875rem; font-weight: 500; color: var(--text); }
-  .panel-meta  { font-size: 0.75rem; color: var(--text-3); }
+  .panel-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
+  .panel-meta  { font-size: 0.8rem; font-weight: 600; color: var(--text-3); }
   .panel-body  { padding: 1.25rem; }
 
   .cap-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1rem; margin-bottom: 1.5rem;
+    gap: 1.25rem; margin-bottom: 1.5rem;
   }
 
   .cap-card {
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.25rem;
-    display: flex; flex-direction: column; gap: 0.5rem;
-    transition: border-color 0.15s;
+    padding: 1.5rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
   }
 
-  .cap-card:hover { border-color: var(--border-md); }
+  .cap-card:hover { border-color: var(--indosat-teal); box-shadow: 0 6px 16px var(--blue-bg); }
 
   .cap-badge {
     display: inline-flex; align-items: center;
-    font-size: 0.68rem; font-weight: 500;
+    font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.05em; text-transform: uppercase;
-    padding: 0.2rem 0.6rem; border-radius: 4px; width: fit-content;
+    padding: 0.25rem 0.7rem; border-radius: 6px; width: fit-content;
   }
 
   .cap-badge.blue   { background: var(--blue-bg);   color: var(--blue); }
@@ -238,26 +254,26 @@
   .cap-badge.red    { background: var(--red-bg);    color: var(--red); }
   .cap-badge.purple { background: var(--purple-bg); color: var(--purple); }
 
-  .cap-name { font-size: 0.9rem; font-weight: 500; color: var(--text); }
+  .cap-name { font-size: 1.05rem; font-weight: 700; color: var(--text); }
 
-  .cap-desc { font-size: 0.82rem; color: var(--text-2); line-height: 1.55; }
+  .cap-desc { font-size: 0.875rem; font-weight: 500; color: var(--text-2); line-height: 1.55; }
 
   .cap-status {
-    margin-top: auto; font-size: 0.72rem; color: var(--text-3);
-    padding-top: 0.5rem; border-top: 1px solid var(--border);
+    margin-top: auto; font-size: 0.75rem; font-weight: 600; color: var(--text-3);
+    padding-top: 0.75rem; border-top: 1px solid var(--border);
   }
 
   .empty {
     background: var(--surface);
-    border: 1px dashed var(--border-md);
+    border: 2px dashed var(--border-md);
     border-radius: var(--radius);
-    padding: 3rem 2rem; text-align: center;
-    color: var(--text-3); font-size: 0.85rem;
+    padding: 3.5rem 2rem; text-align: center;
+    color: var(--text-3); font-size: 0.9rem; font-weight: 500;
   }
 
   .empty-title {
-    font-family: var(--serif);
-    font-size: 1.1rem; color: var(--text-2); margin-bottom: 0.4rem;
+    font-family: var(--sans); font-weight: 700;
+    font-size: 1.15rem; color: var(--text-2); margin-bottom: 0.4rem;
   }
 
   .chat-wrap {
@@ -265,38 +281,39 @@
     border: 1px solid var(--border);
     border-radius: var(--radius);
     display: flex; flex-direction: column; height: 560px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
   }
 
   .chat-messages {
     flex: 1; overflow-y: auto;
-    padding: 1.25rem;
-    display: flex; flex-direction: column; gap: 1rem;
+    padding: 1.5rem;
+    display: flex; flex-direction: column; gap: 1.25rem;
   }
 
-  .msg { display: flex; flex-direction: column; gap: 0.25rem; max-width: 82%; }
+  .msg { display: flex; flex-direction: column; gap: 0.35rem; max-width: 82%; }
   .msg.user      { align-self: flex-end;   align-items: flex-end; }
   .msg.assistant { align-self: flex-start; align-items: flex-start; }
 
   .msg-role {
-    font-size: 0.68rem; font-weight: 500;
+    font-size: 0.7rem; font-weight: 700;
     color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase;
   }
 
   .msg-bubble {
-    padding: 0.65rem 0.9rem;
-    border-radius: 10px;
-    font-size: 0.875rem; line-height: 1.55;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem; font-weight: 500; line-height: 1.55;
   }
 
   .msg.user .msg-bubble {
-    background: var(--text); color: #fff;
-    border-bottom-right-radius: 3px;
+    background: var(--indosat-teal); color: #fff;
+    border-bottom-right-radius: 4px;
   }
 
   .msg.assistant .msg-bubble {
     background: var(--surface2); color: var(--text);
     border: 1px solid var(--border);
-    border-bottom-left-radius: 3px;
+    border-bottom-left-radius: 4px;
   }
 
   .suggestions {
@@ -305,188 +322,197 @@
   }
 
   .suggestion {
-    font-size: 0.75rem; color: var(--text-2);
+    font-size: 0.8rem; font-weight: 600; color: var(--text-2);
     border: 1px solid var(--border);
-    border-radius: 100px; padding: 0.3rem 0.75rem;
-    cursor: pointer; transition: all 0.1s; background: var(--bg);
+    border-radius: 100px; padding: 0.35rem 0.85rem;
+    cursor: pointer; transition: all 0.15s; background: var(--bg);
   }
 
-  .suggestion:hover { background: var(--text); color: #fff; border-color: var(--text); }
+  .suggestion:hover { background: var(--indosat-teal); color: #fff; border-color: var(--indosat-teal); }
 
   .chat-input-row {
-    padding: 0.75rem 1rem;
+    padding: 1rem 1.25rem;
     border-top: 1px solid var(--border);
-    display: flex; gap: 0.5rem; align-items: center;
+    display: flex; gap: 0.75rem; align-items: center; background: #fcfdfe;
+    border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
   }
 
   .chat-input-row input {
     flex: 1;
-    border: 1px solid var(--border);
-    border-radius: 6px; padding: 0.55rem 0.8rem;
-    font-family: var(--sans); font-size: 0.875rem;
-    color: var(--text); background: var(--bg);
-    outline: none; transition: border-color 0.15s;
+    border: 1px solid var(--border-md);
+    border-radius: 8px; padding: 0.65rem 1rem;
+    font-family: var(--sans); font-size: 0.95rem; font-weight: 500;
+    color: var(--text); background: var(--surface);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
   }
 
-  .chat-input-row input:focus { border-color: var(--border-md); }
+  .chat-input-row input:focus { border-color: var(--indosat-teal); box-shadow: 0 0 0 3px var(--blue-bg); }
   .chat-input-row input::placeholder { color: var(--text-3); }
 
   .btn {
-    font-family: var(--sans); font-size: 0.8rem; font-weight: 500;
-    padding: 0.5rem 1rem; border-radius: 6px;
-    border: 1px solid rgba(0,0,0,0.15);
-    background: var(--text); color: #fff;
-    cursor: pointer; transition: opacity 0.15s; white-space: nowrap;
+    font-family: var(--sans); font-size: 0.85rem; font-weight: 700;
+    padding: 0.6rem 1.2rem; border-radius: 8px;
+    border: none;
+    background: var(--indosat-teal); color: #fff;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(36, 188, 173, 0.2);
   }
 
-  .btn:hover    { opacity: 0.85; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn:hover    { background: #1fa093; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  
+  .btn-ghost {
+    background: transparent; color: var(--text-2); border: 1px solid var(--border-md); box-shadow: none;
+  }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); }
 
   /* ── DETAIL MODAL FIELDS ────────────────── */
-  .detail-field { display: flex; flex-direction: column; gap: 0.3rem; }
+  .detail-field { display: flex; flex-direction: column; gap: 0.35rem; }
 
   .detail-label {
-    font-size: 0.7rem; font-weight: 500;
+    font-size: 0.75rem; font-weight: 700;
     color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase;
   }
 
-  .detail-value { font-size: 0.875rem; color: var(--text); }
+  .detail-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
 
   .detail-desc {
-    font-size: 0.875rem; color: var(--text-2);
+    font-size: 0.9rem; font-weight: 500; color: var(--text-2);
     line-height: 1.6; background: var(--surface2);
-    border-radius: 6px; padding: 0.75rem;
+    border-radius: 8px; padding: 0.85rem;
     border: 1px solid var(--border);
   }
 
   .activity-log {
-    display: flex; flex-direction: column; gap: 0.5rem;
+    display: flex; flex-direction: column; gap: 0.6rem;
   }
 
   .activity-item {
-    display: flex; gap: 0.75rem; align-items: flex-start;
-    font-size: 0.8rem; color: var(--text-2);
+    display: flex; gap: 0.85rem; align-items: flex-start;
+    font-size: 0.85rem; font-weight: 500; color: var(--text-2);
   }
 
   .activity-time {
-    font-size: 0.72rem; color: var(--text-3);
-    white-space: nowrap; padding-top: 1px; min-width: 80px;
+    font-size: 0.75rem; font-weight: 700; color: var(--text-3);
+    white-space: nowrap; padding-top: 1px; min-width: 50px;
   }
 
   .activity-dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--border-md); flex-shrink: 0; margin-top: 5px;
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--border-md); flex-shrink: 0; margin-top: 6px;
   }
 
-  .activity-dot.red    { background: var(--red); }
-  .activity-dot.amber  { background: var(--amber); }
+  .activity-dot.red    { background: var(--red); box-shadow: 0 0 6px var(--red-bg); }
+  .activity-dot.amber  { background: var(--indosat-yellow); }
   .activity-dot.green  { background: var(--green); }
   .activity-dot.blue   { background: var(--blue); }
 
   /* ── FILTER BUTTONS ─────────────────────── */
   .filter-btn {
-    font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
-    padding: 0.4rem 0.85rem; border-radius: 6px;
-    border: 1px solid var(--border); background: var(--surface);
-    color: var(--text-2); cursor: pointer; transition: all 0.1s;
+    font-family: var(--sans); font-size: 0.85rem; font-weight: 700;
+    padding: 0.45rem 1rem; border-radius: 8px;
+    border: 1px solid var(--border-md); background: var(--surface);
+    color: var(--text-2); cursor: pointer; transition: all 0.15s;
   }
   .filter-btn:hover  { background: var(--surface2); color: var(--text); }
-  .filter-btn.active { background: var(--text); color: #fff; border-color: var(--text); }
+  .filter-btn.active { background: var(--indosat-magenta); color: #fff; border-color: var(--indosat-magenta); box-shadow: 0 2px 8px var(--red-bg); }
 
   /* ── INCIDENT TABLE ──────────────────────── */
   .inc-table {
     width: 100%; border-collapse: collapse;
-    font-size: 0.82rem;
+    font-size: 0.875rem; font-weight: 500;
   }
   .inc-table th {
-    text-align: left; padding: 0.6rem 1rem;
-    font-size: 0.72rem; font-weight: 500;
+    text-align: left; padding: 0.75rem 1rem;
+    font-size: 0.75rem; font-weight: 700;
     color: var(--text-3); letter-spacing: 0.04em;
     border-bottom: 1px solid var(--border);
-    white-space: nowrap;
+    white-space: nowrap; text-transform: uppercase;
   }
   .inc-table td {
-    padding: 0.75rem 1rem;
+    padding: 0.85rem 1rem;
     border-bottom: 1px solid var(--border);
     color: var(--text-2); vertical-align: middle;
   }
   .inc-table tr:last-child td { border-bottom: none; }
   .inc-table tr:hover td { background: var(--surface2); }
 
-  .inc-id { font-family: monospace; font-size: 0.75rem; color: var(--text-3); }
+  .inc-id { font-family: monospace; font-size: 0.8rem; font-weight: 600; color: var(--text-3); }
 
-  .inc-title { font-weight: 500; color: var(--text); }
+  .inc-title { font-weight: 700; color: var(--text); }
 
   .sev-badge, .status-badge-sm {
-    display: inline-block; padding: 0.15rem 0.55rem;
-    border-radius: 4px; font-size: 0.7rem; font-weight: 500;
+    display: inline-block; padding: 0.2rem 0.6rem;
+    border-radius: 6px; font-size: 0.7rem; font-weight: 700;
     letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
   }
-  .sev-critical { background: #fde8e8; color: #9b1c1c; }
-  .sev-high     { background: var(--red-bg);    color: var(--red); }
-  .sev-medium   { background: var(--amber-bg);  color: var(--amber); }
-  .sev-low      { background: var(--blue-bg);   color: var(--blue); }
+  .sev-critical { background: var(--red-bg); color: var(--red); border: 1px solid rgba(235,0,140,0.2); }
+  .sev-high     { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(255,202,9,0.4); }
+  .sev-medium   { background: var(--blue-bg); color: var(--blue); }
+  .sev-low      { background: var(--surface2); color: var(--text-2); }
 
-  .status-active       { background: var(--red-bg);    color: var(--red); }
-  .status-investigating{ background: var(--amber-bg);  color: var(--amber); }
-  .status-resolved     { background: var(--green-bg);  color: var(--green); }
+  .status-active        { background: var(--red-bg);    color: var(--red); }
+  .status-investigating { background: var(--amber-bg);  color: var(--amber); }
+  .status-resolved      { background: var(--green-bg);  color: var(--green); }
 
   .inc-action {
-    font-size: 0.75rem; font-weight: 500;
-    color: var(--blue); cursor: pointer; background: none;
+    font-size: 0.8rem; font-weight: 700;
+    color: var(--indosat-teal); cursor: pointer; background: none;
     border: none; padding: 0; text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
   }
 
   /* ── MODAL ───────────────────────────────── */
   .modal-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.3); backdrop-filter: blur(2px);
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(3px);
     z-index: 200; align-items: center; justify-content: center;
   }
   .modal-overlay.open { display: flex; }
 
   .modal {
     background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; width: 100%; max-width: 480px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-    animation: fade 0.15s ease;
+    border-radius: 16px; width: 100%; max-width: 500px;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.15);
+    animation: fade 0.2s ease;
   }
   .modal-head {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 1.1rem 1.25rem; border-bottom: 1px solid var(--border);
+    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
   }
-  .modal-title { font-weight: 600; font-size: 0.95rem; }
+  .modal-title { font-weight: 800; font-size: 1.1rem; }
   .modal-close {
-    background: none; border: none; cursor: pointer;
-    color: var(--text-3); font-size: 1rem; line-height: 1;
-    padding: 0.25rem;
+    background: var(--surface2); border: none; cursor: pointer;
+    color: var(--text-2); font-size: 1.1rem; font-weight: 700; line-height: 1;
+    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
+    transition: all 0.15s;
   }
-  .modal-close:hover { color: var(--text); }
-  .modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+  .modal-close:hover { background: var(--border-md); color: var(--text); }
+  .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
   .modal-foot {
-    padding: 1rem 1.25rem; border-top: 1px solid var(--border);
-    display: flex; justify-content: flex-end; gap: 0.5rem;
+    padding: 1.25rem 1.5rem; border-top: 1px solid var(--border);
+    display: flex; justify-content: flex-end; gap: 0.75rem; background: #fcfdfe;
+    border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
   }
 
-  .form-group { display: flex; flex-direction: column; gap: 0.35rem; }
-  .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+  .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+  .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 
   .form-group label {
-    font-size: 0.75rem; font-weight: 500; color: var(--text-2);
+    font-size: 0.8rem; font-weight: 700; color: var(--text-2);
   }
   .form-group input,
   .form-group select,
   .form-group textarea {
-    border: 1px solid var(--border); border-radius: 6px;
-    padding: 0.5rem 0.75rem; font-family: var(--sans);
-    font-size: 0.875rem; color: var(--text); background: var(--bg);
-    outline: none; transition: border-color 0.15s;
+    border: 1px solid var(--border-md); border-radius: 8px;
+    padding: 0.6rem 0.85rem; font-family: var(--sans);
+    font-size: 0.95rem; font-weight: 500; color: var(--text); background: var(--surface);
+    outline: none; transition: all 0.15s;
     resize: vertical;
   }
   .form-group input:focus,
   .form-group select:focus,
-  .form-group textarea:focus { border-color: var(--border-md); }
+  .form-group textarea:focus { border-color: var(--indosat-teal); box-shadow: 0 0 0 3px var(--blue-bg); }
 
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
@@ -508,7 +534,7 @@
       <div class="nav-label">Analytics</div>
 
       <a class="nav-item active" data-page="predictive" onclick="navigate('predictive')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
           <polyline points="1,12 5,7 8,9 12,4 15,5"/>
           <line x1="15" y1="2" x2="15" y2="8"/><line x1="12" y1="8" x2="15" y2="8"/>
         </svg>
@@ -516,7 +542,7 @@
       </a>
 
       <a class="nav-item" data-page="detective" onclick="navigate('detective')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="6.5" cy="6.5" r="4.5"/>
           <line x1="10" y1="10" x2="14" y2="14"/>
         </svg>
@@ -524,7 +550,7 @@
       </a>
 
       <a class="nav-item" data-page="diagnostic" onclick="navigate('diagnostic')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="8" cy="8" r="6.5"/>
           <line x1="8" y1="5" x2="8" y2="8"/>
           <circle cx="8" cy="11" r="0.5" fill="currentColor"/>
@@ -537,7 +563,7 @@
       <div class="nav-label">Assistant</div>
 
       <a class="nav-item" data-page="chatbot" onclick="navigate('chatbot')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 10.5c0 .8-.7 1.5-1.5 1.5H4l-2.5 2.5V3.5C1.5 2.7 2.2 2 3 2h9.5c.8 0 1.5.7 1.5 1.5v7z"/>
         </svg>
         AIOps Chat
@@ -548,7 +574,7 @@
       <div class="nav-label">Operations</div>
 
       <a class="nav-item" data-page="incidents" onclick="navigate('incidents')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
           <rect x="2" y="2" width="12" height="12" rx="2"/>
           <line x1="5" y1="6" x2="11" y2="6"/>
           <line x1="5" y1="9" x2="9" y2="9"/>
@@ -584,7 +610,7 @@
           <span class="panel-title">Memory availability forecast</span>
           <div style="display:flex;gap:0.5rem;align-items:center">
             <span class="panel-meta" id="mem-status">—</span>
-            <button class="btn" style="padding:0.3rem 0.75rem;font-size:0.75rem" onclick="loadMemory()">Run forecast</button>
+            <button class="btn" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="loadMemory()">Run forecast</button>
           </div>
         </div>
         <div class="panel-body">
@@ -598,7 +624,7 @@
           <span class="panel-title">CPU usage forecast</span>
           <div style="display:flex;gap:0.5rem;align-items:center">
             <span class="panel-meta" id="cpu-status">—</span>
-            <button class="btn" style="padding:0.3rem 0.75rem;font-size:0.75rem" onclick="loadCpu()">Run forecast</button>
+            <button class="btn" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="loadCpu()">Run forecast</button>
           </div>
         </div>
         <div class="panel-body">
@@ -612,7 +638,7 @@
           <span class="panel-title">Order traffic forecast</span>
           <div style="display:flex;gap:0.5rem;align-items:center">
             <span class="panel-meta" id="traffic-status">—</span>
-            <button class="btn" style="padding:0.3rem 0.75rem;font-size:0.75rem" onclick="loadTraffic()">Run forecast</button>
+            <button class="btn" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="loadTraffic()">Run forecast</button>
           </div>
         </div>
         <div class="panel-body">
@@ -715,7 +741,6 @@
       </div>
     </div>
 
-
     <!-- INCIDENT REGISTRY -->
     <div class="page" id="page-incidents">
       <div class="page-eyebrow">Operations</div>
@@ -723,8 +748,8 @@
       <p class="page-desc">Track, manage, and resolve operational incidents. Create new incidents manually or let the Diagnostic engine raise them automatically.</p>
 
       <!-- ACTION BAR -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;flex-wrap:wrap">
-        <div style="display:flex;gap:0.5rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap">
+        <div style="display:flex;gap:0.6rem">
           <button class="filter-btn active" onclick="filterIncidents('all', this)">All</button>
           <button class="filter-btn" onclick="filterIncidents('active', this)">Active</button>
           <button class="filter-btn" onclick="filterIncidents('investigating', this)">Investigating</button>
@@ -785,17 +810,17 @@
 
     <!-- INCIDENT DETAIL MODAL -->
     <div class="modal-overlay" id="detail-overlay" onclick="closeDetail()">
-      <div class="modal" style="max-width:540px" onclick="event.stopPropagation()">
+      <div class="modal" style="max-width:580px" onclick="event.stopPropagation()">
         <div class="modal-head">
           <div style="display:flex;align-items:center;gap:0.75rem">
-            <span class="inc-id" id="detail-id" style="font-size:0.8rem"></span>
+            <span class="inc-id" id="detail-id" style="font-size:0.85rem"></span>
             <span class="modal-title" id="detail-title"></span>
           </div>
           <button class="modal-close" onclick="closeDetail()">✕</button>
         </div>
-        <div class="modal-body" style="gap:1.25rem">
+        <div class="modal-body" style="gap:1.4rem">
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
             <div class="detail-field">
               <div class="detail-label">Service</div>
               <div class="detail-value" id="detail-service"></div>
@@ -1093,12 +1118,12 @@ function renderIncidents(filter) {
       <td>${inc.service}</td>
       <td><span class="sev-badge sev-${inc.severity}">${inc.severity}</span></td>
       <td><span class="status-badge-sm status-${inc.status}">${inc.status}</span></td>
-      <td style="white-space:nowrap;color:var(--text-3);font-size:0.78rem">${inc.opened}</td>
+      <td style="white-space:nowrap;color:var(--text-3);font-size:0.8rem">${inc.opened}</td>
       <td style="color:${inc.assignee === 'Unassigned' ? 'var(--text-3)' : 'var(--text-2)'}">${inc.assignee}</td>
       <td>
         ${inc.status !== 'resolved'
-          ? `<button class="inc-action" onclick="resolveIncident('${inc.id}')">Resolve</button>`
-          : `<span style="color:var(--text-3);font-size:0.75rem">Closed</span>`
+          ? `<button class="inc-action" onclick="event.stopPropagation(); resolveIncident('${inc.id}')">Resolve</button>`
+          : `<span style="color:var(--text-3);font-size:0.8rem">Closed</span>`
         }
       </td>
     </tr>
@@ -1174,7 +1199,7 @@ function openDetail(id) {
       </div>
     `).join('');
   } else {
-    actEl.innerHTML = '<span style="color:var(--text-3);font-size:0.8rem">No activity yet.</span>';
+    actEl.innerHTML = '<span style="color:var(--text-3);font-size:0.85rem">No activity yet.</span>';
   }
 
   // Footer actions
@@ -1296,8 +1321,8 @@ function buildForecastChart(canvasId, data, label, color) {
           label: 'Forecast',
           data: forePoints,
           borderColor: color,
-          borderWidth: 2,
-          borderDash: [4, 3],
+          borderWidth: 2.5,
+          borderDash: [4, 4],
           backgroundColor: 'transparent',
           pointRadius: 0,
           tension: 0.4,
@@ -1305,8 +1330,8 @@ function buildForecastChart(canvasId, data, label, color) {
         {
           label: label,
           data: histPoints,
-          borderColor: '#1a1916',
-          borderWidth: 2,
+          borderColor: '#2b2b2b',
+          borderWidth: 2.5,
           backgroundColor: 'transparent',
           pointRadius: 0,
           tension: 0.4,
@@ -1317,20 +1342,20 @@ function buildForecastChart(canvasId, data, label, color) {
       responsive: true,
       interaction: { mode: 'index', intersect: false },
       plugins: {
-        legend: { display: true, labels: { font: { size: 11 }, color: '#9b9890', boxWidth: 12 } },
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(2)}` } }
+        legend: { display: true, labels: { font: { family: 'Nunito', size: 12, weight: 600 }, color: '#8f8f8f', boxWidth: 12 } },
+        tooltip: { titleFont: { family: 'Nunito' }, bodyFont: { family: 'Nunito' }, callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(2)}` } }
       },
       scales: {
         x: {
           type: 'time',
           time: { unit: 'hour', displayFormats: { hour: 'HH:mm' }, tooltipFormat: 'dd LLL yyyy HH:mm' },
           adapters: { date: { locale: 'id' } },
-          ticks: { color: '#9b9890', font: { size: 11 }, maxRotation: 0 },
-          grid: { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 12, weight: 600 }, maxRotation: 0 },
+          grid: { color: 'rgba(0,0,0,0.04)' },
         },
         y: {
-          ticks: { color: '#9b9890', font: { size: 11 } },
-          grid:  { color: 'rgba(0,0,0,0.05)' },
+          ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 12, weight: 600 } },
+          grid:  { color: 'rgba(0,0,0,0.04)' },
         }
       }
     }
@@ -1350,7 +1375,7 @@ async function loadMemory() {
     loading.style.display = 'none';
     canvas.style.display  = 'block';
     status.textContent = `${data.data_points} data points · forecasting 24h ahead`;
-    buildForecastChart('mem-chart', data, 'Memory available (GB)', '#2a5caa');
+    buildForecastChart('mem-chart', data, 'Memory available (GB)', '#24BCAD'); // Indosat Teal
   } catch(e) {
     loading.textContent = 'Error: ' + e.message;
   }
@@ -1369,7 +1394,7 @@ async function loadCpu() {
     loading.style.display = 'none';
     canvas.style.display  = 'block';
     status.textContent = `${data.data_points} data points · forecasting 24h ahead`;
-    buildForecastChart('cpu-chart', data, 'CPU usage (%)', '#a05c10');
+    buildForecastChart('cpu-chart', data, 'CPU usage (%)', '#FFCA09'); // Indosat Yellow
   } catch(e) {
     loading.textContent = 'Error: ' + e.message;
   }
@@ -1389,7 +1414,7 @@ async function loadTraffic() {
     canvas.style.display  = 'block';
     const peak = data.peak_predicted ? ` · peak: ${data.peak_predicted.value} orders/5min` : '';
     status.textContent = `${data.data_points} data points${peak}`;
-    buildForecastChart('traffic-chart', data, 'Orders per 5 min', '#1e7a4a');
+    buildForecastChart('traffic-chart', data, 'Orders per 5 min', '#EB008C'); // Indosat Magenta
   } catch(e) {
     loading.textContent = 'Error: ' + e.message;
   }

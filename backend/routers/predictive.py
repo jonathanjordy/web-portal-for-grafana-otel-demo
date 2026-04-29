@@ -42,12 +42,12 @@ def fit_and_forecast(df: pd.DataFrame, periods: int, freq: str = "5min") -> dict
 
     return {
         "historical": [
-            {"ds": str(r["ds"]), "y": round(float(r["y"]), 4) if pd.notna(r["y"]) else None}
+            {"ds": pd.Timestamp(r["ds"]).strftime("%Y-%m-%dT%H:%M:%SZ"), "y": round(float(r["y"]), 4) if pd.notna(r["y"]) else None}
             for _, r in merged[merged["y"].notna()].iterrows()
         ],
         "forecast": [
             {
-                "ds":         str(r["ds"]),
+                "ds":         pd.Timestamp(r["ds"]).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "yhat":       round(float(r["yhat"]), 4),
                 "yhat_lower": round(float(r["yhat_lower"]), 4),
                 "yhat_upper": round(float(r["yhat_upper"]), 4),

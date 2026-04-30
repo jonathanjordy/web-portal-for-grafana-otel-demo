@@ -9,511 +9,169 @@
 <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
   :root {
-    /* Indosat Theme Colors */
     --indosat-magenta: #EB008C;
     --indosat-yellow:  #FFCA09;
     --indosat-teal:    #24BCAD;
     --indosat-white:   #FFFFFF;
-
     --bg:         #f8f9fb;
     --surface:    var(--indosat-white);
     --surface2:   #f1f3f5;
     --border:     rgba(0,0,0,0.06);
     --border-md:  rgba(0,0,0,0.12);
-    
     --text:       #2b2b2b;
     --text-2:     #5e5e5e;
     --text-3:     #8f8f8f;
-    
-    /* Semantic mappings to Indosat palette */
     --blue:       var(--indosat-teal);
     --blue-bg:    rgba(36, 188, 173, 0.12);
     --green:      var(--indosat-teal);
     --green-bg:   rgba(36, 188, 173, 0.12);
-    --amber:      #d4a000; /* Slightly darkened yellow for text legibility */
+    --amber:      #d4a000;
     --amber-bg:   rgba(255, 202, 9, 0.2);
     --red:        var(--indosat-magenta);
     --red-bg:     rgba(235, 0, 140, 0.08);
     --purple:     var(--indosat-magenta);
     --purple-bg:  rgba(235, 0, 140, 0.08);
-    
-    /* Font Update */
     --sans:       'Nunito', system-ui, sans-serif;
-    --serif:      'Nunito', system-ui, sans-serif; /* Replacing serif with the casual sans */
-    --radius:     14px; /* Slightly rounder for a casual feel */
+    --serif:      'Nunito', system-ui, sans-serif;
+    --radius:     14px;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14.5px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14.5px; line-height: 1.6; min-height: 100vh; }
   .shell { display: flex; height: 100vh; overflow: hidden; }
-
-  aside {
-    width: 250px;
-    background: var(--surface);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    flex-shrink: 0;
-    overflow-y: auto;
-  }
-
-  .sidebar-top {
-    padding: 1.75rem 1.5rem 1.25rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .wordmark {
-    font-family: var(--sans);
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: var(--indosat-magenta);
-    letter-spacing: -0.02em;
-    line-height: 1.2;
-  }
-
-  .wordmark span {
-    display: block;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text-3);
-    letter-spacing: 0.02em;
-    margin-top: 2px;
-  }
-
+  aside { width: 250px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+  .sidebar-top { padding: 1.75rem 1.5rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .wordmark { font-family: var(--sans); font-size: 1.45rem; font-weight: 800; color: var(--indosat-magenta); letter-spacing: -0.02em; line-height: 1.2; }
+  .wordmark span { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-3); letter-spacing: 0.02em; margin-top: 2px; }
   .nav-group { padding: 1.25rem 1rem 0.5rem; }
-
-  .nav-label {
-    font-size: 0.7rem;
-    font-weight: 700;
-    color: var(--text-3);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    padding: 0 0.5rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .nav-item {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    padding: 0.55rem 0.65rem;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--text-2);
-    font-size: 0.9rem;
-    font-weight: 600;
-    transition: all 0.15s ease;
-    text-decoration: none;
-    user-select: none;
-  }
-
+  .nav-label { font-size: 0.7rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; padding: 0 0.5rem; margin-bottom: 0.4rem; }
+  .nav-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.55rem 0.65rem; border-radius: 8px; cursor: pointer; color: var(--text-2); font-size: 0.9rem; font-weight: 600; transition: all 0.15s ease; text-decoration: none; user-select: none; }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
-
   .nav-item.active { background: var(--indosat-magenta); color: #fff; box-shadow: 0 4px 12px var(--red-bg); }
-
-  .nav-icon {
-    width: 18px; height: 18px;
-    opacity: 0.7; flex-shrink: 0;
-  }
-
+  .nav-icon { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
   .nav-item.active .nav-icon { opacity: 1; }
-
-  .sidebar-footer {
-    margin-top: auto;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid var(--border);
-  }
-
-  .health-row {
-    display: flex; align-items: center; gap: 0.5rem;
-    font-size: 0.8rem; font-weight: 600; color: var(--text-3);
-  }
-
+  .sidebar-footer { margin-top: auto; padding: 1rem 1.5rem; border-top: 1px solid var(--border); }
+  .health-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; font-weight: 600; color: var(--text-3); }
   .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
   .dot.ok    { background: var(--green); box-shadow: 0 0 6px var(--green-bg); }
   .dot.error { background: var(--red); box-shadow: 0 0 6px var(--red-bg); }
-
   main { flex: 1; overflow-y: auto; background: var(--bg); }
-
-  .page {
-    display: none;
-    padding: 2.5rem 3rem;
-    max-width: 1100px;
-    animation: fade 0.2s ease;
-  }
-
+  .page { display: none; padding: 2.5rem 3rem; max-width: 1100px; animation: fade 0.2s ease; }
   .page.active { display: block; }
-
-  @keyframes fade {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .page-eyebrow {
-    font-size: 0.75rem; font-weight: 700;
-    color: var(--indosat-teal); letter-spacing: 0.07em;
-    text-transform: uppercase; margin-bottom: 0.4rem;
-  }
-
-  .page-title {
-    font-family: var(--sans);
-    font-size: 2.2rem; font-weight: 800;
-    color: var(--text); letter-spacing: -0.02em;
-    line-height: 1.15; margin-bottom: 0.6rem;
-  }
-
-  .page-desc {
-    font-size: 0.95rem; font-weight: 500; color: var(--text-2);
-    max-width: 560px; line-height: 1.65; margin-bottom: 2rem;
-  }
-
-  .stat-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px; margin-bottom: 1.5rem;
-  }
-
-  .stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.25rem 1.15rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-
-  .stat-label {
-    font-size: 0.75rem; font-weight: 700;
-    color: var(--text-3); letter-spacing: 0.04em; margin-bottom: 0.35rem;
-  }
-
-  .stat-value {
-    font-family: var(--sans);
-    font-size: 1.8rem; font-weight: 800;
-    color: var(--text); line-height: 1;
-  }
-
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .page-eyebrow { font-size: 0.75rem; font-weight: 700; color: var(--indosat-teal); letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 0.4rem; }
+  .page-title { font-family: var(--sans); font-size: 2.2rem; font-weight: 800; color: var(--text); letter-spacing: -0.02em; line-height: 1.15; margin-bottom: 0.6rem; }
+  .page-desc { font-size: 0.95rem; font-weight: 500; color: var(--text-2); max-width: 560px; line-height: 1.65; margin-bottom: 2rem; }
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 1.5rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.25rem 1.15rem; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+  .stat-label { font-size: 0.75rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.04em; margin-bottom: 0.35rem; }
+  .stat-value { font-family: var(--sans); font-size: 1.8rem; font-weight: 800; color: var(--text); line-height: 1; }
   .stat-value.blue  { color: var(--blue); }
   .stat-value.green { color: var(--green); }
   .stat-value.red   { color: var(--red); }
   .stat-value.amber { color: var(--amber); }
-
   .stat-sub { font-size: 0.75rem; font-weight: 600; color: var(--text-3); margin-top: 0.4rem; }
-
-  .panel {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-  }
-
-  .panel-head {
-    padding: 1rem 1.25rem; border-bottom: 1px solid var(--border);
-    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-    background: #fcfdfe;
-  }
-
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+  .panel-head { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #fcfdfe; }
   .panel-title { font-size: 0.95rem; font-weight: 700; color: var(--text); }
   .panel-meta  { font-size: 0.8rem; font-weight: 600; color: var(--text-3); }
   .panel-body  { padding: 1.25rem; }
-
-  .cap-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 1.25rem; margin-bottom: 1.5rem;
-  }
-
-  .cap-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1.5rem;
-    display: flex; flex-direction: column; gap: 0.6rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-  }
-
+  .cap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+  .cap-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; transition: border-color 0.2s, box-shadow 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
   .cap-card:hover { border-color: var(--indosat-teal); box-shadow: 0 6px 16px var(--blue-bg); }
-
-  .cap-badge {
-    display: inline-flex; align-items: center;
-    font-size: 0.7rem; font-weight: 700;
-    letter-spacing: 0.05em; text-transform: uppercase;
-    padding: 0.25rem 0.7rem; border-radius: 6px; width: fit-content;
-  }
-
+  .cap-badge { display: inline-flex; align-items: center; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.25rem 0.7rem; border-radius: 6px; width: fit-content; }
   .cap-badge.blue   { background: var(--blue-bg);   color: var(--blue); }
   .cap-badge.amber  { background: var(--amber-bg);  color: var(--amber); }
   .cap-badge.red    { background: var(--red-bg);    color: var(--red); }
   .cap-badge.purple { background: var(--purple-bg); color: var(--purple); }
-
   .cap-name { font-size: 1.05rem; font-weight: 700; color: var(--text); }
-
   .cap-desc { font-size: 0.875rem; font-weight: 500; color: var(--text-2); line-height: 1.55; }
-
-  .cap-status {
-    margin-top: auto; font-size: 0.75rem; font-weight: 600; color: var(--text-3);
-    padding-top: 0.75rem; border-top: 1px solid var(--border);
-  }
-
-  .empty {
-    background: var(--surface);
-    border: 2px dashed var(--border-md);
-    border-radius: var(--radius);
-    padding: 3.5rem 2rem; text-align: center;
-    color: var(--text-3); font-size: 0.9rem; font-weight: 500;
-  }
-
-  .empty-title {
-    font-family: var(--sans); font-weight: 700;
-    font-size: 1.15rem; color: var(--text-2); margin-bottom: 0.4rem;
-  }
-
-  .chat-wrap {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    display: flex; flex-direction: column; height: 560px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.03);
-  }
-
-  .chat-messages {
-    flex: 1; overflow-y: auto;
-    padding: 1.5rem;
-    display: flex; flex-direction: column; gap: 1.25rem;
-  }
-
+  .cap-status { margin-top: auto; font-size: 0.75rem; font-weight: 600; color: var(--text-3); padding-top: 0.75rem; border-top: 1px solid var(--border); }
+  .empty { background: var(--surface); border: 2px dashed var(--border-md); border-radius: var(--radius); padding: 3.5rem 2rem; text-align: center; color: var(--text-3); font-size: 0.9rem; font-weight: 500; }
+  .empty-title { font-family: var(--sans); font-weight: 700; font-size: 1.15rem; color: var(--text-2); margin-bottom: 0.4rem; }
+  .chat-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); display: flex; flex-direction: column; height: 560px; box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+  .chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
   .msg { display: flex; flex-direction: column; gap: 0.35rem; max-width: 82%; }
   .msg.user      { align-self: flex-end;   align-items: flex-end; }
   .msg.assistant { align-self: flex-start; align-items: flex-start; }
-
-  .msg-role {
-    font-size: 0.7rem; font-weight: 700;
-    color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase;
-  }
-
-  .msg-bubble {
-    padding: 0.75rem 1rem;
-    border-radius: 12px;
-    font-size: 0.9rem; font-weight: 500; line-height: 1.55;
-  }
-
-  .msg.user .msg-bubble {
-    background: var(--indosat-teal); color: #fff;
-    border-bottom-right-radius: 4px;
-  }
-
-  .msg.assistant .msg-bubble {
-    background: var(--surface2); color: var(--text);
-    border: 1px solid var(--border);
-    border-bottom-left-radius: 4px;
-  }
-
-  .suggestions {
-    display: flex; flex-wrap: wrap; gap: 0.5rem;
-    padding: 0 1.25rem 0.75rem;
-  }
-
-  .suggestion {
-    font-size: 0.8rem; font-weight: 600; color: var(--text-2);
-    border: 1px solid var(--border);
-    border-radius: 100px; padding: 0.35rem 0.85rem;
-    cursor: pointer; transition: all 0.15s; background: var(--bg);
-  }
-
+  .msg-role { font-size: 0.7rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase; }
+  .msg-bubble { padding: 0.75rem 1rem; border-radius: 12px; font-size: 0.9rem; font-weight: 500; line-height: 1.55; }
+  .msg.user .msg-bubble { background: var(--indosat-teal); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.assistant .msg-bubble { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+  .suggestions { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0 1.25rem 0.75rem; }
+  .suggestion { font-size: 0.8rem; font-weight: 600; color: var(--text-2); border: 1px solid var(--border); border-radius: 100px; padding: 0.35rem 0.85rem; cursor: pointer; transition: all 0.15s; background: var(--bg); }
   .suggestion:hover { background: var(--indosat-teal); color: #fff; border-color: var(--indosat-teal); }
-
-  .chat-input-row {
-    padding: 1rem 1.25rem;
-    border-top: 1px solid var(--border);
-    display: flex; gap: 0.75rem; align-items: center; background: #fcfdfe;
-    border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius);
-  }
-
-  .chat-input-row input {
-    flex: 1;
-    border: 1px solid var(--border-md);
-    border-radius: 8px; padding: 0.65rem 1rem;
-    font-family: var(--sans); font-size: 0.95rem; font-weight: 500;
-    color: var(--text); background: var(--surface);
-    outline: none; transition: border-color 0.15s, box-shadow 0.15s;
-  }
-
+  .chat-input-row { padding: 1rem 1.25rem; border-top: 1px solid var(--border); display: flex; gap: 0.75rem; align-items: center; background: #fcfdfe; border-bottom-left-radius: var(--radius); border-bottom-right-radius: var(--radius); }
+  .chat-input-row input { flex: 1; border: 1px solid var(--border-md); border-radius: 8px; padding: 0.65rem 1rem; font-family: var(--sans); font-size: 0.95rem; font-weight: 500; color: var(--text); background: var(--surface); outline: none; transition: border-color 0.15s, box-shadow 0.15s; }
   .chat-input-row input:focus { border-color: var(--indosat-teal); box-shadow: 0 0 0 3px var(--blue-bg); }
   .chat-input-row input::placeholder { color: var(--text-3); }
-
-  .btn {
-    font-family: var(--sans); font-size: 0.85rem; font-weight: 700;
-    padding: 0.6rem 1.2rem; border-radius: 8px;
-    border: none;
-    background: var(--indosat-teal); color: #fff;
-    cursor: pointer; transition: all 0.15s; white-space: nowrap;
-    box-shadow: 0 2px 6px rgba(36, 188, 173, 0.2);
-  }
-
+  .btn { font-family: var(--sans); font-size: 0.85rem; font-weight: 700; padding: 0.6rem 1.2rem; border-radius: 8px; border: none; background: var(--indosat-teal); color: #fff; cursor: pointer; transition: all 0.15s; white-space: nowrap; box-shadow: 0 2px 6px rgba(36, 188, 173, 0.2); }
   .btn:hover    { background: #1fa093; transform: translateY(-1px); }
   .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-  
-  .btn-ghost {
-    background: transparent; color: var(--text-2); border: 1px solid var(--border-md); box-shadow: none;
-  }
+  .btn-ghost { background: transparent; color: var(--text-2); border: 1px solid var(--border-md); box-shadow: none; }
   .btn-ghost:hover { background: var(--surface2); color: var(--text); }
-
-  /* ── DETAIL MODAL FIELDS ────────────────── */
   .detail-field { display: flex; flex-direction: column; gap: 0.35rem; }
-
-  .detail-label {
-    font-size: 0.75rem; font-weight: 700;
-    color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase;
-  }
-
+  .detail-label { font-size: 0.75rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.05em; text-transform: uppercase; }
   .detail-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-
-  .detail-desc {
-    font-size: 0.9rem; font-weight: 500; color: var(--text-2);
-    line-height: 1.6; background: var(--surface2);
-    border-radius: 8px; padding: 0.85rem;
-    border: 1px solid var(--border);
-  }
-
-  .activity-log {
-    display: flex; flex-direction: column; gap: 0.6rem;
-  }
-
-  .activity-item {
-    display: flex; gap: 0.85rem; align-items: flex-start;
-    font-size: 0.85rem; font-weight: 500; color: var(--text-2);
-  }
-
-  .activity-time {
-    font-size: 0.75rem; font-weight: 700; color: var(--text-3);
-    white-space: nowrap; padding-top: 1px; min-width: 50px;
-  }
-
-  .activity-dot {
-    width: 8px; height: 8px; border-radius: 50%;
-    background: var(--border-md); flex-shrink: 0; margin-top: 6px;
-  }
-
+  .detail-desc { font-size: 0.9rem; font-weight: 500; color: var(--text-2); line-height: 1.6; background: var(--surface2); border-radius: 8px; padding: 0.85rem; border: 1px solid var(--border); }
+  .activity-log { display: flex; flex-direction: column; gap: 0.6rem; }
+  .activity-item { display: flex; gap: 0.85rem; align-items: flex-start; font-size: 0.85rem; font-weight: 500; color: var(--text-2); }
+  .activity-time { font-size: 0.75rem; font-weight: 700; color: var(--text-3); white-space: nowrap; padding-top: 1px; min-width: 50px; }
+  .activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border-md); flex-shrink: 0; margin-top: 6px; }
   .activity-dot.red    { background: var(--red); box-shadow: 0 0 6px var(--red-bg); }
   .activity-dot.amber  { background: var(--indosat-yellow); }
   .activity-dot.green  { background: var(--green); }
   .activity-dot.blue   { background: var(--blue); }
-
-  /* ── FILTER BUTTONS ─────────────────────── */
-  .filter-btn {
-    font-family: var(--sans); font-size: 0.85rem; font-weight: 700;
-    padding: 0.45rem 1rem; border-radius: 8px;
-    border: 1px solid var(--border-md); background: var(--surface);
-    color: var(--text-2); cursor: pointer; transition: all 0.15s;
-  }
+  .filter-btn { font-family: var(--sans); font-size: 0.85rem; font-weight: 700; padding: 0.45rem 1rem; border-radius: 8px; border: 1px solid var(--border-md); background: var(--surface); color: var(--text-2); cursor: pointer; transition: all 0.15s; }
   .filter-btn:hover  { background: var(--surface2); color: var(--text); }
   .filter-btn.active { background: var(--indosat-magenta); color: #fff; border-color: var(--indosat-magenta); box-shadow: 0 2px 8px var(--red-bg); }
-
-  /* ── INCIDENT TABLE ──────────────────────── */
-  .inc-table {
-    width: 100%; border-collapse: collapse;
-    font-size: 0.875rem; font-weight: 500;
-  }
-  .inc-table th {
-    text-align: left; padding: 0.75rem 1rem;
-    font-size: 0.75rem; font-weight: 700;
-    color: var(--text-3); letter-spacing: 0.04em;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap; text-transform: uppercase;
-  }
-  .inc-table td {
-    padding: 0.85rem 1rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--text-2); vertical-align: middle;
-  }
+  .inc-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; font-weight: 500; }
+  .inc-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.75rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.04em; border-bottom: 1px solid var(--border); white-space: nowrap; text-transform: uppercase; }
+  .inc-table td { padding: 0.85rem 1rem; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: middle; }
   .inc-table tr:last-child td { border-bottom: none; }
   .inc-table tr:hover td { background: var(--surface2); }
-
   .inc-id { font-family: monospace; font-size: 0.8rem; font-weight: 600; color: var(--text-3); }
-
   .inc-title { font-weight: 700; color: var(--text); }
-
-  .sev-badge, .status-badge-sm {
-    display: inline-block; padding: 0.2rem 0.6rem;
-    border-radius: 6px; font-size: 0.7rem; font-weight: 700;
-    letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
-  }
+  .sev-badge, .status-badge-sm { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; }
   .sev-critical { background: var(--red-bg); color: var(--red); border: 1px solid rgba(235,0,140,0.2); }
   .sev-high     { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(255,202,9,0.4); }
   .sev-medium   { background: var(--blue-bg); color: var(--blue); }
   .sev-low      { background: var(--surface2); color: var(--text-2); }
-
   .status-active        { background: var(--red-bg);    color: var(--red); }
   .status-investigating { background: var(--amber-bg);  color: var(--amber); }
   .status-resolved      { background: var(--green-bg);  color: var(--green); }
-
-  .inc-action {
-    font-size: 0.8rem; font-weight: 700;
-    color: var(--indosat-teal); cursor: pointer; background: none;
-    border: none; padding: 0; text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  /* ── MODAL ───────────────────────────────── */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); backdrop-filter: blur(3px);
-    z-index: 200; align-items: center; justify-content: center;
-  }
+  .inc-action { font-size: 0.8rem; font-weight: 700; color: var(--indosat-teal); cursor: pointer; background: none; border: none; padding: 0; text-decoration: underline; text-underline-offset: 3px; }
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); backdrop-filter: blur(3px); z-index: 200; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
-
-  .modal {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 16px; width: 100%; max-width: 500px;
-    box-shadow: 0 24px 60px rgba(0,0,0,0.15);
-    animation: fade 0.2s ease;
-  }
-  .modal-head {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
-  }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 500px; box-shadow: 0 24px 60px rgba(0,0,0,0.15); animation: fade 0.2s ease; }
+  .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border); }
   .modal-title { font-weight: 800; font-size: 1.1rem; }
-  .modal-close {
-    background: var(--surface2); border: none; cursor: pointer;
-    color: var(--text-2); font-size: 1.1rem; font-weight: 700; line-height: 1;
-    width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center;
-    transition: all 0.15s;
-  }
+  .modal-close { background: var(--surface2); border: none; cursor: pointer; color: var(--text-2); font-size: 1.1rem; font-weight: 700; line-height: 1; width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; transition: all 0.15s; }
   .modal-close:hover { background: var(--border-md); color: var(--text); }
   .modal-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1.1rem; }
-  .modal-foot {
-    padding: 1.25rem 1.5rem; border-top: 1px solid var(--border);
-    display: flex; justify-content: flex-end; gap: 0.75rem; background: #fcfdfe;
-    border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
-  }
-
+  .modal-foot { padding: 1.25rem 1.5rem; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 0.75rem; background: #fcfdfe; border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; }
   .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
   .form-row   { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-2); }
+  .form-group input, .form-group select, .form-group textarea { border: 1px solid var(--border-md); border-radius: 8px; padding: 0.6rem 0.85rem; font-family: var(--sans); font-size: 0.95rem; font-weight: 500; color: var(--text); background: var(--surface); outline: none; transition: all 0.15s; resize: vertical; }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--indosat-teal); box-shadow: 0 0 0 3px var(--blue-bg); }
 
-  .form-group label {
-    font-size: 0.8rem; font-weight: 700; color: var(--text-2);
-  }
-  .form-group input,
-  .form-group select,
-  .form-group textarea {
-    border: 1px solid var(--border-md); border-radius: 8px;
-    padding: 0.6rem 0.85rem; font-family: var(--sans);
-    font-size: 0.95rem; font-weight: 500; color: var(--text); background: var(--surface);
-    outline: none; transition: all 0.15s;
-    resize: vertical;
-  }
-  .form-group input:focus,
-  .form-group select:focus,
-  .form-group textarea:focus { border-color: var(--indosat-teal); box-shadow: 0 0 0 3px var(--blue-bg); }
-
+  /* ── DETECTIVE PAGE STYLES ─────────────── */
+  .det-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+  .det-table th { text-align: left; padding: 0.5rem 0.85rem; font-size: 0.7rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.04em; border-bottom: 1px solid var(--border); text-transform: uppercase; }
+  .det-table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: middle; }
+  .det-table tr:last-child td { border-bottom: none; }
+  .det-table tr:hover td { background: var(--surface2); }
+  .anomaly-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+  .anomaly-dot.anomaly { background: var(--red); box-shadow: 0 0 6px var(--red-bg); }
+  .anomaly-dot.normal  { background: var(--green); }
+  .tag { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; background: var(--surface2); color: var(--text-3); margin: 0 2px 2px 0; }
+  .tag.red    { background: var(--red-bg);    color: var(--red); }
+  .tag.amber  { background: var(--amber-bg);  color: var(--amber); }
+  .tag.blue   { background: var(--blue-bg);   color: var(--blue); }
+  .tag.green  { background: var(--green-bg);  color: var(--green); }
+  .select-sm { font-size: 0.78rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text-2); font-family: var(--sans); outline: none; }
+  .btn-sm { font-family: var(--sans); font-size: 0.78rem; font-weight: 700; padding: 0.35rem 0.8rem; border-radius: 6px; border: none; background: var(--indosat-teal); color: #fff; cursor: pointer; transition: all 0.15s; }
+  .btn-sm:hover { background: #1fa093; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
@@ -521,68 +179,39 @@
 </head>
 <body>
 <div class="shell">
-
   <aside>
     <div class="sidebar-top">
-      <div class="wordmark">
-        AIOps Portal
-        <span>Observability Intelligence</span>
-      </div>
+      <div class="wordmark">AIOps Portal<span>Observability Intelligence</span></div>
     </div>
-
     <div class="nav-group">
       <div class="nav-label">Analytics</div>
-
       <a class="nav-item active" data-page="predictive" onclick="navigate('predictive')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <polyline points="1,12 5,7 8,9 12,4 15,5"/>
-          <line x1="15" y1="2" x2="15" y2="8"/><line x1="12" y1="8" x2="15" y2="8"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,12 5,7 8,9 12,4 15,5"/><line x1="15" y1="2" x2="15" y2="8"/><line x1="12" y1="8" x2="15" y2="8"/></svg>
         Predictive
       </a>
-
       <a class="nav-item" data-page="detective" onclick="navigate('detective')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="6.5" cy="6.5" r="4.5"/>
-          <line x1="10" y1="10" x2="14" y2="14"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6.5" cy="6.5" r="4.5"/><line x1="10" y1="10" x2="14" y2="14"/></svg>
         Detective
       </a>
-
       <a class="nav-item" data-page="diagnostic" onclick="navigate('diagnostic')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="8" cy="8" r="6.5"/>
-          <line x1="8" y1="5" x2="8" y2="8"/>
-          <circle cx="8" cy="11" r="0.5" fill="currentColor"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="8" cy="8" r="6.5"/><line x1="8" y1="5" x2="8" y2="8"/><circle cx="8" cy="11" r="0.5" fill="currentColor"/></svg>
         Diagnostic
       </a>
     </div>
-
     <div class="nav-group">
       <div class="nav-label">Assistant</div>
-
       <a class="nav-item" data-page="chatbot" onclick="navigate('chatbot')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M14 10.5c0 .8-.7 1.5-1.5 1.5H4l-2.5 2.5V3.5C1.5 2.7 2.2 2 3 2h9.5c.8 0 1.5.7 1.5 1.5v7z"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 10.5c0 .8-.7 1.5-1.5 1.5H4l-2.5 2.5V3.5C1.5 2.7 2.2 2 3 2h9.5c.8 0 1.5.7 1.5 1.5v7z"/></svg>
         AIOps Chat
       </a>
     </div>
-
     <div class="nav-group">
       <div class="nav-label">Operations</div>
-
       <a class="nav-item" data-page="incidents" onclick="navigate('incidents')">
-        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-          <rect x="2" y="2" width="12" height="12" rx="2"/>
-          <line x1="5" y1="6" x2="11" y2="6"/>
-          <line x1="5" y1="9" x2="9" y2="9"/>
-        </svg>
+        <svg class="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="12" height="12" rx="2"/><line x1="5" y1="6" x2="11" y2="6"/><line x1="5" y1="9" x2="9" y2="9"/></svg>
         Incident Registry
       </a>
     </div>
-
     <div class="sidebar-footer">
       <div class="health-row">
         <div class="dot" id="health-dot"></div>
@@ -593,53 +222,40 @@
 
   <main>
 
-    <!-- PREDICTIVE -->
+    <!-- ═══════════════════════════════════════ PREDICTIVE -->
     <div class="page active" id="page-predictive">
       <div class="page-eyebrow">Page 1 — Predictive Analytics</div>
       <h1 class="page-title">Forecasting & Capacity</h1>
       <p class="page-desc">Predict resource saturation and traffic volume before they become incidents, using time-series models trained on your telemetry history.</p>
-
-      <div class="stat-row" id="pred-stats">
+      <div class="stat-row">
         <div class="stat"><div class="stat-label">Memory used</div><div class="stat-value" id="stat-mem">—</div><div class="stat-sub">of total RAM</div></div>
         <div class="stat"><div class="stat-label">Load average (1m)</div><div class="stat-value" id="stat-load">—</div><div class="stat-sub">system load</div></div>
         <div class="stat"><div class="stat-label">Orders last hour</div><div class="stat-value" id="stat-orders">—</div><div class="stat-sub" id="stat-orders-trend">vs previous hour</div></div>
       </div>
-
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">Memory availability forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <span class="panel-meta" id="mem-status">—</span>
-            <button class="btn" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="loadMemory()">Run forecast</button>
-          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="mem-status">—</span><button class="btn-sm" onclick="loadMemory()">Run forecast</button></div>
         </div>
         <div class="panel-body">
           <div id="mem-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to generate a 24-hour prediction using Facebook Prophet.</div>
           <canvas id="mem-chart" style="display:none;max-height:260px"></canvas>
         </div>
       </div>
-
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">CPU usage forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <span class="panel-meta" id="cpu-status">—</span>
-            <button class="btn" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="loadCpu()">Run forecast</button>
-          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="cpu-status">—</span><button class="btn-sm" onclick="loadCpu()">Run forecast</button></div>
         </div>
         <div class="panel-body">
           <div id="cpu-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to generate a 24-hour CPU prediction.</div>
           <canvas id="cpu-chart" style="display:none;max-height:260px"></canvas>
         </div>
       </div>
-
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">Order traffic forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <span class="panel-meta" id="traffic-status">—</span>
-            <button class="btn" style="padding:0.4rem 0.85rem;font-size:0.75rem" onclick="loadTraffic()">Run forecast</button>
-          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="traffic-status">—</span><button class="btn-sm" onclick="loadTraffic()">Run forecast</button></div>
         </div>
         <div class="panel-body">
           <div id="traffic-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to predict order volume for the next 12 hours.</div>
@@ -648,74 +264,116 @@
       </div>
     </div>
 
-    <!-- DETECTIVE -->
+    <!-- ═══════════════════════════════════════ DETECTIVE -->
     <div class="page" id="page-detective">
       <div class="page-eyebrow">Page 2 — Detective Analytics</div>
       <h1 class="page-title">Smart Anomaly Detection</h1>
       <p class="page-desc">Context-aware anomaly detection across metrics, logs, and traces — moving beyond static thresholds to dynamic, multivariate intelligence.</p>
-      <div class="cap-grid">
-        <div class="cap-card">
-          <div class="cap-badge amber">Anomaly</div>
-          <div class="cap-name">Multivariate Anomaly Detection</div>
-          <div class="cap-desc">Isolation Forest looks at payment duration, cache misses, and error rates simultaneously to flag unusual combinations invisible to single-metric alerts.</div>
-          <div class="cap-status">Coming in Phase 3</div>
+
+      <!-- ANOMALY DETECTION -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Multivariate anomaly detection</div>
+            <div class="panel-meta">Isolation Forest — payment duration · failure rate · cache misses · order errors · node load</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <select class="select-sm" id="anomaly-hours">
+              <option value="3">Last 3h</option>
+              <option value="6" selected>Last 6h</option>
+              <option value="12">Last 12h</option>
+              <option value="24">Last 24h</option>
+            </select>
+            <button class="btn-sm" onclick="loadAnomalies()">Run detection</button>
+          </div>
         </div>
-        <div class="cap-card">
-          <div class="cap-badge amber">Clustering</div>
-          <div class="cap-name">Log Pattern Clustering</div>
-          <div class="cap-desc">Groups log lines by structure using NLP, strips variables, and surfaces new patterns or sudden volume spikes in specific log types.</div>
-          <div class="cap-status">Coming in Phase 3</div>
-        </div>
-        <div class="cap-card">
-          <div class="cap-badge amber">Tracing</div>
-          <div class="cap-name">Trace Shape Anomaly</div>
-          <div class="cap-desc">Flags traces whose span structure deviates from the baseline — N+1 query loops, missing spans, or unexpected service calls.</div>
-          <div class="cap-status">Coming in Phase 3</div>
+        <div class="panel-body">
+          <div class="stat-row" id="anomaly-stats" style="display:none;margin-bottom:1rem">
+            <div class="stat"><div class="stat-label">Windows analysed</div><div class="stat-value" id="anom-total">—</div></div>
+            <div class="stat"><div class="stat-label">Anomalies found</div><div class="stat-value red" id="anom-count">—</div></div>
+            <div class="stat"><div class="stat-label">Anomaly rate</div><div class="stat-value amber" id="anom-rate">—</div></div>
+          </div>
+          <div id="anomaly-loading" class="empty" style="padding:1.5rem;border:none">Click "Run detection" to analyse your metrics with Isolation Forest.</div>
+          <canvas id="anomaly-chart" style="display:none;max-height:220px"></canvas>
+          <div id="anomaly-table-wrap" style="display:none;margin-top:1.25rem;overflow-x:auto"></div>
         </div>
       </div>
-      <div class="empty">
-        <div class="empty-title">No anomalies detected</div>
-        The anomaly timeline and log cluster table will appear here once Phase 3 is complete.
+
+      <!-- LOG PATTERN CLUSTERING -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Log pattern clustering</div>
+            <div class="panel-meta">Drain3 template mining — strips variables, groups logs by structure</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <select class="select-sm" id="log-hours">
+              <option value="1">Last 1h</option>
+              <option value="2" selected>Last 2h</option>
+              <option value="6">Last 6h</option>
+            </select>
+            <button class="btn-sm" onclick="loadLogPatterns()">Analyse logs</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="stat-row" id="log-stats" style="display:none;margin-bottom:1rem">
+            <div class="stat"><div class="stat-label">Total logs</div><div class="stat-value" id="log-total">—</div></div>
+            <div class="stat"><div class="stat-label">Unique patterns</div><div class="stat-value blue" id="log-patterns">—</div></div>
+            <div class="stat"><div class="stat-label">New patterns</div><div class="stat-value amber" id="log-new">—</div></div>
+            <div class="stat"><div class="stat-label">Error patterns</div><div class="stat-value red" id="log-errors">—</div></div>
+          </div>
+          <div id="log-loading" class="empty" style="padding:1.5rem;border:none">Click "Analyse logs" to cluster log templates using Drain3.</div>
+          <div id="log-table-wrap" style="overflow-x:auto"></div>
+        </div>
+      </div>
+
+      <!-- TRACE SHAPE -->
+      <div class="panel">
+        <div class="panel-head">
+          <div>
+            <div class="panel-title">Trace shape anomaly detection</div>
+            <div class="panel-meta">Fingerprints each trace's span structure — flags deviations from baseline</div>
+          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <select class="select-sm" id="trace-hours">
+              <option value="1">Last 1h</option>
+              <option value="2" selected>Last 2h</option>
+              <option value="6">Last 6h</option>
+            </select>
+            <button class="btn-sm" onclick="loadTraceShapes()">Analyse traces</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="stat-row" id="trace-stats" style="display:none;margin-bottom:1rem">
+            <div class="stat"><div class="stat-label">Total traces</div><div class="stat-value" id="trace-total">—</div></div>
+            <div class="stat"><div class="stat-label">Unique shapes</div><div class="stat-value blue" id="trace-shapes-count">—</div></div>
+            <div class="stat"><div class="stat-label">Anomalous traces</div><div class="stat-value red" id="trace-anomalous">—</div></div>
+            <div class="stat"><div class="stat-label">Baseline coverage</div><div class="stat-value green" id="trace-baseline-pct">—</div></div>
+          </div>
+          <div id="trace-loading" class="empty" style="padding:1.5rem;border:none">Click "Analyse traces" to fingerprint trace shapes.</div>
+          <div id="trace-table-wrap" style="overflow-x:auto"></div>
+        </div>
       </div>
     </div>
 
-    <!-- DIAGNOSTIC -->
+    <!-- ═══════════════════════════════════════ DIAGNOSTIC -->
     <div class="page" id="page-diagnostic">
       <div class="page-eyebrow">Page 3 — Diagnostic Analytics</div>
       <h1 class="page-title">Root Cause Analysis</h1>
       <p class="page-desc">Automated RCA that connects the dots across metrics, traces, and logs — and hands you a human-readable incident summary.</p>
       <div class="cap-grid">
-        <div class="cap-card">
-          <div class="cap-badge red">RCA</div>
-          <div class="cap-name">Causal Graph Analysis</div>
-          <div class="cap-desc">Builds a real-time service dependency map from trace parent-child relationships and walks the graph to identify the root cause of failures.</div>
-          <div class="cap-status">Coming in Phase 4</div>
-        </div>
-        <div class="cap-card">
-          <div class="cap-badge red">Correlation</div>
-          <div class="cap-name">Telemetry Correlation Engine</div>
-          <div class="cap-desc">When an anomaly fires, automatically surfaces the slowest traces, attached error logs, and resource spikes from that exact time window.</div>
-          <div class="cap-status">Coming in Phase 4</div>
-        </div>
-        <div class="cap-card">
-          <div class="cap-badge purple">AI</div>
-          <div class="cap-name">LLM Incident Summarization</div>
-          <div class="cap-desc">Feeds correlated metrics, traces, and logs into Claude to generate a plain-English incident summary ready to post to Slack.</div>
-          <div class="cap-status">Coming in Phase 4</div>
-        </div>
+        <div class="cap-card"><div class="cap-badge red">RCA</div><div class="cap-name">Causal Graph Analysis</div><div class="cap-desc">Builds a real-time service dependency map from trace parent-child relationships and walks the graph to identify the root cause of failures.</div><div class="cap-status">Coming in Phase 4</div></div>
+        <div class="cap-card"><div class="cap-badge red">Correlation</div><div class="cap-name">Telemetry Correlation Engine</div><div class="cap-desc">When an anomaly fires, automatically surfaces the slowest traces, attached error logs, and resource spikes from that exact time window.</div><div class="cap-status">Coming in Phase 4</div></div>
+        <div class="cap-card"><div class="cap-badge purple">AI</div><div class="cap-name">LLM Incident Summarization</div><div class="cap-desc">Feeds correlated metrics, traces, and logs into Claude to generate a plain-English incident summary ready to post to Slack.</div><div class="cap-status">Coming in Phase 4</div></div>
       </div>
-      <div class="empty">
-        <div class="empty-title">No incidents to diagnose</div>
-        The dependency graph and correlated incident view will appear here once Phase 4 is complete.
-      </div>
+      <div class="empty"><div class="empty-title">No incidents to diagnose</div>Coming in Phase 4.</div>
     </div>
 
-    <!-- CHATBOT -->
+    <!-- ═══════════════════════════════════════ CHATBOT -->
     <div class="page" id="page-chatbot">
       <div class="page-eyebrow">Page 4 — AIOps Assistant</div>
       <h1 class="page-title">Talk to Your Data</h1>
       <p class="page-desc">Ask questions in plain English. The assistant translates them into ClickHouse SQL, runs the query, and returns results as tables or charts.</p>
-
       <div class="chat-wrap">
         <div class="chat-messages" id="chat-messages">
           <div class="msg assistant">
@@ -723,7 +381,6 @@
             <div class="msg-bubble">Hello. I have access to your ClickHouse <code>otel</code> database — traces, logs, and metrics from all three services plus node exporter data. What would you like to know?</div>
           </div>
         </div>
-
         <div class="suggestions" id="suggestions">
           <div class="suggestion" onclick="suggest(this)">How many orders in the last hour?</div>
           <div class="suggestion" onclick="suggest(this)">Show payment failure rate by item</div>
@@ -731,23 +388,18 @@
           <div class="suggestion" onclick="suggest(this)">What is the p95 order duration?</div>
           <div class="suggestion" onclick="suggest(this)">Show node memory usage trend</div>
         </div>
-
         <div class="chat-input-row">
-          <input type="text" id="chat-input"
-            placeholder="Ask anything about your telemetry data..."
-            onkeydown="if(event.key==='Enter') sendMessage()"/>
+          <input type="text" id="chat-input" placeholder="Ask anything about your telemetry data..." onkeydown="if(event.key==='Enter') sendMessage()"/>
           <button class="btn" onclick="sendMessage()" id="send-btn">Send</button>
         </div>
       </div>
     </div>
 
-    <!-- INCIDENT REGISTRY -->
+    <!-- ═══════════════════════════════════════ INCIDENTS -->
     <div class="page" id="page-incidents">
       <div class="page-eyebrow">Operations</div>
       <h1 class="page-title">Incident Registry</h1>
       <p class="page-desc">Track, manage, and resolve operational incidents. Create new incidents manually or let the Diagnostic engine raise them automatically.</p>
-
-      <!-- ACTION BAR -->
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;flex-wrap:wrap">
         <div style="display:flex;gap:0.6rem">
           <button class="filter-btn active" onclick="filterIncidents('all', this)">All</button>
@@ -757,51 +409,20 @@
         </div>
         <button class="btn" onclick="openModal()">+ New Incident</button>
       </div>
-
-      <!-- SUMMARY STATS -->
       <div class="stat-row" style="margin-bottom:1.5rem">
-        <div class="stat">
-          <div class="stat-label">Active</div>
-          <div class="stat-value red" id="inc-count-active">3</div>
-          <div class="stat-sub">require attention</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Investigating</div>
-          <div class="stat-value amber" id="inc-count-investigating">2</div>
-          <div class="stat-sub">in progress</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Resolved today</div>
-          <div class="stat-value green" id="inc-count-resolved">4</div>
-          <div class="stat-sub">closed incidents</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Avg resolution time</div>
-          <div class="stat-value" id="inc-avg-time">42m</div>
-          <div class="stat-sub">last 7 days</div>
-        </div>
+        <div class="stat"><div class="stat-label">Active</div><div class="stat-value red" id="inc-count-active">3</div><div class="stat-sub">require attention</div></div>
+        <div class="stat"><div class="stat-label">Investigating</div><div class="stat-value amber" id="inc-count-investigating">2</div><div class="stat-sub">in progress</div></div>
+        <div class="stat"><div class="stat-label">Resolved today</div><div class="stat-value green" id="inc-count-resolved">4</div><div class="stat-sub">closed incidents</div></div>
+        <div class="stat"><div class="stat-label">Avg resolution time</div><div class="stat-value" id="inc-avg-time">42m</div><div class="stat-sub">last 7 days</div></div>
       </div>
-
-      <!-- INCIDENT TABLE -->
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">All incidents</span>
           <span class="panel-meta" id="inc-table-meta">Showing 9 incidents</span>
         </div>
         <div style="overflow-x:auto">
-          <table class="inc-table" id="inc-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>Service</th>
-                <th>Severity</th>
-                <th>Status</th>
-                <th>Opened</th>
-                <th>Assignee</th>
-                <th>Action</th>
-              </tr>
-            </thead>
+          <table class="inc-table">
+            <thead><tr><th>ID</th><th>Title</th><th>Service</th><th>Severity</th><th>Status</th><th>Opened</th><th>Assignee</th><th>Action</th></tr></thead>
             <tbody id="inc-tbody"></tbody>
           </table>
         </div>
@@ -819,40 +440,15 @@
           <button class="modal-close" onclick="closeDetail()">✕</button>
         </div>
         <div class="modal-body" style="gap:1.4rem">
-
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-            <div class="detail-field">
-              <div class="detail-label">Service</div>
-              <div class="detail-value" id="detail-service"></div>
-            </div>
-            <div class="detail-field">
-              <div class="detail-label">Severity</div>
-              <div id="detail-severity"></div>
-            </div>
-            <div class="detail-field">
-              <div class="detail-label">Status</div>
-              <div id="detail-status"></div>
-            </div>
-            <div class="detail-field">
-              <div class="detail-label">Assignee</div>
-              <div class="detail-value" id="detail-assignee"></div>
-            </div>
-            <div class="detail-field" style="grid-column:span 2">
-              <div class="detail-label">Opened</div>
-              <div class="detail-value" id="detail-opened"></div>
-            </div>
+            <div class="detail-field"><div class="detail-label">Service</div><div class="detail-value" id="detail-service"></div></div>
+            <div class="detail-field"><div class="detail-label">Severity</div><div id="detail-severity"></div></div>
+            <div class="detail-field"><div class="detail-label">Status</div><div id="detail-status"></div></div>
+            <div class="detail-field"><div class="detail-label">Assignee</div><div class="detail-value" id="detail-assignee"></div></div>
+            <div class="detail-field" style="grid-column:span 2"><div class="detail-label">Opened</div><div class="detail-value" id="detail-opened"></div></div>
           </div>
-
-          <div class="detail-field">
-            <div class="detail-label">Description</div>
-            <div class="detail-desc" id="detail-desc"></div>
-          </div>
-
-          <div class="detail-field">
-            <div class="detail-label">Activity log</div>
-            <div class="activity-log" id="detail-activity"></div>
-          </div>
-
+          <div class="detail-field"><div class="detail-label">Description</div><div class="detail-desc" id="detail-desc"></div></div>
+          <div class="detail-field"><div class="detail-label">Activity log</div><div class="activity-log" id="detail-activity"></div></div>
         </div>
         <div class="modal-foot" id="detail-footer"></div>
       </div>
@@ -861,44 +457,15 @@
     <!-- CREATE INCIDENT MODAL -->
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
       <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-head">
-          <span class="modal-title">New Incident</span>
-          <button class="modal-close" onclick="closeModal()">✕</button>
-        </div>
+        <div class="modal-head"><span class="modal-title">New Incident</span><button class="modal-close" onclick="closeModal()">✕</button></div>
         <div class="modal-body">
-          <div class="form-group">
-            <label>Title</label>
-            <input type="text" id="form-title" placeholder="Brief description of the incident"/>
-          </div>
+          <div class="form-group"><label>Title</label><input type="text" id="form-title" placeholder="Brief description of the incident"/></div>
           <div class="form-row">
-            <div class="form-group">
-              <label>Service</label>
-              <select id="form-service">
-                <option>order-service</option>
-                <option>inventory-service</option>
-                <option>payment-service</option>
-                <option>node / infrastructure</option>
-                <option>multiple services</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>Severity</label>
-              <select id="form-severity">
-                <option value="critical">Critical</option>
-                <option value="high">High</option>
-                <option value="medium" selected>Medium</option>
-                <option value="low">Low</option>
-              </select>
-            </div>
+            <div class="form-group"><label>Service</label><select id="form-service"><option>order-service</option><option>inventory-service</option><option>payment-service</option><option>node / infrastructure</option><option>multiple services</option></select></div>
+            <div class="form-group"><label>Severity</label><select id="form-severity"><option value="critical">Critical</option><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
           </div>
-          <div class="form-group">
-            <label>Assignee</label>
-            <input type="text" id="form-assignee" placeholder="Who is handling this?"/>
-          </div>
-          <div class="form-group">
-            <label>Description</label>
-            <textarea id="form-desc" rows="3" placeholder="What is happening? Any initial findings?"></textarea>
-          </div>
+          <div class="form-group"><label>Assignee</label><input type="text" id="form-assignee" placeholder="Who is handling this?"/></div>
+          <div class="form-group"><label>Description</label><textarea id="form-desc" rows="3" placeholder="What is happening? Any initial findings?"></textarea></div>
         </div>
         <div class="modal-foot">
           <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
@@ -909,11 +476,11 @@
 
   </main>
 </div>
-
 <script>
-const API_BASE = 'http://35.219.90.43:8080/api';
+const API_BASE = 'http://YOUR_VM_IP:8080/api';
 let chatHistory = [];
 
+// ── NAVIGATION ────────────────────────────────
 function navigate(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -921,6 +488,7 @@ function navigate(page) {
   document.querySelector(`[data-page="${page}"]`).classList.add('active');
 }
 
+// ── HEALTH ────────────────────────────────────
 async function checkHealth() {
   const dot = document.getElementById('health-dot');
   const txt = document.getElementById('health-text');
@@ -935,11 +503,8 @@ async function checkHealth() {
   }
 }
 
-function suggest(el) {
-  document.getElementById('chat-input').value = el.textContent;
-  sendMessage();
-}
-
+// ── CHATBOT ───────────────────────────────────
+function suggest(el) { document.getElementById('chat-input').value = el.textContent; sendMessage(); }
 function appendMsg(role, html) {
   const wrap = document.getElementById('chat-messages');
   const sugg = document.getElementById('suggestions');
@@ -950,481 +515,321 @@ function appendMsg(role, html) {
   wrap.scrollTop = wrap.scrollHeight;
   return d;
 }
-
 async function sendMessage() {
   const input = document.getElementById('chat-input');
   const btn   = document.getElementById('send-btn');
   const msg   = input.value.trim();
   if (!msg) return;
-
-  input.value  = '';
-  btn.disabled = true;
+  input.value  = ''; btn.disabled = true;
   appendMsg('user', msg);
   chatHistory.push({ role: 'user', content: msg });
-
   const thinking = appendMsg('assistant', '<em style="color:var(--text-3)">Thinking...</em>');
-
   try {
-    const res  = await fetch(`${API_BASE}/chatbot/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg, history: chatHistory }),
-    });
+    const res  = await fetch(`${API_BASE}/chatbot/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: msg, history: chatHistory }) });
     const data = await res.json();
     const reply = data.response || 'Sorry, I could not process that.';
     thinking.querySelector('.msg-bubble').innerHTML = reply;
     chatHistory.push({ role: 'assistant', content: reply });
-  } catch {
-    thinking.querySelector('.msg-bubble').textContent = 'Backend unreachable. Make sure the API is running on port 8080.';
-  }
-
-  btn.disabled = false;
-  input.focus();
+  } catch { thinking.querySelector('.msg-bubble').textContent = 'Backend unreachable.'; }
+  btn.disabled = false; input.focus();
 }
 
-checkHealth();
-setInterval(checkHealth, 30000);
-
-// ── INCIDENT REGISTRY ─────────────────────────────────────────
+// ── INCIDENTS ─────────────────────────────────
 const DUMMY_INCIDENTS = [
-  {
-    id: 'INC-001', title: 'Payment gateway rejection rate elevated',
-    service: 'payment-service', severity: 'critical', status: 'active',
-    opened: '2026-04-29 08:14', assignee: 'Ahmad R.',
-    desc: 'Payment failures spiked to 45% at 08:12. Gateway returning 402 consistently.'
-  },
-  {
-    id: 'INC-002', title: 'Inventory DB slow query detected',
-    service: 'inventory-service', severity: 'high', status: 'investigating',
-    opened: '2026-04-29 07:55', assignee: 'Siti N.',
-    desc: 'db-stock-lookup span averaging 2.1s. Suspected missing index on stock table.'
-  },
-  {
-    id: 'INC-003', title: 'Memory usage trending upward on node',
-    service: 'node / infrastructure', severity: 'medium', status: 'investigating',
-    opened: '2026-04-29 06:30', assignee: 'Budi S.',
-    desc: 'Prophet forecast predicts memory saturation in ~18 hours if trend continues.'
-  },
-  {
-    id: 'INC-004', title: 'Order service response time p99 > 3s',
-    service: 'order-service', severity: 'high', status: 'active',
-    opened: '2026-04-29 09:01', assignee: 'Unassigned',
-    desc: 'p99 latency crossed 3s threshold. Correlated with INC-002 slow inventory lookup.'
-  },
-  {
-    id: 'INC-005', title: 'Redis cache hit rate dropped below 50%',
-    service: 'inventory-service', severity: 'medium', status: 'active',
-    opened: '2026-04-29 09:15', assignee: 'Siti N.',
-    desc: 'Cache hit rate fell from 85% to 43%. Possible cache eviction or TTL issue.'
-  },
-  {
-    id: 'INC-006', title: 'Intermittent connection timeout to ClickHouse',
-    service: 'multiple services', severity: 'low', status: 'resolved',
-    opened: '2026-04-28 22:10', assignee: 'Ahmad R.',
-    desc: 'OTel collector reported retry errors. Resolved after ClickHouse restart.'
-  },
-  {
-    id: 'INC-007', title: 'Deployment caused 2 min downtime on order-service',
-    service: 'order-service', severity: 'high', status: 'resolved',
-    opened: '2026-04-28 18:00', assignee: 'Budi S.',
-    desc: 'Rolling restart during peak hours caused brief unavailability. Post-mortem filed.'
-  },
-  {
-    id: 'INC-008', title: 'Node CPU load spike during batch job',
-    service: 'node / infrastructure', severity: 'medium', status: 'resolved',
-    opened: '2026-04-28 14:22', assignee: 'Siti N.',
-    desc: 'Load average hit 4.2 during scheduled analytics job. Resolved after job completed.'
-  },
-  {
-    id: 'INC-009', title: 'Payment amount histogram showing outliers > $5000',
-    service: 'payment-service', severity: 'low', status: 'resolved',
-    opened: '2026-04-28 11:05', assignee: 'Ahmad R.',
-    desc: 'Unusually large payment amounts detected. Confirmed as load test data, not real.'
-  },
+  { id:'INC-001', title:'Payment gateway rejection rate elevated', service:'payment-service', severity:'critical', status:'active', opened:'2026-04-29 08:14', assignee:'Ahmad R.', desc:'Payment failures spiked to 45% at 08:12. Gateway returning 402 consistently.' },
+  { id:'INC-002', title:'Inventory DB slow query detected', service:'inventory-service', severity:'high', status:'investigating', opened:'2026-04-29 07:55', assignee:'Siti N.', desc:'db-stock-lookup span averaging 2.1s. Suspected missing index on stock table.' },
+  { id:'INC-003', title:'Memory usage trending upward on node', service:'node / infrastructure', severity:'medium', status:'investigating', opened:'2026-04-29 06:30', assignee:'Budi S.', desc:'Prophet forecast predicts memory saturation in ~18 hours if trend continues.' },
+  { id:'INC-004', title:'Order service response time p99 > 3s', service:'order-service', severity:'high', status:'active', opened:'2026-04-29 09:01', assignee:'Unassigned', desc:'p99 latency crossed 3s threshold. Correlated with INC-002 slow inventory lookup.' },
+  { id:'INC-005', title:'Redis cache hit rate dropped below 50%', service:'inventory-service', severity:'medium', status:'active', opened:'2026-04-29 09:15', assignee:'Siti N.', desc:'Cache hit rate fell from 85% to 43%. Possible cache eviction or TTL issue.' },
+  { id:'INC-006', title:'Intermittent connection timeout to ClickHouse', service:'multiple services', severity:'low', status:'resolved', opened:'2026-04-28 22:10', assignee:'Ahmad R.', desc:'OTel collector reported retry errors. Resolved after ClickHouse restart.' },
+  { id:'INC-007', title:'Deployment caused 2 min downtime on order-service', service:'order-service', severity:'high', status:'resolved', opened:'2026-04-28 18:00', assignee:'Budi S.', desc:'Rolling restart during peak hours caused brief unavailability. Post-mortem filed.' },
+  { id:'INC-008', title:'Node CPU load spike during batch job', service:'node / infrastructure', severity:'medium', status:'resolved', opened:'2026-04-28 14:22', assignee:'Siti N.', desc:'Load average hit 4.2 during scheduled analytics job. Resolved after job completed.' },
+  { id:'INC-009', title:'Payment amount histogram showing outliers > $5000', service:'payment-service', severity:'low', status:'resolved', opened:'2026-04-28 11:05', assignee:'Ahmad R.', desc:'Unusually large payment amounts detected. Confirmed as load test data, not real.' },
 ];
-
-// Seed activity logs
 const ACTIVITY_SEEDS = {
-  'INC-001': [
-    { time: '08:12', dot: 'red',   text: 'Anomaly detected by payment monitor — failure rate 45%' },
-    { time: '08:14', dot: 'red',   text: 'Incident raised automatically' },
-    { time: '08:17', dot: 'amber', text: 'Ahmad R. assigned and started investigation' },
-    { time: '08:22', dot: 'blue',  text: 'Checked payment-service logs — gateway returning 402 consistently' },
-  ],
-  'INC-002': [
-    { time: '07:50', dot: 'amber', text: 'Slow span alert fired — db-stock-lookup > 2s' },
-    { time: '07:55', dot: 'red',   text: 'Incident raised' },
-    { time: '08:01', dot: 'amber', text: 'Siti N. assigned' },
-    { time: '08:10', dot: 'blue',  text: 'Reviewing EXPLAIN output on stock table query' },
-  ],
-  'INC-003': [
-    { time: '06:28', dot: 'amber', text: 'Prophet forecast predicted saturation in 18h' },
-    { time: '06:30', dot: 'red',   text: 'Incident raised' },
-    { time: '06:45', dot: 'amber', text: 'Budi S. assigned — monitoring trend' },
-  ],
-  'INC-004': [
-    { time: '09:01', dot: 'red',   text: 'p99 latency crossed 3s threshold' },
-    { time: '09:03', dot: 'blue',  text: 'Correlated with INC-002 inventory slow query' },
-  ],
-  'INC-005': [
-    { time: '09:12', dot: 'amber', text: 'Cache hit rate monitoring alert fired' },
-    { time: '09:15', dot: 'red',   text: 'Incident raised' },
-    { time: '09:18', dot: 'amber', text: 'Siti N. assigned — checking Redis TTL config' },
-  ],
-  'INC-006': [
-    { time: '22:10', dot: 'red',   text: 'OTel collector retry errors detected' },
-    { time: '22:15', dot: 'amber', text: 'Ahmad R. investigated — ClickHouse connection dropping' },
-    { time: '22:31', dot: 'blue',  text: 'ClickHouse restarted' },
-    { time: '22:33', dot: 'green', text: 'Connections restored — incident resolved' },
-  ],
-  'INC-007': [
-    { time: '18:00', dot: 'red',   text: 'Deployment started on order-service' },
-    { time: '18:02', dot: 'red',   text: 'Health check failures detected during rolling restart' },
-    { time: '18:04', dot: 'amber', text: 'Budi S. monitoring — all pods restarting' },
-    { time: '18:06', dot: 'green', text: 'All pods healthy — service restored' },
-    { time: '18:10', dot: 'green', text: 'Post-mortem filed — resolved' },
-  ],
-  'INC-008': [
-    { time: '14:20', dot: 'amber', text: 'CPU load average spike detected — load1 = 4.2' },
-    { time: '14:22', dot: 'red',   text: 'Incident raised' },
-    { time: '14:25', dot: 'blue',  text: 'Siti N. identified scheduled analytics batch job' },
-    { time: '14:55', dot: 'green', text: 'Batch job completed — load normalised — resolved' },
-  ],
-  'INC-009': [
-    { time: '11:05', dot: 'amber', text: 'Histogram outliers detected — payments > $5000' },
-    { time: '11:08', dot: 'blue',  text: 'Ahmad R. investigated — confirmed load test data' },
-    { time: '11:15', dot: 'green', text: 'No real impact — resolved' },
-  ],
+  'INC-001': [{time:'08:12',dot:'red',text:'Anomaly detected — failure rate 45%'},{time:'08:14',dot:'red',text:'Incident raised automatically'},{time:'08:17',dot:'amber',text:'Ahmad R. assigned and started investigation'},{time:'08:22',dot:'blue',text:'Checked payment-service logs — gateway returning 402 consistently'}],
+  'INC-002': [{time:'07:50',dot:'amber',text:'Slow span alert fired — db-stock-lookup > 2s'},{time:'07:55',dot:'red',text:'Incident raised'},{time:'08:01',dot:'amber',text:'Siti N. assigned'},{time:'08:10',dot:'blue',text:'Reviewing EXPLAIN output on stock table query'}],
+  'INC-003': [{time:'06:28',dot:'amber',text:'Prophet forecast predicted saturation in 18h'},{time:'06:30',dot:'red',text:'Incident raised'},{time:'06:45',dot:'amber',text:'Budi S. assigned — monitoring trend'}],
+  'INC-004': [{time:'09:01',dot:'red',text:'p99 latency crossed 3s threshold'},{time:'09:03',dot:'blue',text:'Correlated with INC-002 inventory slow query'}],
+  'INC-005': [{time:'09:12',dot:'amber',text:'Cache hit rate monitoring alert fired'},{time:'09:15',dot:'red',text:'Incident raised'},{time:'09:18',dot:'amber',text:'Siti N. assigned — checking Redis TTL config'}],
+  'INC-006': [{time:'22:10',dot:'red',text:'OTel collector retry errors detected'},{time:'22:15',dot:'amber',text:'Ahmad R. investigated — ClickHouse connection dropping'},{time:'22:31',dot:'blue',text:'ClickHouse restarted'},{time:'22:33',dot:'green',text:'Connections restored — incident resolved'}],
+  'INC-007': [{time:'18:00',dot:'red',text:'Deployment started on order-service'},{time:'18:02',dot:'red',text:'Health check failures detected'},{time:'18:04',dot:'amber',text:'Budi S. monitoring — all pods restarting'},{time:'18:06',dot:'green',text:'All pods healthy — service restored'},{time:'18:10',dot:'green',text:'Post-mortem filed — resolved'}],
+  'INC-008': [{time:'14:20',dot:'amber',text:'CPU load average spike — load1 = 4.2'},{time:'14:22',dot:'red',text:'Incident raised'},{time:'14:25',dot:'blue',text:'Siti N. identified scheduled analytics batch job'},{time:'14:55',dot:'green',text:'Batch job completed — load normalised — resolved'}],
+  'INC-009': [{time:'11:05',dot:'amber',text:'Histogram outliers detected — payments > $5000'},{time:'11:08',dot:'blue',text:'Ahmad R. investigated — confirmed load test data'},{time:'11:15',dot:'green',text:'No real impact — resolved'}],
 };
-
-// Attach activity to incidents
-DUMMY_INCIDENTS.forEach(inc => {
-  inc.activity = ACTIVITY_SEEDS[inc.id] || [];
-});
-
+DUMMY_INCIDENTS.forEach(inc => { inc.activity = ACTIVITY_SEEDS[inc.id] || []; });
 let currentFilter = 'all';
 let incidentList  = [...DUMMY_INCIDENTS];
 
 function renderIncidents(filter) {
-  const filtered = filter === 'all'
-    ? incidentList
-    : incidentList.filter(i => i.status === filter);
-
-  const tbody = document.getElementById('inc-tbody');
-  tbody.innerHTML = filtered.map(inc => `
-    <tr data-id="${inc.id}" style="cursor:pointer" onclick="openDetail('${inc.id}')">
+  const filtered = filter === 'all' ? incidentList : incidentList.filter(i => i.status === filter);
+  document.getElementById('inc-tbody').innerHTML = filtered.map(inc => `
+    <tr style="cursor:pointer" onclick="openDetail('${inc.id}')">
       <td><span class="inc-id">${inc.id}</span></td>
       <td><span class="inc-title">${inc.title}</span></td>
       <td>${inc.service}</td>
       <td><span class="sev-badge sev-${inc.severity}">${inc.severity}</span></td>
       <td><span class="status-badge-sm status-${inc.status}">${inc.status}</span></td>
       <td style="white-space:nowrap;color:var(--text-3);font-size:0.8rem">${inc.opened}</td>
-      <td style="color:${inc.assignee === 'Unassigned' ? 'var(--text-3)' : 'var(--text-2)'}">${inc.assignee}</td>
-      <td>
-        ${inc.status !== 'resolved'
-          ? `<button class="inc-action" onclick="event.stopPropagation(); resolveIncident('${inc.id}')">Resolve</button>`
-          : `<span style="color:var(--text-3);font-size:0.8rem">Closed</span>`
-        }
-      </td>
-    </tr>
-  `).join('');
-
-  document.getElementById('inc-table-meta').textContent =
-    `Showing ${filtered.length} incident${filtered.length !== 1 ? 's' : ''}`;
-
+      <td style="color:${inc.assignee==='Unassigned'?'var(--text-3)':'var(--text-2)'}">${inc.assignee}</td>
+      <td>${inc.status!=='resolved' ? `<button class="inc-action" onclick="event.stopPropagation();resolveIncident('${inc.id}')">Resolve</button>` : `<span style="color:var(--text-3);font-size:0.8rem">Closed</span>`}</td>
+    </tr>`).join('');
+  document.getElementById('inc-table-meta').textContent = `Showing ${filtered.length} incident${filtered.length!==1?'s':''}`;
   updateSummaryStats();
 }
-
 function updateSummaryStats() {
-  document.getElementById('inc-count-active').textContent =
-    incidentList.filter(i => i.status === 'active').length;
-  document.getElementById('inc-count-investigating').textContent =
-    incidentList.filter(i => i.status === 'investigating').length;
-  document.getElementById('inc-count-resolved').textContent =
-    incidentList.filter(i => i.status === 'resolved').length;
+  document.getElementById('inc-count-active').textContent       = incidentList.filter(i=>i.status==='active').length;
+  document.getElementById('inc-count-investigating').textContent = incidentList.filter(i=>i.status==='investigating').length;
+  document.getElementById('inc-count-resolved').textContent     = incidentList.filter(i=>i.status==='resolved').length;
 }
-
 function filterIncidents(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderIncidents(filter);
 }
-
 function resolveIncident(id) {
-  const inc = incidentList.find(i => i.id === id);
-  if (inc) {
-    inc.status   = 'resolved';
-    inc.opened   = inc.opened + ' → resolved ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-  }
+  const inc = incidentList.find(i=>i.id===id);
+  if (inc) { inc.status='resolved'; inc.opened += ' → resolved '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
   renderIncidents(currentFilter);
 }
-
-function openModal() {
-  document.getElementById('modal-overlay').classList.add('open');
-  document.getElementById('form-title').focus();
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.getElementById('form-title').value   = '';
-  document.getElementById('form-assignee').value = '';
-  document.getElementById('form-desc').value     = '';
-}
-
+function openModal() { document.getElementById('modal-overlay').classList.add('open'); document.getElementById('form-title').focus(); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); document.getElementById('form-title').value=''; document.getElementById('form-assignee').value=''; document.getElementById('form-desc').value=''; }
 function openDetail(id) {
-  const inc = incidentList.find(i => i.id === id);
+  const inc = incidentList.find(i=>i.id===id);
   if (!inc) return;
-
-  document.getElementById('detail-id').textContent    = inc.id;
-  document.getElementById('detail-title').textContent = inc.title;
+  document.getElementById('detail-id').textContent       = inc.id;
+  document.getElementById('detail-title').textContent    = inc.title;
   document.getElementById('detail-service').textContent  = inc.service;
   document.getElementById('detail-assignee').textContent = inc.assignee;
   document.getElementById('detail-opened').textContent   = inc.opened;
-  document.getElementById('detail-desc').textContent     = inc.desc || 'No description provided.';
-
-  document.getElementById('detail-severity').innerHTML =
-    `<span class="sev-badge sev-${inc.severity}">${inc.severity}</span>`;
-  document.getElementById('detail-status').innerHTML =
-    `<span class="status-badge-sm status-${inc.status}">${inc.status}</span>`;
-
-  // Activity log
+  document.getElementById('detail-desc').textContent     = inc.desc||'No description provided.';
+  document.getElementById('detail-severity').innerHTML   = `<span class="sev-badge sev-${inc.severity}">${inc.severity}</span>`;
+  document.getElementById('detail-status').innerHTML     = `<span class="status-badge-sm status-${inc.status}">${inc.status}</span>`;
   const actEl = document.getElementById('detail-activity');
-  if (inc.activity && inc.activity.length) {
-    actEl.innerHTML = inc.activity.map(a => `
-      <div class="activity-item">
-        <span class="activity-time">${a.time}</span>
-        <div class="activity-dot ${a.dot}"></div>
-        <span>${a.text}</span>
-      </div>
-    `).join('');
-  } else {
-    actEl.innerHTML = '<span style="color:var(--text-3);font-size:0.85rem">No activity yet.</span>';
-  }
-
-  // Footer actions
-  const footer = document.getElementById('detail-footer');
-  if (inc.status !== 'resolved') {
-    footer.innerHTML = `
-      <button class="btn btn-ghost" onclick="closeDetail()">Close</button>
-      <button class="btn" onclick="resolveFromDetail('${inc.id}')">Mark as resolved</button>
-    `;
-  } else {
-    footer.innerHTML = `
-      <button class="btn" onclick="closeDetail()">Close</button>
-    `;
-  }
-
+  actEl.innerHTML = inc.activity?.length ? inc.activity.map(a=>`<div class="activity-item"><span class="activity-time">${a.time}</span><div class="activity-dot ${a.dot}"></div><span>${a.text}</span></div>`).join('') : '<span style="color:var(--text-3);font-size:0.85rem">No activity yet.</span>';
+  document.getElementById('detail-footer').innerHTML = inc.status!=='resolved'
+    ? `<button class="btn btn-ghost" onclick="closeDetail()">Close</button><button class="btn" onclick="resolveFromDetail('${inc.id}')">Mark as resolved</button>`
+    : `<button class="btn" onclick="closeDetail()">Close</button>`;
   document.getElementById('detail-overlay').classList.add('open');
 }
-
-function closeDetail() {
-  document.getElementById('detail-overlay').classList.remove('open');
-}
-
-function resolveFromDetail(id) {
-  resolveIncident(id);
-  closeDetail();
-}
-
+function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
+function resolveFromDetail(id) { resolveIncident(id); closeDetail(); }
 function createIncident() {
   const title    = document.getElementById('form-title').value.trim();
   const service  = document.getElementById('form-service').value;
   const severity = document.getElementById('form-severity').value;
-  const assignee = document.getElementById('form-assignee').value.trim() || 'Unassigned';
+  const assignee = document.getElementById('form-assignee').value.trim()||'Unassigned';
   const desc     = document.getElementById('form-desc').value.trim();
-
-  if (!title) {
-    document.getElementById('form-title').style.borderColor = 'var(--red)';
-    document.getElementById('form-title').focus();
-    return;
-  }
-
+  if (!title) { document.getElementById('form-title').style.borderColor='var(--red)'; document.getElementById('form-title').focus(); return; }
   const now = new Date();
-  const ts  = now.toLocaleDateString('id-ID', { year:'numeric', month:'2-digit', day:'2-digit' }).split('/').reverse().join('-')
-    + ' ' + now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-
-  const newId = 'INC-' + String(incidentList.length + 1).padStart(3, '0');
-
-  incidentList.unshift({
-    id: newId, title, service, severity,
-    status: 'active', opened: ts, assignee, desc,
-  });
-
-  closeModal();
-  currentFilter = 'all';
-  document.querySelectorAll('.filter-btn').forEach((b, i) => {
-    b.classList.toggle('active', i === 0);
-  });
+  const ts  = now.toLocaleDateString('id-ID',{year:'numeric',month:'2-digit',day:'2-digit'}).split('/').reverse().join('-')+' '+now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const newId = 'INC-'+String(incidentList.length+1).padStart(3,'0');
+  incidentList.unshift({ id:newId, title, service, severity, status:'active', opened:ts, assignee, desc, activity:[] });
+  closeModal(); currentFilter='all';
+  document.querySelectorAll('.filter-btn').forEach((b,i) => b.classList.toggle('active',i===0));
   renderIncidents('all');
 }
-
-// Init on page load
 renderIncidents('all');
+document.querySelector('[data-page="incidents"]').addEventListener('click', () => renderIncidents(currentFilter));
 
-document.querySelector('[data-page="incidents"]').addEventListener('click', () => {
-  renderIncidents(currentFilter);
-});
-
-// ── PREDICTIVE PAGE ───────────────────────────────────────────
+// ── PREDICTIVE ────────────────────────────────
 async function loadSummary() {
   try {
-    const data = await fetch(`${API_BASE}/predictive/summary`).then(r => r.json());
+    const data = await fetch(`${API_BASE}/predictive/summary`).then(r=>r.json());
     if (data.memory) {
       const el = document.getElementById('stat-mem');
-      el.textContent = data.memory.used_pct + '%';
-      el.className = 'stat-value ' + (data.memory.used_pct > 85 ? 'red' : data.memory.used_pct > 70 ? 'amber' : 'green');
+      el.textContent = data.memory.used_pct+'%';
+      el.className = 'stat-value '+(data.memory.used_pct>85?'red':data.memory.used_pct>70?'amber':'green');
     }
     if (data.load)   document.getElementById('stat-load').textContent = data.load.load1;
     if (data.orders) {
       document.getElementById('stat-orders').textContent = data.orders.last_hour;
       const trend = data.orders.change_pct;
-      const tEl   = document.getElementById('stat-orders-trend');
-      tEl.textContent = (trend >= 0 ? '+' : '') + trend + '% vs prev hour';
-      tEl.style.color = trend > 10 ? 'var(--amber)' : trend < -10 ? 'var(--red)' : 'var(--text-3)';
+      const tEl = document.getElementById('stat-orders-trend');
+      tEl.textContent = (trend>=0?'+':'')+trend+'% vs prev hour';
+      tEl.style.color = trend>10?'var(--amber)':trend<-10?'var(--red)':'var(--text-3)';
     }
   } catch {}
 }
-
 function buildForecastChart(canvasId, data, label, color) {
   const ctx = document.getElementById(canvasId);
   if (ctx._chart) ctx._chart.destroy();
-
-  const histPoints = data.historical.map(d => ({ x: d.ds, y: d.y }));
-  const forePoints = data.forecast.map(d => ({ x: d.ds, y: d.yhat }));
-  const upperPts   = data.forecast.map(d => ({ x: d.ds, y: d.yhat_upper }));
-  const lowerPts   = data.forecast.map(d => ({ x: d.ds, y: d.yhat_lower }));
-
   ctx._chart = new Chart(ctx, {
     type: 'line',
-    data: {
-      datasets: [
-        {
-          label: 'Confidence band',
-          data: upperPts,
-          borderWidth: 0,
-          backgroundColor: color + '22',
-          fill: '+1',
-          pointRadius: 0,
-          tension: 0.4,
-        },
-        {
-          label: 'Lower band',
-          data: lowerPts,
-          borderWidth: 0,
-          backgroundColor: color + '22',
-          fill: false,
-          pointRadius: 0,
-          tension: 0.4,
-        },
-        {
-          label: 'Forecast',
-          data: forePoints,
-          borderColor: color,
-          borderWidth: 2.5,
-          borderDash: [4, 4],
-          backgroundColor: 'transparent',
-          pointRadius: 0,
-          tension: 0.4,
-        },
-        {
-          label: label,
-          data: histPoints,
-          borderColor: '#2b2b2b',
-          borderWidth: 2.5,
-          backgroundColor: 'transparent',
-          pointRadius: 0,
-          tension: 0.4,
-        },
-      ]
-    },
-    options: {
-      responsive: true,
-      interaction: { mode: 'index', intersect: false },
-      plugins: {
-        legend: { display: true, labels: { font: { family: 'Nunito', size: 12, weight: 600 }, color: '#8f8f8f', boxWidth: 12 } },
-        tooltip: { titleFont: { family: 'Nunito' }, bodyFont: { family: 'Nunito' }, callbacks: { label: ctx => `${ctx.dataset.label}: ${Number(ctx.parsed.y).toFixed(2)}` } }
-      },
-      scales: {
-        x: {
-          type: 'time',
-          time: { unit: 'hour', displayFormats: { hour: 'HH:mm' }, tooltipFormat: 'dd LLL yyyy HH:mm' },
-          adapters: { date: { locale: 'id' } },
-          ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 12, weight: 600 }, maxRotation: 0 },
-          grid: { color: 'rgba(0,0,0,0.04)' },
-        },
-        y: {
-          ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 12, weight: 600 } },
-          grid:  { color: 'rgba(0,0,0,0.04)' },
-        }
+    data: { datasets: [
+      { label:'Confidence band', data:data.forecast.map(d=>({x:d.ds,y:d.yhat_upper})), borderWidth:0, backgroundColor:color+'22', fill:'+1', pointRadius:0, tension:0.4 },
+      { label:'Lower band',      data:data.forecast.map(d=>({x:d.ds,y:d.yhat_lower})), borderWidth:0, backgroundColor:color+'22', fill:false, pointRadius:0, tension:0.4 },
+      { label:'Forecast',        data:data.forecast.map(d=>({x:d.ds,y:d.yhat})),        borderColor:color, borderWidth:2.5, borderDash:[4,4], backgroundColor:'transparent', pointRadius:0, tension:0.4 },
+      { label:label,             data:data.historical.map(d=>({x:d.ds,y:d.y})),          borderColor:'#2b2b2b', borderWidth:2.5, backgroundColor:'transparent', pointRadius:0, tension:0.4 },
+    ]},
+    options: { responsive:true, interaction:{mode:'index',intersect:false},
+      plugins:{ legend:{display:true,labels:{font:{family:'Nunito',size:12,weight:600},color:'#8f8f8f',boxWidth:12}}, tooltip:{titleFont:{family:'Nunito'},bodyFont:{family:'Nunito'},callbacks:{label:c=>`${c.dataset.label}: ${Number(c.parsed.y).toFixed(2)}`}} },
+      scales:{
+        x:{ type:'time', time:{unit:'hour',displayFormats:{hour:'HH:mm'},tooltipFormat:'dd LLL yyyy HH:mm'}, adapters:{date:{locale:'id'}}, ticks:{color:'#8f8f8f',font:{family:'Nunito',size:12,weight:600},maxRotation:0}, grid:{color:'rgba(0,0,0,0.04)'} },
+        y:{ ticks:{color:'#8f8f8f',font:{family:'Nunito',size:12,weight:600}}, grid:{color:'rgba(0,0,0,0.04)'} }
       }
     }
   });
 }
-
-async function loadMemory() {
-  const loading = document.getElementById('mem-loading');
-  const canvas  = document.getElementById('mem-chart');
-  const status  = document.getElementById('mem-status');
-  loading.textContent = 'Fitting Prophet model on memory data...';
-  loading.style.display = 'block';
-  canvas.style.display  = 'none';
+async function loadForecast(type, loadingId, canvasId, statusId, color, label) {
+  const loading = document.getElementById(loadingId);
+  const canvas  = document.getElementById(canvasId);
+  const status  = document.getElementById(statusId);
+  loading.textContent = `Fitting Prophet model on ${type} data...`;
+  loading.style.display = 'block'; canvas.style.display = 'none';
   try {
-    const data = await fetch(`${API_BASE}/predictive/memory`).then(r => r.json());
+    const data = await fetch(`${API_BASE}/predictive/${type}`).then(r=>r.json());
     if (data.detail) { loading.textContent = data.detail; return; }
-    loading.style.display = 'none';
-    canvas.style.display  = 'block';
-    status.textContent = `${data.data_points} data points · forecasting 24h ahead`;
-    buildForecastChart('mem-chart', data, 'Memory available (GB)', '#24BCAD'); // Indosat Teal
-  } catch(e) {
-    loading.textContent = 'Error: ' + e.message;
-  }
-}
-
-async function loadCpu() {
-  const loading = document.getElementById('cpu-loading');
-  const canvas  = document.getElementById('cpu-chart');
-  const status  = document.getElementById('cpu-status');
-  loading.textContent = 'Fitting Prophet model on CPU data...';
-  loading.style.display = 'block';
-  canvas.style.display  = 'none';
-  try {
-    const data = await fetch(`${API_BASE}/predictive/cpu`).then(r => r.json());
-    if (data.detail) { loading.textContent = data.detail; return; }
-    loading.style.display = 'none';
-    canvas.style.display  = 'block';
-    status.textContent = `${data.data_points} data points · forecasting 24h ahead`;
-    buildForecastChart('cpu-chart', data, 'CPU usage (%)', '#FFCA09'); // Indosat Yellow
-  } catch(e) {
-    loading.textContent = 'Error: ' + e.message;
-  }
-}
-
-async function loadTraffic() {
-  const loading = document.getElementById('traffic-loading');
-  const canvas  = document.getElementById('traffic-chart');
-  const status  = document.getElementById('traffic-status');
-  loading.textContent = 'Fitting Prophet model on order volume data...';
-  loading.style.display = 'block';
-  canvas.style.display  = 'none';
-  try {
-    const data = await fetch(`${API_BASE}/predictive/traffic`).then(r => r.json());
-    if (data.detail) { loading.textContent = data.detail; return; }
-    loading.style.display = 'none';
-    canvas.style.display  = 'block';
-    const peak = data.peak_predicted ? ` · peak: ${data.peak_predicted.value} orders/5min` : '';
+    loading.style.display = 'none'; canvas.style.display = 'block';
+    const peak = data.peak_predicted ? ` · peak: ${data.peak_predicted.value}` : '';
     status.textContent = `${data.data_points} data points${peak}`;
-    buildForecastChart('traffic-chart', data, 'Orders per 5 min', '#EB008C'); // Indosat Magenta
-  } catch(e) {
-    loading.textContent = 'Error: ' + e.message;
-  }
+    buildForecastChart(canvasId, data, label, color);
+  } catch(e) { loading.textContent = 'Error: '+e.message; }
+}
+const loadMemory  = () => loadForecast('memory',  'mem-loading',     'mem-chart',     'mem-status',     '#24BCAD', 'Memory available (GB)');
+const loadCpu     = () => loadForecast('cpu',     'cpu-loading',     'cpu-chart',     'cpu-status',     '#FFCA09', 'CPU usage (%)');
+const loadTraffic = () => loadForecast('traffic', 'traffic-loading', 'traffic-chart', 'traffic-status', '#EB008C', 'Orders per 5 min');
+
+document.querySelector('[data-page="predictive"]').addEventListener('click', loadSummary);
+loadSummary();
+
+// ── DETECTIVE ─────────────────────────────────
+async function loadAnomalies() {
+  const hours   = document.getElementById('anomaly-hours').value;
+  const loading = document.getElementById('anomaly-loading');
+  const canvas  = document.getElementById('anomaly-chart');
+  const stats   = document.getElementById('anomaly-stats');
+  const tableW  = document.getElementById('anomaly-table-wrap');
+
+  loading.textContent = 'Running Isolation Forest on your metrics...';
+  loading.style.display = 'block'; canvas.style.display = 'none';
+  stats.style.display = 'none'; tableW.style.display = 'none';
+
+  try {
+    const data = await fetch(`${API_BASE}/detective/anomalies?hours=${hours}`).then(r=>r.json());
+    if (data.detail) { loading.textContent = data.detail; return; }
+
+    loading.style.display = 'none';
+    stats.style.display = 'grid';
+    canvas.style.display = 'block';
+    tableW.style.display = 'block';
+
+    document.getElementById('anom-total').textContent = data.total_windows;
+    document.getElementById('anom-count').textContent = data.anomaly_count;
+    document.getElementById('anom-rate').textContent  = data.anomaly_rate + '%';
+
+    // Draw anomaly score timeline
+    const ctx = document.getElementById('anomaly-chart');
+    if (ctx._chart) ctx._chart.destroy();
+    const normal   = data.timeline.filter(d=>!d.is_anomaly);
+    const anomalies = data.timeline.filter(d=>d.is_anomaly);
+    ctx._chart = new Chart(ctx, {
+      type: 'scatter',
+      data: { datasets: [
+        { label:'Normal',  data: normal.map(d=>({x:d.ts,y:d.anomaly_score})),    backgroundColor:'rgba(36,188,173,0.5)',  pointRadius:3 },
+        { label:'Anomaly', data: anomalies.map(d=>({x:d.ts,y:d.anomaly_score})), backgroundColor:'rgba(235,0,140,0.8)', pointRadius:5 },
+      ]},
+      options:{ responsive:true, plugins:{ legend:{display:true,labels:{font:{family:'Nunito',size:12},color:'#8f8f8f',boxWidth:10}} },
+        scales:{
+          x:{ type:'time', time:{unit:'hour',displayFormats:{hour:'HH:mm'}}, ticks:{color:'#8f8f8f',font:{family:'Nunito',size:11}}, grid:{color:'rgba(0,0,0,0.04)'} },
+          y:{ title:{display:true,text:'Anomaly score',color:'#8f8f8f',font:{family:'Nunito',size:11}}, ticks:{color:'#8f8f8f',font:{family:'Nunito',size:11}}, grid:{color:'rgba(0,0,0,0.04)'} }
+        }
+      }
+    });
+
+    // Anomaly details table
+    const anomRows = data.timeline.filter(d=>d.is_anomaly).slice(0,10);
+    tableW.innerHTML = anomRows.length ? `
+      <div style="font-size:0.78rem;font-weight:700;color:var(--text-3);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em">Top anomalous windows</div>
+      <table class="det-table">
+        <thead><tr><th>Timestamp</th><th>Score</th><th>Contributing factors</th></tr></thead>
+        <tbody>${anomRows.map(r=>`
+          <tr>
+            <td style="font-family:monospace;font-size:0.78rem">${r.ts.replace('T',' ').slice(0,16)}</td>
+            <td><span class="tag red">${(r.anomaly_score*100).toFixed(0)}</span></td>
+            <td>${r.contributing.map(c=>`<span class="tag amber">${c}</span>`).join('') || '<span class="tag">—</span>'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>` : '<div style="color:var(--text-3);font-size:0.85rem">No anomalies to detail.</div>';
+  } catch(e) { loading.textContent = 'Error: '+e.message; }
 }
 
-// Load summary stats when predictive page is active
-document.querySelector('[data-page="predictive"]').addEventListener('click', () => {
-  loadSummary();
-});
-loadSummary();
+async function loadLogPatterns() {
+  const hours   = document.getElementById('log-hours').value;
+  const loading = document.getElementById('log-loading');
+  const stats   = document.getElementById('log-stats');
+  const tableW  = document.getElementById('log-table-wrap');
+
+  loading.textContent = 'Clustering log templates with Drain3...';
+  loading.style.display = 'block'; stats.style.display = 'none';
+  tableW.innerHTML = '';
+
+  try {
+    const data = await fetch(`${API_BASE}/detective/log-patterns?hours=${hours}`).then(r=>r.json());
+    if (data.detail) { loading.textContent = data.detail; return; }
+
+    loading.style.display = 'none'; stats.style.display = 'grid';
+    document.getElementById('log-total').textContent    = data.total_logs;
+    document.getElementById('log-patterns').textContent = data.unique_patterns;
+    document.getElementById('log-new').textContent      = data.new_patterns;
+    document.getElementById('log-errors').textContent   = data.error_patterns;
+
+    tableW.innerHTML = `
+      <table class="det-table">
+        <thead><tr><th>Pattern template</th><th>Count</th><th>%</th><th>Service</th><th>Severity</th><th>Flags</th></tr></thead>
+        <tbody>${data.patterns.slice(0,15).map(p=>`
+          <tr>
+            <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:0.75rem" title="${p.template}">${p.template}</td>
+            <td>${p.count}</td>
+            <td style="color:var(--text-3)">${p.pct_of_total}%</td>
+            <td><span class="tag">${p.top_service}</span></td>
+            <td><span class="tag ${p.dominant_severity==='ERROR'?'red':p.dominant_severity==='WARNING'?'amber':'blue'}">${p.dominant_severity}</span></td>
+            <td>${p.is_new?'<span class="tag amber">NEW</span>':''}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { loading.textContent = 'Error: '+e.message; }
+}
+
+async function loadTraceShapes() {
+  const hours   = document.getElementById('trace-hours').value;
+  const loading = document.getElementById('trace-loading');
+  const stats   = document.getElementById('trace-stats');
+  const tableW  = document.getElementById('trace-table-wrap');
+
+  loading.textContent = 'Fingerprinting trace shapes...';
+  loading.style.display = 'block'; stats.style.display = 'none';
+  tableW.innerHTML = '';
+
+  try {
+    const data = await fetch(`${API_BASE}/detective/trace-shapes?hours=${hours}`).then(r=>r.json());
+    if (data.detail) { loading.textContent = data.detail; return; }
+
+    loading.style.display = 'none'; stats.style.display = 'grid';
+    document.getElementById('trace-total').textContent       = data.total_traces;
+    document.getElementById('trace-shapes-count').textContent = data.unique_shapes;
+    document.getElementById('trace-anomalous').textContent   = data.anomalous_count;
+    document.getElementById('trace-baseline-pct').textContent = data.baseline_pct + '%';
+
+    tableW.innerHTML = `
+      <table class="det-table">
+        <thead><tr><th>Shape</th><th>Count</th><th>%</th><th>Deviation</th><th>Example trace</th></tr></thead>
+        <tbody>${data.shape_summary.slice(0,10).map(s=>`
+          <tr>
+            <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:0.72rem" title="${s.fingerprint}">${s.fingerprint}</td>
+            <td>${s.count}</td>
+            <td style="color:var(--text-3)">${s.pct_of_total}%</td>
+            <td>${s.is_baseline?'<span class="tag green">baseline</span>':s.deviation_type?`<span class="tag red">${s.deviation_type.replace(/_/g,' ')}</span>`:'<span class="tag">—</span>'}</td>
+            <td style="font-family:monospace;font-size:0.72rem;color:var(--text-3)">${s.example_traces[0]?s.example_traces[0].slice(0,16)+'…':'—'}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { loading.textContent = 'Error: '+e.message; }
+}
+
+checkHealth();
+setInterval(checkHealth, 30000);
 </script>
 </body>
 </html>

@@ -2,7 +2,6 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install build dependencies needed for Prophet/stan
 RUN apt-get update && apt-get install -y \
     gcc \
     g++ \
@@ -12,8 +11,8 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install cmdstan (required by Prophet)
-RUN python3 -c "import cmdstanpy; cmdstanpy.install_cmdstan()"
+# Install cmdstan — force_compile=False uses cached binary if available
+RUN python3 -c "import cmdstanpy; cmdstanpy.install_cmdstan(force_compile=False)"
 
 COPY . .
 

@@ -35,7 +35,7 @@ async def detect_anomalies(
     interval = 1  # 1-minute buckets
 
     metrics = [
-        ("payment_duration",   "otel_metrics_histogram", "order_duration_seconds",       "avg(Value)"),
+        ("payment_duration",   "otel_metrics_histogram", "order_duration_seconds",       "avg(Sum / nullIf(Count, 0))"),
         ("payment_failures",   "otel_metrics_sum",       "payment_failures_total",        "sum(Value)"),
         ("cache_misses",       "otel_metrics_sum",       "inventory_cache_misses_total",  "sum(Value)"),
         ("order_errors",       "otel_metrics_sum",       "order_errors_total",            "sum(Value)"),

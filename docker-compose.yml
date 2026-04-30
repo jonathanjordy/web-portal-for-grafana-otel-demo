@@ -5,28 +5,31 @@ services:
   aiops-backend:
     build: ./backend
     ports:
-      - "8080:8080"
+      - "0.0.0.0:8080:8080"
     env_file:
       - ./backend/.env
+    volumes:
+      - cmdstan-cache:/root/.cmdstan   # persists cmdstan across rebuilds
     restart: unless-stopped
     networks:
       - aiops-net
 
   # ─────────────────────────────────────────
-  # OPTIONAL: serve the frontend via nginx
-  # so you don't need to open index.html
-  # manually from your filesystem.
-  # Access at http://localhost:3001
+  # Serves the frontend via nginx
+  # Access at http://YOUR_VM_IP:3001
   # ─────────────────────────────────────────
   aiops-frontend:
     image: nginx:alpine
     ports:
-      - "80:80"
+      - "0.0.0.0:3001:80"
     volumes:
       - ./frontend:/usr/share/nginx/html:ro
     restart: unless-stopped
     networks:
       - aiops-net
+
+volumes:
+  cmdstan-cache:
 
 networks:
   aiops-net:

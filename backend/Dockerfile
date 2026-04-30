@@ -3,16 +3,16 @@ FROM python:3.11-slim
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    build-essential \
+    gcc g++ build-essential \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install cmdstan — force_compile=False uses cached binary if available
-RUN python3 -c "import cmdstanpy; cmdstanpy.install_cmdstan(force_compile=False)"
+# Install cmdstan — overwrite=False skips if already installed
+# The /root/.cmdstan directory is mounted as a volume in docker-compose
+# so it persists across rebuilds and doesn't recompile every time
+RUN python3 -c "import cmdstanpy; cmdstanpy.install_cmdstan(overwrite=False, progress=False)"
 
 COPY . .
 

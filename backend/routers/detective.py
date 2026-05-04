@@ -172,7 +172,6 @@ async def cluster_log_patterns(
 
     # Configure Drain3
     config = TemplateMinerConfig()
-    config.load_defaults()
     config.parametrize_numeric_tokens = True
     miner = TemplateMiner(config=config)
 
@@ -201,7 +200,9 @@ async def cluster_log_patterns(
     # Parse baseline logs to detect new patterns
     baseline_templates = set()
     if not baseline_df.empty:
-        baseline_miner = TemplateMiner(config=config)
+        baseline_config = TemplateMinerConfig()
+        baseline_config.parametrize_numeric_tokens = True
+        baseline_miner = TemplateMiner(config=baseline_config)
         for _, row in baseline_df.iterrows():
             body = str(row.get("Body", ""))
             if body:

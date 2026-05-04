@@ -172,6 +172,44 @@
   .select-sm { font-size: 0.78rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text-2); font-family: var(--sans); outline: none; }
   .btn-sm { font-family: var(--sans); font-size: 0.78rem; font-weight: 700; padding: 0.35rem 0.8rem; border-radius: 6px; border: none; background: var(--indosat-teal); color: #fff; cursor: pointer; transition: all 0.15s; }
   .btn-sm:hover { background: #1fa093; }
+
+  /* ── INFO BUTTON STYLES ─────────────── */
+  .btn-info {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 1px solid var(--border-md);
+    color: var(--text-2);
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+    padding: 0;
+  }
+  .btn-info:hover {
+    background: var(--indosat-teal);
+    color: #fff;
+    border-color: var(--indosat-teal);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px var(--blue-bg);
+  }
+  .code-block {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1rem;
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    overflow-x: auto;
+    white-space: pre;
+    line-height: 1.4;
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
@@ -235,7 +273,11 @@
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">Memory availability forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="mem-status">—</span><button class="btn-sm" onclick="loadMemory()">Run forecast</button></div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <span class="panel-meta" id="mem-status">—</span>
+            <button class="btn-sm" onclick="loadMemory()">Run forecast</button>
+            <button class="btn-info" onclick="showInfo('memory')" title="How this works">i</button>
+          </div>
         </div>
         <div class="panel-body">
           <div id="mem-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to generate a 24-hour prediction using Facebook Prophet.</div>
@@ -245,7 +287,11 @@
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">CPU usage forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="cpu-status">—</span><button class="btn-sm" onclick="loadCpu()">Run forecast</button></div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <span class="panel-meta" id="cpu-status">—</span>
+            <button class="btn-sm" onclick="loadCpu()">Run forecast</button>
+            <button class="btn-info" onclick="showInfo('cpu')" title="How this works">i</button>
+          </div>
         </div>
         <div class="panel-body">
           <div id="cpu-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to generate a 24-hour CPU prediction.</div>
@@ -255,7 +301,11 @@
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">Order traffic forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="traffic-status">—</span><button class="btn-sm" onclick="loadTraffic()">Run forecast</button></div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <span class="panel-meta" id="traffic-status">—</span>
+            <button class="btn-sm" onclick="loadTraffic()">Run forecast</button>
+            <button class="btn-info" onclick="showInfo('traffic')" title="How this works">i</button>
+          </div>
         </div>
         <div class="panel-body">
           <div id="traffic-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to predict order volume for the next 12 hours.</div>
@@ -285,6 +335,7 @@
               <option value="24">Last 24h</option>
             </select>
             <button class="btn-sm" onclick="loadAnomalies()">Run detection</button>
+            <button class="btn-info" onclick="showInfo('anomalies')" title="How this works">i</button>
           </div>
         </div>
         <div class="panel-body">
@@ -296,6 +347,14 @@
           <div id="anomaly-loading" class="empty" style="padding:1.5rem;border:none">Click "Run detection" to analyse your metrics with Isolation Forest.</div>
           <canvas id="anomaly-chart" style="display:none;max-height:220px"></canvas>
           <div id="anomaly-table-wrap" style="display:none;margin-top:1.25rem;overflow-x:auto"></div>
+          <div id="anomaly-detail" style="display:none;margin-top:1rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.25rem">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem">
+              <div style="font-size:0.85rem;font-weight:700;color:var(--text)">Anomaly detail — <span id="anom-detail-ts" style="font-family:monospace;font-weight:600"></span></div>
+              <button onclick="document.getElementById('anomaly-detail').style.display='none'" style="background:none;border:none;cursor:pointer;color:var(--text-3);font-size:1rem">✕</button>
+            </div>
+            <div id="anom-detail-metrics" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.75rem;margin-bottom:1rem"></div>
+            <div id="anom-detail-traces" style="font-size:0.82rem;color:var(--text-2)"></div>
+          </div>
         </div>
       </div>
 
@@ -313,6 +372,7 @@
               <option value="6">Last 6h</option>
             </select>
             <button class="btn-sm" onclick="loadLogPatterns()">Analyse logs</button>
+            <button class="btn-info" onclick="showInfo('logs')" title="How this works">i</button>
           </div>
         </div>
         <div class="panel-body">
@@ -341,6 +401,7 @@
               <option value="6">Last 6h</option>
             </select>
             <button class="btn-sm" onclick="loadTraceShapes()">Analyse traces</button>
+            <button class="btn-info" onclick="showInfo('traces')" title="How this works">i</button>
           </div>
         </div>
         <div class="panel-body">
@@ -474,10 +535,34 @@
       </div>
     </div>
 
+    <!-- MODULE INFO MODAL -->
+    <div class="modal-overlay" id="info-overlay" onclick="closeInfo()">
+      <div class="modal" style="max-width:650px" onclick="event.stopPropagation()">
+        <div class="modal-head">
+          <span class="modal-title" id="info-title">Module Info</span>
+          <button class="modal-close" onclick="closeInfo()">✕</button>
+        </div>
+        <div class="modal-body" style="gap:1.25rem; max-height: 75vh; overflow-y: auto;">
+          <div class="detail-field">
+            <div class="detail-label">How it works</div>
+            <div class="detail-desc" id="info-desc"></div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-label">How to read the data</div>
+            <div class="detail-desc" id="info-read"></div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-label">Sample Data (JSON / Format)</div>
+            <div class="code-block" id="info-sample"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 <script>
-const API_BASE = 'http://YOUR_VM_IP:8080/api';
+const API_BASE = 'http://XXX:8080/api';
 let chatHistory = [];
 
 // ── NAVIGATION ────────────────────────────────
@@ -722,18 +807,74 @@ async function loadAnomalies() {
     // Draw anomaly score timeline
     const ctx = document.getElementById('anomaly-chart');
     if (ctx._chart) ctx._chart.destroy();
-    const normal   = data.timeline.filter(d=>!d.is_anomaly);
-    const anomalies = data.timeline.filter(d=>d.is_anomaly);
+
+    const allTs     = data.timeline.map(d => d.ts);
+    const allScores = data.timeline.map(d => d.anomaly_score);
+    const bgColors  = data.timeline.map(d => d.is_anomaly ? 'rgba(235,0,140,0.85)' : 'rgba(36,188,173,0.55)');
+
+    // Compute y-axis max — at least 0.1 so bars are always visible
+    const maxScore = Math.max(...allScores, 0.1);
+
     ctx._chart = new Chart(ctx, {
-      type: 'scatter',
-      data: { datasets: [
-        { label:'Normal',  data: normal.map(d=>({x:d.ts,y:d.anomaly_score})),    backgroundColor:'rgba(36,188,173,0.5)',  pointRadius:3 },
-        { label:'Anomaly', data: anomalies.map(d=>({x:d.ts,y:d.anomaly_score})), backgroundColor:'rgba(235,0,140,0.8)', pointRadius:5 },
-      ]},
-      options:{ responsive:true, plugins:{ legend:{display:true,labels:{font:{family:'Nunito',size:12},color:'#8f8f8f',boxWidth:10}} },
-        scales:{
-          x:{ type:'time', time:{unit:'hour',displayFormats:{hour:'HH:mm'}}, ticks:{color:'#8f8f8f',font:{family:'Nunito',size:11}}, grid:{color:'rgba(0,0,0,0.04)'} },
-          y:{ title:{display:true,text:'Anomaly score',color:'#8f8f8f',font:{family:'Nunito',size:11}}, ticks:{color:'#8f8f8f',font:{family:'Nunito',size:11}}, grid:{color:'rgba(0,0,0,0.04)'} }
+      type: 'bar',
+      data: {
+        labels: allTs.map(t => t.replace('T',' ').slice(11,16)),
+        datasets: [{
+          label: 'Anomaly score',
+          data: allScores,
+          backgroundColor: bgColors,
+          borderColor: bgColors,
+          borderWidth: 0,
+          borderRadius: 2,
+          barPercentage: 0.9,
+          categoryPercentage: 1.0,
+        }]
+      },
+      options: {
+        responsive: true,
+        onClick: (evt, elements) => {
+          if (!elements.length) return;
+          const idx = elements[0].index;
+          showAnomalyDetail(data.timeline[idx]);
+        },
+        plugins: {
+          legend: {
+            display: true,
+            position: 'top',
+            labels: {
+              generateLabels: () => [
+                { text: 'Normal',  fillStyle: 'rgba(36,188,173,0.55)',  strokeStyle: 'transparent', fontColor: '#8f8f8f', font: { family: 'Nunito', size: 12 } },
+                { text: 'Anomaly', fillStyle: 'rgba(235,0,140,0.85)', strokeStyle: 'transparent', fontColor: '#8f8f8f', font: { family: 'Nunito', size: 12 } },
+              ]
+            }
+          },
+          tooltip: {
+            callbacks: {
+              title: (items) => allTs[items[0].dataIndex].replace('T',' ').slice(0,16),
+              label: (item) => {
+                const d = data.timeline[item.dataIndex];
+                const flag = d.is_anomaly ? ' ⚠ ANOMALY' : '';
+                return `Score: ${(d.anomaly_score * 100).toFixed(1)}${flag}`;
+              },
+              afterLabel: (item) => {
+                const d = data.timeline[item.dataIndex];
+                return d.contributing.length ? 'Factors: ' + d.contributing.join(', ') : '';
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 10 }, maxTicksLimit: 12 },
+            grid: { color: 'rgba(0,0,0,0.04)' }
+          },
+          y: {
+            min: 0,
+            max: Math.ceil(maxScore * 10) / 10,
+            title: { display: true, text: 'Anomaly score', color: '#8f8f8f', font: { family: 'Nunito', size: 11 } },
+            ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 11 } },
+            grid: { color: 'rgba(0,0,0,0.04)' }
+          }
         }
       }
     });
@@ -814,14 +955,19 @@ async function loadTraceShapes() {
 
     tableW.innerHTML = `
       <table class="det-table">
-        <thead><tr><th>Shape</th><th>Count</th><th>%</th><th>Deviation</th><th>Example trace</th></tr></thead>
+        <thead><tr><th>Shape</th><th>Count</th><th>%</th><th>Deviation</th><th>Example trace IDs</th></tr></thead>
         <tbody>${data.shape_summary.slice(0,10).map(s=>`
           <tr>
-            <td style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:0.72rem" title="${s.fingerprint}">${s.fingerprint}</td>
+            <td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:0.72rem;cursor:help" title="${s.fingerprint}">${s.fingerprint}</td>
             <td>${s.count}</td>
             <td style="color:var(--text-3)">${s.pct_of_total}%</td>
             <td>${s.is_baseline?'<span class="tag green">baseline</span>':s.deviation_type?`<span class="tag red">${s.deviation_type.replace(/_/g,' ')}</span>`:'<span class="tag">—</span>'}</td>
-            <td style="font-family:monospace;font-size:0.72rem;color:var(--text-3)">${s.example_traces[0]?s.example_traces[0].slice(0,16)+'…':'—'}</td>
+            <td>${s.example_traces.map(tid=>`
+              <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:3px">
+                <span style="font-family:monospace;font-size:0.72rem;color:var(--text-3)">${tid}</span>
+                <button onclick="copyText('${tid}')" title="Copy trace ID" style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:0.65rem;cursor:pointer;color:var(--text-3);font-family:var(--sans)">copy</button>
+              </div>`).join('') || '—'}
+            </td>
           </tr>`).join('')}
         </tbody>
       </table>`;
@@ -830,6 +976,67 @@ async function loadTraceShapes() {
 
 checkHealth();
 setInterval(checkHealth, 30000);
+
+// ── MODULE INFO CONTENT ──────────────────────────────
+const INFO_CONTENT = {
+  'memory': {
+    title: 'Memory Availability Forecast',
+    desc: 'Uses Facebook Prophet (an open-source time-series forecasting algorithm) to analyze historical memory telemetry. It accounts for daily and weekly seasonality to predict future resource availability.',
+    read: 'The solid black line represents actual historical memory availability. The dashed teal line is the forecasted future availability. The lightly shaded teal area around the forecast represents the confidence interval (margin of error). If the forecast approaches 0, a saturation incident is imminent.',
+    sample: `// Array of predicted points returned by the API\n{\n  "ds": "2026-04-30 15:00:00", // Timestamp\n  "y": null,                   // Null because it's in the future\n  "yhat": 14.2,                // Predicted memory available (GB)\n  "yhat_lower": 13.8,          // Lower bound of confidence interval\n  "yhat_upper": 14.6           // Upper bound of confidence interval\n}`
+  },
+  'cpu': {
+    title: 'CPU Usage Forecast',
+    desc: 'Uses Facebook Prophet to analyze historical CPU load. It learns from your daily traffic spikes (e.g., peak business hours) to predict future processor saturation.',
+    read: 'The solid black line is historical CPU usage. The dashed yellow line is the forecast. The shaded area is the margin of error. Approaching 100% indicates likely node starvation.',
+    sample: `{\n  "ds": "2026-04-30 15:00:00",\n  "y": null,\n  "yhat": 85.5, // 85.5% CPU load predicted\n  "yhat_lower": 78.0,\n  "yhat_upper": 92.1\n}`
+  },
+  'traffic': {
+    title: 'Order Traffic Forecast',
+    desc: 'Forecasts business metrics (orders per 5 minutes) using historical patterns. Helps capacity planning by predicting inbound load before it hits the infrastructure.',
+    read: 'The solid black line shows actual orders. The dashed magenta line shows expected future order volume. Large deviations from this forecast in real-time can indicate a business-level outage.',
+    sample: `{\n  "ds": "2026-04-30 15:00:00",\n  "y": null,\n  "yhat": 1200, // Predicted 1200 orders in this 5m window\n  "yhat_lower": 1150,\n  "yhat_upper": 1260\n}`
+  },
+  'anomalies': {
+    title: 'Multivariate Anomaly Detection',
+    desc: 'Uses an Isolation Forest machine learning model. Instead of looking at a single metric crossing a static threshold (like CPU > 80%), it looks at multiple metrics simultaneously. It flags windows where the relationship between metrics is highly unusual.',
+    read: 'The chart shows an anomaly score between 0.0 and 1.0. Bars highlighted in magenta (Score > 0.7) are flagged as anomalies. Click a magenta bar or look at the table below to see which specific metrics (e.g., failure rate, load) deviated the most to trigger the anomaly.',
+    sample: `{\n  "ts": "2026-04-30 08:12:00",\n  "anomaly_score": 0.89,\n  "is_anomaly": true,\n  "metrics": {\n    "payment_duration_ms": 1450,\n    "failure_rate_pct": 45.2,\n    "cache_misses": 8920\n  },\n  "contributing": ["failure_rate", "payment_duration_ms"]\n}`
+  },
+  'logs': {
+    title: 'Log Pattern Clustering',
+    desc: 'Uses the Drain3 algorithm. Raw logs are messy and filled with dynamic variables (like IPs, user IDs, or UUIDs). This engine strips out those variables and groups the remaining text into "Templates", allowing you to see which log structures are occurring most often.',
+    read: 'The table shows the generalized template. Dynamic variables are replaced with wildcards like <*>. Look for patterns tagged as "NEW" or "ERROR" to quickly spot novel failures in your system without reading thousands of individual log lines.',
+    sample: `// Raw Log: "User user-8891 failed to authenticate from IP 192.168.1.5"\n// Raw Log: "User user-1022 failed to authenticate from IP 10.0.0.1"\n\n// Clustered Result:\n{\n  "template": "User <ID> failed to authenticate from IP <IP>",\n  "count": 451,\n  "pct_of_total": 12.4,\n  "top_service": "auth-service",\n  "dominant_severity": "WARNING",\n  "is_new": false\n}`
+  },
+  'traces': {
+    title: 'Trace Shape Anomaly Detection',
+    desc: 'Every distributed trace has a "shape" defined by its parent-child spans (e.g., Service A calls DB B and Cache C). This engine fingerprints those shapes. It learns the "normal" shape for an endpoint and flags traces that suddenly deviate (e.g., missing a cache call, or querying the DB in a loop).',
+    read: 'The "Shape" column shows a hashed fingerprint of the span structure. "Baseline" tags mean this is how the trace normally executes. Red tags like "MISSING_SPAN" or "EXTRA_CALLS" indicate a structural failure in the execution path. Use the Trace IDs to view the exact flow in Jaeger/Zipkin.',
+    sample: `{\n  "fingerprint": "shp_8f92a1b",\n  "count": 12,\n  "pct_of_total": 0.5,\n  "is_baseline": false,\n  "deviation_type": "MISSING_CACHE_SPAN",\n  "example_traces": [\n    "trace-66a7b8",\n    "trace-99f1c2"\n  ]\n}`
+  }
+};
+
+// Default fallback for unconfigured info panels
+const DEFAULT_INFO = {
+  title: 'Module Information',
+  desc: 'Explanation coming soon.',
+  read: 'Metrics display standard system telemetry.',
+  sample: 'No sample data available.'
+};
+
+function showInfo(moduleId) {
+  const content = INFO_CONTENT[moduleId] || DEFAULT_INFO;
+  document.getElementById('info-title').textContent = content.title;
+  document.getElementById('info-desc').textContent = content.desc;
+  document.getElementById('info-read').textContent = content.read;
+  document.getElementById('info-sample').textContent = content.sample;
+  document.getElementById('info-overlay').classList.add('open');
+}
+
+function closeInfo() {
+  document.getElementById('info-overlay').classList.remove('open');
+}
 </script>
 </body>
 </html>

@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     clickhouse_password: str = ""
     clickhouse_database: str = "otel"
 
-    # Claude API
-    anthropic_api_key: str = ""
+    # Gemini API
+    gemini_api_key: str = ""
 
     # App
     debug: bool = False

@@ -97,9 +97,19 @@ async def detect_anomalies(
         # Which features contributed most to the anomaly
         contributing = []
         if is_anomaly:
+            # Get absolute Z-scores for this specific window
             z_scores = np.abs(X_scaled[i])
-            top_idx  = np.argsort(z_scores)[::-1][:3]
-            contributing = [feature_cols[j] for j in top_idx if z_scores[j] > 1.5]
+            
+            # Sort indices of features from highest deviation to lowest
+            top_indices = np.argsort(z_scores)[::-1] 
+            
+            # FIX: Always include the #1 most deviated metric
+            contributing.append(feature_cols[top_indices[0]])
+            
+            # Include the #2 and #3 only if they are also "suspicious" (e.g., Z > 1.0)
+            for idx in top_indices[1:3]:
+                if z_scores[idx] > 1.0:
+                    contributing.append(feature_cols[idx])
 
         results.append({
             "ts":            str(ts),

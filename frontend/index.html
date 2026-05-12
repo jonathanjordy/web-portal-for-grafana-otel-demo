@@ -154,16 +154,20 @@
   .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--text-2); }
   .form-group input, .form-group select, .form-group textarea { border: 1px solid var(--border-md); border-radius: 8px; padding: 0.6rem 0.85rem; font-family: var(--sans); font-size: 0.95rem; font-weight: 500; color: var(--text); background: var(--surface); outline: none; transition: all 0.15s; resize: vertical; }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--indosat-teal); box-shadow: 0 0 0 3px var(--blue-bg); }
+  /* ── CHAT RESULTS TABLE ─────────────────── */
+  .msg-bubble table { border-collapse: collapse; font-size: 0.78rem; }
+  .msg-bubble table th { background: var(--surface2); padding: 0.3rem 0.6rem; text-align: left; font-size: 0.7rem; color: var(--text-3); border-bottom: 1px solid var(--border); }
+  .msg-bubble table td { padding: 0.3rem 0.6rem; border-bottom: 1px solid var(--border); color: var(--text-2); }
+  .msg-bubble table tr:last-child td { border-bottom: none; }
+  .msg-bubble details summary { outline: none; }
+  .msg-bubble pre { border-radius: 6px; font-size: 0.75rem; }
 
-  /* ── DETECTIVE PAGE STYLES ─────────────── */
+  /* ── DETECTIVE ─────────────────────────── */
   .det-table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
   .det-table th { text-align: left; padding: 0.5rem 0.85rem; font-size: 0.7rem; font-weight: 700; color: var(--text-3); letter-spacing: 0.04em; border-bottom: 1px solid var(--border); text-transform: uppercase; }
   .det-table td { padding: 0.65rem 0.85rem; border-bottom: 1px solid var(--border); color: var(--text-2); vertical-align: middle; }
   .det-table tr:last-child td { border-bottom: none; }
   .det-table tr:hover td { background: var(--surface2); }
-  .anomaly-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
-  .anomaly-dot.anomaly { background: var(--red); box-shadow: 0 0 6px var(--red-bg); }
-  .anomaly-dot.normal  { background: var(--green); }
   .tag { display: inline-block; font-size: 0.68rem; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; background: var(--surface2); color: var(--text-3); margin: 0 2px 2px 0; }
   .tag.red    { background: var(--red-bg);    color: var(--red); }
   .tag.amber  { background: var(--amber-bg);  color: var(--amber); }
@@ -172,44 +176,10 @@
   .select-sm { font-size: 0.78rem; padding: 0.3rem 0.5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text-2); font-family: var(--sans); outline: none; }
   .btn-sm { font-family: var(--sans); font-size: 0.78rem; font-weight: 700; padding: 0.35rem 0.8rem; border-radius: 6px; border: none; background: var(--indosat-teal); color: #fff; cursor: pointer; transition: all 0.15s; }
   .btn-sm:hover { background: #1fa093; }
-
-  /* ── INFO BUTTON STYLES ─────────────── */
-  .btn-info {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    background: var(--surface2);
-    border: 1px solid var(--border-md);
-    color: var(--text-2);
-    font-family: 'Georgia', serif;
-    font-style: italic;
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: all 0.15s;
-    line-height: 1;
-    padding: 0;
-  }
-  .btn-info:hover {
-    background: var(--indosat-teal);
-    color: #fff;
-    border-color: var(--indosat-teal);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px var(--blue-bg);
-  }
-  .code-block {
-    background: #1e1e1e;
-    color: #d4d4d4;
-    padding: 1rem;
-    border-radius: 8px;
-    font-family: monospace;
-    font-size: 0.8rem;
-    overflow-x: auto;
-    white-space: pre;
-    line-height: 1.4;
-  }
+  /* ── INFO BUTTON ─────────────────────── */
+  .btn-info { width: 24px; height: 24px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border-md); color: var(--text-2); font-family: 'Georgia', serif; font-style: italic; font-weight: 700; font-size: 0.85rem; display: grid; place-items: center; cursor: pointer; transition: all 0.15s; line-height: 1; padding: 0; }
+  .btn-info:hover { background: var(--indosat-teal); color: #fff; border-color: var(--indosat-teal); transform: translateY(-1px); box-shadow: 0 2px 6px var(--blue-bg); }
+  .code-block { background: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 8px; font-family: monospace; font-size: 0.8rem; overflow-x: auto; white-space: pre; line-height: 1.4; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js"></script>
@@ -260,7 +230,6 @@
 
   <main>
 
-    <!-- ═══════════════════════════════════════ PREDICTIVE -->
     <div class="page active" id="page-predictive">
       <div class="page-eyebrow">Page 1 — Predictive Analytics</div>
       <h1 class="page-title">Forecasting & Capacity</h1>
@@ -273,11 +242,7 @@
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">Memory availability forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <span class="panel-meta" id="mem-status">—</span>
-            <button class="btn-sm" onclick="loadMemory()">Run forecast</button>
-            <button class="btn-info" onclick="showInfo('memory')" title="How this works">i</button>
-          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="mem-status">—</span><button class="btn-sm" onclick="loadMemory()">Run forecast</button><button class="btn-info" onclick="showInfo('memory')" title="How this works">i</button></div>
         </div>
         <div class="panel-body">
           <div id="mem-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to generate a 24-hour prediction using Facebook Prophet.</div>
@@ -287,11 +252,7 @@
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">CPU usage forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <span class="panel-meta" id="cpu-status">—</span>
-            <button class="btn-sm" onclick="loadCpu()">Run forecast</button>
-            <button class="btn-info" onclick="showInfo('cpu')" title="How this works">i</button>
-          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="cpu-status">—</span><button class="btn-sm" onclick="loadCpu()">Run forecast</button><button class="btn-info" onclick="showInfo('cpu')" title="How this works">i</button></div>
         </div>
         <div class="panel-body">
           <div id="cpu-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to generate a 24-hour CPU prediction.</div>
@@ -301,11 +262,7 @@
       <div class="panel">
         <div class="panel-head">
           <span class="panel-title">Order traffic forecast</span>
-          <div style="display:flex;gap:0.5rem;align-items:center">
-            <span class="panel-meta" id="traffic-status">—</span>
-            <button class="btn-sm" onclick="loadTraffic()">Run forecast</button>
-            <button class="btn-info" onclick="showInfo('traffic')" title="How this works">i</button>
-          </div>
+          <div style="display:flex;gap:0.5rem;align-items:center"><span class="panel-meta" id="traffic-status">—</span><button class="btn-sm" onclick="loadTraffic()">Run forecast</button><button class="btn-info" onclick="showInfo('traffic')" title="How this works">i</button></div>
         </div>
         <div class="panel-body">
           <div id="traffic-loading" class="empty" style="padding:1.5rem;border:none">Click "Run forecast" to predict order volume for the next 12 hours.</div>
@@ -314,26 +271,16 @@
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════ DETECTIVE -->
     <div class="page" id="page-detective">
       <div class="page-eyebrow">Page 2 — Detective Analytics</div>
       <h1 class="page-title">Smart Anomaly Detection</h1>
       <p class="page-desc">Context-aware anomaly detection across metrics, logs, and traces — moving beyond static thresholds to dynamic, multivariate intelligence.</p>
 
-      <!-- ANOMALY DETECTION -->
       <div class="panel">
         <div class="panel-head">
-          <div>
-            <div class="panel-title">Multivariate anomaly detection</div>
-            <div class="panel-meta">Isolation Forest — payment duration · failure rate · cache misses · order errors · node load</div>
-          </div>
+          <div><div class="panel-title">Multivariate anomaly detection</div><div class="panel-meta">Isolation Forest — payment duration · failure rate · cache misses · order errors · node load</div></div>
           <div style="display:flex;gap:0.5rem;align-items:center">
-            <select class="select-sm" id="anomaly-hours">
-              <option value="3">Last 3h</option>
-              <option value="6" selected>Last 6h</option>
-              <option value="12">Last 12h</option>
-              <option value="24">Last 24h</option>
-            </select>
+            <select class="select-sm" id="anomaly-hours"><option value="3">Last 3h</option><option value="6" selected>Last 6h</option><option value="12">Last 12h</option><option value="24">Last 24h</option></select>
             <button class="btn-sm" onclick="loadAnomalies()">Run detection</button>
             <button class="btn-info" onclick="showInfo('anomalies')" title="How this works">i</button>
           </div>
@@ -358,19 +305,11 @@
         </div>
       </div>
 
-      <!-- LOG PATTERN CLUSTERING -->
       <div class="panel">
         <div class="panel-head">
-          <div>
-            <div class="panel-title">Log pattern clustering</div>
-            <div class="panel-meta">Drain3 template mining — strips variables, groups logs by structure</div>
-          </div>
+          <div><div class="panel-title">Log pattern clustering</div><div class="panel-meta">Drain3 template mining — strips variables, groups logs by structure</div></div>
           <div style="display:flex;gap:0.5rem;align-items:center">
-            <select class="select-sm" id="log-hours">
-              <option value="1">Last 1h</option>
-              <option value="2" selected>Last 2h</option>
-              <option value="6">Last 6h</option>
-            </select>
+            <select class="select-sm" id="log-hours"><option value="1">Last 1h</option><option value="2" selected>Last 2h</option><option value="6">Last 6h</option></select>
             <button class="btn-sm" onclick="loadLogPatterns()">Analyse logs</button>
             <button class="btn-info" onclick="showInfo('logs')" title="How this works">i</button>
           </div>
@@ -387,19 +326,11 @@
         </div>
       </div>
 
-      <!-- TRACE SHAPE -->
       <div class="panel">
         <div class="panel-head">
-          <div>
-            <div class="panel-title">Trace shape anomaly detection</div>
-            <div class="panel-meta">Fingerprints each trace's span structure — flags deviations from baseline</div>
-          </div>
+          <div><div class="panel-title">Trace shape anomaly detection</div><div class="panel-meta">Fingerprints each trace's span structure — flags deviations from baseline</div></div>
           <div style="display:flex;gap:0.5rem;align-items:center">
-            <select class="select-sm" id="trace-hours">
-              <option value="1">Last 1h</option>
-              <option value="2" selected>Last 2h</option>
-              <option value="6">Last 6h</option>
-            </select>
+            <select class="select-sm" id="trace-hours"><option value="1">Last 1h</option><option value="2" selected>Last 2h</option><option value="6">Last 6h</option></select>
             <button class="btn-sm" onclick="loadTraceShapes()">Analyse traces</button>
             <button class="btn-info" onclick="showInfo('traces')" title="How this works">i</button>
           </div>
@@ -417,20 +348,75 @@
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════ DIAGNOSTIC -->
     <div class="page" id="page-diagnostic">
       <div class="page-eyebrow">Page 3 — Diagnostic Analytics</div>
       <h1 class="page-title">Root Cause Analysis</h1>
       <p class="page-desc">Automated RCA that connects the dots across metrics, traces, and logs — and hands you a human-readable incident summary.</p>
-      <div class="cap-grid">
-        <div class="cap-card"><div class="cap-badge red">RCA</div><div class="cap-name">Causal Graph Analysis</div><div class="cap-desc">Builds a real-time service dependency map from trace parent-child relationships and walks the graph to identify the root cause of failures.</div><div class="cap-status">Coming in Phase 4</div></div>
-        <div class="cap-card"><div class="cap-badge red">Correlation</div><div class="cap-name">Telemetry Correlation Engine</div><div class="cap-desc">When an anomaly fires, automatically surfaces the slowest traces, attached error logs, and resource spikes from that exact time window.</div><div class="cap-status">Coming in Phase 4</div></div>
-        <div class="cap-card"><div class="cap-badge purple">AI</div><div class="cap-name">LLM Incident Summarization</div><div class="cap-desc">Feeds correlated metrics, traces, and logs into Claude to generate a plain-English incident summary ready to post to Slack.</div><div class="cap-status">Coming in Phase 4</div></div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Service dependency graph</div><div class="panel-meta">Built from trace parent-child relationships — highlights root cause service</div></div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <select class="select-sm" id="graph-hours"><option value="1" selected>Last 1h</option><option value="3">Last 3h</option><option value="6">Last 6h</option></select>
+            <button class="btn-sm" onclick="loadCausalGraph()">Build graph</button>
+            <button class="btn-info" onclick="showInfo('graph')" title="How this works">i</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="graph-loading" class="empty" style="padding:1.5rem;border:none">Click "Build graph" to generate the live service dependency map.</div>
+          <div id="graph-wrap" style="display:none">
+            <div id="graph-canvas" style="background:var(--surface2);border-radius:10px;min-height:260px;position:relative;overflow:hidden;margin-bottom:1rem"></div>
+            <div id="graph-nodes-wrap" style="overflow-x:auto"></div>
+          </div>
+        </div>
       </div>
-      <div class="empty"><div class="empty-title">No incidents to diagnose</div>Coming in Phase 4.</div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">Telemetry correlation engine</div><div class="panel-meta">Slowest traces · error logs · metric spikes — all in one view</div></div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <select class="select-sm" id="corr-service">
+              <option value="">All services</option>
+              <option value="order-service">order-service</option>
+              <option value="inventory-service">inventory-service</option>
+              <option value="payment-service">payment-service</option>
+            </select>
+            <select class="select-sm" id="corr-hours"><option value="1" selected>Last 1h</option><option value="3">Last 3h</option><option value="6">Last 6h</option></select>
+            <button class="btn-sm" onclick="loadCorrelation()">Correlate</button>
+            <button class="btn-info" onclick="showInfo('correlate')" title="How this works">i</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="corr-loading" class="empty" style="padding:1.5rem;border:none">Click "Correlate" to surface the slowest traces, error logs, and metric anomalies side by side.</div>
+          <div id="corr-wrap" style="display:none"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><div class="panel-title">AI incident summarization</div><div class="panel-meta">Powered by Claude — generates a plain-English RCA ready to post to Slack</div></div>
+          <div style="display:flex;gap:0.5rem;align-items:center">
+            <select class="select-sm" id="llm-service">
+              <option value="">All services</option>
+              <option value="order-service">order-service</option>
+              <option value="inventory-service">inventory-service</option>
+              <option value="payment-service">payment-service</option>
+            </select>
+            <select class="select-sm" id="llm-hours"><option value="1" selected>Last 1h</option><option value="3">Last 3h</option><option value="6">Last 6h</option></select>
+            <button class="btn-sm" onclick="loadSummary_rca()">Generate summary</button>
+            <button class="btn-info" onclick="showInfo('llm')" title="How this works">i</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div id="llm-loading" class="empty" style="padding:1.5rem;border:none">Click "Generate summary" to have Claude analyse your telemetry and produce an incident report.</div>
+          <div id="llm-wrap" style="display:none">
+            <div id="llm-summary" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1.25rem;font-size:0.9rem;line-height:1.7;color:var(--text-2);white-space:pre-wrap;margin-bottom:1rem"></div>
+            <button class="btn-sm" onclick="copyLLMSummary(this)">Copy to clipboard</button>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- ═══════════════════════════════════════ CHATBOT -->
     <div class="page" id="page-chatbot">
       <div class="page-eyebrow">Page 4 — AIOps Assistant</div>
       <h1 class="page-title">Talk to Your Data</h1>
@@ -456,7 +442,6 @@
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════ INCIDENTS -->
     <div class="page" id="page-incidents">
       <div class="page-eyebrow">Operations</div>
       <h1 class="page-title">Incident Registry</h1>
@@ -477,10 +462,7 @@
         <div class="stat"><div class="stat-label">Avg resolution time</div><div class="stat-value" id="inc-avg-time">42m</div><div class="stat-sub">last 7 days</div></div>
       </div>
       <div class="panel">
-        <div class="panel-head">
-          <span class="panel-title">All incidents</span>
-          <span class="panel-meta" id="inc-table-meta">Showing 9 incidents</span>
-        </div>
+        <div class="panel-head"><span class="panel-title">All incidents</span><span class="panel-meta" id="inc-table-meta">Showing 9 incidents</span></div>
         <div style="overflow-x:auto">
           <table class="inc-table">
             <thead><tr><th>ID</th><th>Title</th><th>Service</th><th>Severity</th><th>Status</th><th>Opened</th><th>Assignee</th><th>Action</th></tr></thead>
@@ -490,14 +472,10 @@
       </div>
     </div>
 
-    <!-- INCIDENT DETAIL MODAL -->
     <div class="modal-overlay" id="detail-overlay" onclick="closeDetail()">
       <div class="modal" style="max-width:580px" onclick="event.stopPropagation()">
         <div class="modal-head">
-          <div style="display:flex;align-items:center;gap:0.75rem">
-            <span class="inc-id" id="detail-id" style="font-size:0.85rem"></span>
-            <span class="modal-title" id="detail-title"></span>
-          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem"><span class="inc-id" id="detail-id" style="font-size:0.85rem"></span><span class="modal-title" id="detail-title"></span></div>
           <button class="modal-close" onclick="closeDetail()">✕</button>
         </div>
         <div class="modal-body" style="gap:1.4rem">
@@ -515,7 +493,6 @@
       </div>
     </div>
 
-    <!-- CREATE INCIDENT MODAL -->
     <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
       <div class="modal" onclick="event.stopPropagation()">
         <div class="modal-head"><span class="modal-title">New Incident</span><button class="modal-close" onclick="closeModal()">✕</button></div>
@@ -535,26 +512,16 @@
       </div>
     </div>
 
-    <!-- MODULE INFO MODAL -->
     <div class="modal-overlay" id="info-overlay" onclick="closeInfo()">
       <div class="modal" style="max-width:650px" onclick="event.stopPropagation()">
         <div class="modal-head">
           <span class="modal-title" id="info-title">Module Info</span>
           <button class="modal-close" onclick="closeInfo()">✕</button>
         </div>
-        <div class="modal-body" style="gap:1.25rem; max-height: 75vh; overflow-y: auto;">
-          <div class="detail-field">
-            <div class="detail-label">How it works</div>
-            <div class="detail-desc" id="info-desc"></div>
-          </div>
-          <div class="detail-field">
-            <div class="detail-label">How to read the data</div>
-            <div class="detail-desc" id="info-read"></div>
-          </div>
-          <div class="detail-field">
-            <div class="detail-label">Sample Data (JSON / Format)</div>
-            <div class="code-block" id="info-sample"></div>
-          </div>
+        <div class="modal-body" style="gap:1.25rem;max-height:75vh;overflow-y:auto">
+          <div class="detail-field"><div class="detail-label">How it works</div><div class="detail-desc" id="info-desc"></div></div>
+          <div class="detail-field"><div class="detail-label">How to read the data</div><div class="detail-desc" id="info-read"></div></div>
+          <div class="detail-field"><div class="detail-label">Sample Data (JSON / Format)</div><div class="code-block" id="info-sample"></div></div>
         </div>
       </div>
     </div>
@@ -562,19 +529,19 @@
   </main>
 </div>
 <script>
-const API_BASE = 'http://XXX:8080/api';
+const API_BASE = 'http://XXXXX:8080/api';
 let chatHistory = [];
 
 // ── NAVIGATION ────────────────────────────────
-function navigate(page) {
+window.navigate = function(page) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('page-' + page).classList.add('active');
   document.querySelector(`[data-page="${page}"]`).classList.add('active');
-}
+};
 
 // ── HEALTH ────────────────────────────────────
-async function checkHealth() {
+window.checkHealth = async function() {
   const dot = document.getElementById('health-dot');
   const txt = document.getElementById('health-text');
   try {
@@ -586,10 +553,10 @@ async function checkHealth() {
     dot.className   = 'dot error';
     txt.textContent = 'API unreachable';
   }
-}
+};
 
 // ── CHATBOT ───────────────────────────────────
-function suggest(el) { document.getElementById('chat-input').value = el.textContent; sendMessage(); }
+window.suggest = function(el) { document.getElementById('chat-input').value = el.textContent; window.sendMessage(); };
 function appendMsg(role, html) {
   const wrap = document.getElementById('chat-messages');
   const sugg = document.getElementById('suggestions');
@@ -600,7 +567,7 @@ function appendMsg(role, html) {
   wrap.scrollTop = wrap.scrollHeight;
   return d;
 }
-async function sendMessage() {
+window.sendMessage = async function() {
   const input = document.getElementById('chat-input');
   const btn   = document.getElementById('send-btn');
   const msg   = input.value.trim();
@@ -614,10 +581,30 @@ async function sendMessage() {
     const data = await res.json();
     const reply = data.response || 'Sorry, I could not process that.';
     thinking.querySelector('.msg-bubble').innerHTML = reply;
-    chatHistory.push({ role: 'assistant', content: reply });
+    // Store plain text version in history to avoid sending HTML back to LLM
+    const plainReply = thinking.querySelector('.msg-bubble').textContent.slice(0, 300);
+    chatHistory.push({ role: 'assistant', content: plainReply });
+    // Show SQL badge if query was executed
+    if (data.executed && data.row_count !== undefined) {
+      const badge = document.createElement('div');
+      badge.style = 'font-size:0.7rem;color:var(--green);font-weight:700;margin-top:0.25rem;font-family:monospace';
+      badge.textContent = `✓ ${data.row_count} row${data.row_count !== 1 ? 's' : ''} returned`;
+      thinking.appendChild(badge);
+    }
   } catch { thinking.querySelector('.msg-bubble').textContent = 'Backend unreachable.'; }
   btn.disabled = false; input.focus();
-}
+};
+
+// ── COPY HELPER ───────────────────────────────
+window.copyText = function(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    if (!btn) return;
+    const oldText = btn.textContent;
+    btn.textContent = 'copied!';
+    btn.style.color = 'var(--green)';
+    setTimeout(() => { btn.textContent = oldText; btn.style.color = ''; }, 1500);
+  });
+};
 
 // ── INCIDENTS ─────────────────────────────────
 const DUMMY_INCIDENTS = [
@@ -667,20 +654,21 @@ function updateSummaryStats() {
   document.getElementById('inc-count-investigating').textContent = incidentList.filter(i=>i.status==='investigating').length;
   document.getElementById('inc-count-resolved').textContent     = incidentList.filter(i=>i.status==='resolved').length;
 }
-function filterIncidents(filter, btn) {
+
+window.filterIncidents = function(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   renderIncidents(filter);
-}
-function resolveIncident(id) {
+};
+window.resolveIncident = function(id) {
   const inc = incidentList.find(i=>i.id===id);
   if (inc) { inc.status='resolved'; inc.opened += ' → resolved '+new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
   renderIncidents(currentFilter);
-}
-function openModal() { document.getElementById('modal-overlay').classList.add('open'); document.getElementById('form-title').focus(); }
-function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); document.getElementById('form-title').value=''; document.getElementById('form-assignee').value=''; document.getElementById('form-desc').value=''; }
-function openDetail(id) {
+};
+window.openModal = function() { document.getElementById('modal-overlay').classList.add('open'); document.getElementById('form-title').focus(); };
+window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); document.getElementById('form-title').value=''; document.getElementById('form-assignee').value=''; document.getElementById('form-desc').value=''; };
+window.openDetail = function(id) {
   const inc = incidentList.find(i=>i.id===id);
   if (!inc) return;
   document.getElementById('detail-id').textContent       = inc.id;
@@ -697,10 +685,10 @@ function openDetail(id) {
     ? `<button class="btn btn-ghost" onclick="closeDetail()">Close</button><button class="btn" onclick="resolveFromDetail('${inc.id}')">Mark as resolved</button>`
     : `<button class="btn" onclick="closeDetail()">Close</button>`;
   document.getElementById('detail-overlay').classList.add('open');
-}
-function closeDetail() { document.getElementById('detail-overlay').classList.remove('open'); }
-function resolveFromDetail(id) { resolveIncident(id); closeDetail(); }
-function createIncident() {
+};
+window.closeDetail = function() { document.getElementById('detail-overlay').classList.remove('open'); };
+window.resolveFromDetail = function(id) { window.resolveIncident(id); window.closeDetail(); };
+window.createIncident = function() {
   const title    = document.getElementById('form-title').value.trim();
   const service  = document.getElementById('form-service').value;
   const severity = document.getElementById('form-severity').value;
@@ -711,15 +699,16 @@ function createIncident() {
   const ts  = now.toLocaleDateString('id-ID',{year:'numeric',month:'2-digit',day:'2-digit'}).split('/').reverse().join('-')+' '+now.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
   const newId = 'INC-'+String(incidentList.length+1).padStart(3,'0');
   incidentList.unshift({ id:newId, title, service, severity, status:'active', opened:ts, assignee, desc, activity:[] });
-  closeModal(); currentFilter='all';
+  window.closeModal(); currentFilter='all';
   document.querySelectorAll('.filter-btn').forEach((b,i) => b.classList.toggle('active',i===0));
   renderIncidents('all');
-}
+};
+
 renderIncidents('all');
 document.querySelector('[data-page="incidents"]').addEventListener('click', () => renderIncidents(currentFilter));
 
 // ── PREDICTIVE ────────────────────────────────
-async function loadSummary() {
+window.loadSummary = async function() {
   try {
     const data = await fetch(`${API_BASE}/predictive/summary`).then(r=>r.json());
     if (data.memory) {
@@ -736,7 +725,8 @@ async function loadSummary() {
       tEl.style.color = trend>10?'var(--amber)':trend<-10?'var(--red)':'var(--text-3)';
     }
   } catch {}
-}
+};
+
 function buildForecastChart(canvasId, data, label, color) {
   const ctx = document.getElementById(canvasId);
   if (ctx._chart) ctx._chart.destroy();
@@ -772,15 +762,16 @@ async function loadForecast(type, loadingId, canvasId, statusId, color, label) {
     buildForecastChart(canvasId, data, label, color);
   } catch(e) { loading.textContent = 'Error: '+e.message; }
 }
-const loadMemory  = () => loadForecast('memory',  'mem-loading',     'mem-chart',     'mem-status',     '#24BCAD', 'Memory available (GB)');
-const loadCpu     = () => loadForecast('cpu',     'cpu-loading',     'cpu-chart',     'cpu-status',     '#FFCA09', 'CPU usage (%)');
-const loadTraffic = () => loadForecast('traffic', 'traffic-loading', 'traffic-chart', 'traffic-status', '#EB008C', 'Orders per 5 min');
 
-document.querySelector('[data-page="predictive"]').addEventListener('click', loadSummary);
-loadSummary();
+window.loadMemory  = () => loadForecast('memory',  'mem-loading',     'mem-chart',     'mem-status',     '#24BCAD', 'Memory available (GB)');
+window.loadCpu     = () => loadForecast('cpu',     'cpu-loading',     'cpu-chart',     'cpu-status',     '#FFCA09', 'CPU usage (%)');
+window.loadTraffic = () => loadForecast('traffic', 'traffic-loading', 'traffic-chart', 'traffic-status', '#EB008C', 'Orders per 5 min');
+
+document.querySelector('[data-page="predictive"]').addEventListener('click', window.loadSummary);
+window.loadSummary();
 
 // ── DETECTIVE ─────────────────────────────────
-async function loadAnomalies() {
+window.loadAnomalies = async function() {
   const hours   = document.getElementById('anomaly-hours').value;
   const loading = document.getElementById('anomaly-loading');
   const canvas  = document.getElementById('anomaly-chart');
@@ -790,136 +781,110 @@ async function loadAnomalies() {
   loading.textContent = 'Running Isolation Forest on your metrics...';
   loading.style.display = 'block'; canvas.style.display = 'none';
   stats.style.display = 'none'; tableW.style.display = 'none';
+  document.getElementById('anomaly-detail').style.display = 'none';
 
   try {
     const data = await fetch(`${API_BASE}/detective/anomalies?hours=${hours}`).then(r=>r.json());
     if (data.detail) { loading.textContent = data.detail; return; }
 
-    loading.style.display = 'none';
-    stats.style.display = 'grid';
-    canvas.style.display = 'block';
-    tableW.style.display = 'block';
+    loading.style.display = 'none'; stats.style.display = 'grid';
+    canvas.style.display = 'block'; tableW.style.display = 'block';
 
     document.getElementById('anom-total').textContent = data.total_windows;
     document.getElementById('anom-count').textContent = data.anomaly_count;
     document.getElementById('anom-rate').textContent  = data.anomaly_rate + '%';
 
-    // Draw anomaly score timeline
     const ctx = document.getElementById('anomaly-chart');
     if (ctx._chart) ctx._chart.destroy();
-
     const allTs     = data.timeline.map(d => d.ts);
     const allScores = data.timeline.map(d => d.anomaly_score);
     const bgColors  = data.timeline.map(d => d.is_anomaly ? 'rgba(235,0,140,0.85)' : 'rgba(36,188,173,0.55)');
-
-    // Compute y-axis max — at least 0.1 so bars are always visible
-    const maxScore = Math.max(...allScores, 0.1);
+    const maxScore  = Math.max(...allScores, 0.1);
 
     ctx._chart = new Chart(ctx, {
       type: 'bar',
       data: {
         labels: allTs.map(t => t.replace('T',' ').slice(11,16)),
-        datasets: [{
-          label: 'Anomaly score',
-          data: allScores,
-          backgroundColor: bgColors,
-          borderColor: bgColors,
-          borderWidth: 0,
-          borderRadius: 2,
-          barPercentage: 0.9,
-          categoryPercentage: 1.0,
-        }]
+        datasets: [{ label:'Anomaly score', data:allScores, backgroundColor:bgColors, borderColor:bgColors, borderWidth:0, borderRadius:2, barPercentage:0.9, categoryPercentage:1.0 }]
       },
       options: {
         responsive: true,
         onClick: (evt, elements) => {
           if (!elements.length) return;
-          const idx = elements[0].index;
-          showAnomalyDetail(data.timeline[idx]);
+          window.showAnomalyDetail(data.timeline[elements[0].index]);
         },
         plugins: {
           legend: {
-            display: true,
-            position: 'top',
-            labels: {
-              generateLabels: () => [
-                { text: 'Normal',  fillStyle: 'rgba(36,188,173,0.55)',  strokeStyle: 'transparent', fontColor: '#8f8f8f', font: { family: 'Nunito', size: 12 } },
-                { text: 'Anomaly', fillStyle: 'rgba(235,0,140,0.85)', strokeStyle: 'transparent', fontColor: '#8f8f8f', font: { family: 'Nunito', size: 12 } },
-              ]
-            }
+            display: true, position: 'top',
+            labels: { generateLabels: () => [
+              { text:'Normal',  fillStyle:'rgba(36,188,173,0.55)',  strokeStyle:'transparent', fontColor:'#8f8f8f', font:{family:'Nunito',size:12} },
+              { text:'Anomaly', fillStyle:'rgba(235,0,140,0.85)', strokeStyle:'transparent', fontColor:'#8f8f8f', font:{family:'Nunito',size:12} },
+            ]}
           },
-          tooltip: {
-            callbacks: {
-              title: (items) => allTs[items[0].dataIndex].replace('T',' ').slice(0,16),
-              label: (item) => {
-                const d = data.timeline[item.dataIndex];
-                const flag = d.is_anomaly ? ' ⚠ ANOMALY' : '';
-                return `Score: ${(d.anomaly_score * 100).toFixed(1)}${flag}`;
-              },
-              afterLabel: (item) => {
-                const d = data.timeline[item.dataIndex];
-                return d.contributing.length ? 'Factors: ' + d.contributing.join(', ') : '';
-              }
-            }
-          }
+          tooltip: { callbacks: {
+            title: (items) => allTs[items[0].dataIndex].replace('T',' ').slice(0,16),
+            label: (item) => { const d = data.timeline[item.dataIndex]; return `Score: ${(d.anomaly_score*100).toFixed(1)}${d.is_anomaly?' ⚠ ANOMALY':''}`; },
+            afterLabel: (item) => { const d = data.timeline[item.dataIndex]; return d.contributing.length ? 'Factors: '+d.contributing.join(', ') : ''; }
+          }}
         },
         scales: {
-          x: {
-            ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 10 }, maxTicksLimit: 12 },
-            grid: { color: 'rgba(0,0,0,0.04)' }
-          },
-          y: {
-            min: 0,
-            max: Math.ceil(maxScore * 10) / 10,
-            title: { display: true, text: 'Anomaly score', color: '#8f8f8f', font: { family: 'Nunito', size: 11 } },
-            ticks: { color: '#8f8f8f', font: { family: 'Nunito', size: 11 } },
-            grid: { color: 'rgba(0,0,0,0.04)' }
-          }
+          x: { ticks:{color:'#8f8f8f',font:{family:'Nunito',size:10},maxTicksLimit:12}, grid:{color:'rgba(0,0,0,0.04)'} },
+          y: { min:0, max:Math.ceil(maxScore*10)/10, title:{display:true,text:'Anomaly score',color:'#8f8f8f',font:{family:'Nunito',size:11}}, ticks:{color:'#8f8f8f',font:{family:'Nunito',size:11}}, grid:{color:'rgba(0,0,0,0.04)'} }
         }
       }
     });
 
-    // Anomaly details table
     const anomRows = data.timeline.filter(d=>d.is_anomaly).slice(0,10);
     tableW.innerHTML = anomRows.length ? `
-      <div style="font-size:0.78rem;font-weight:700;color:var(--text-3);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em">Top anomalous windows</div>
+      <div style="font-size:0.78rem;font-weight:700;color:var(--text-3);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.05em">Top anomalous windows — click a bar to see details</div>
       <table class="det-table">
         <thead><tr><th>Timestamp</th><th>Score</th><th>Contributing factors</th></tr></thead>
         <tbody>${anomRows.map(r=>`
-          <tr>
+          <tr style="cursor:pointer" onclick='showAnomalyDetail(${JSON.stringify(r)})'>
             <td style="font-family:monospace;font-size:0.78rem">${r.ts.replace('T',' ').slice(0,16)}</td>
             <td><span class="tag red">${(r.anomaly_score*100).toFixed(0)}</span></td>
-            <td>${r.contributing.map(c=>`<span class="tag amber">${c}</span>`).join('') || '<span class="tag">—</span>'}</td>
+            <td>${r.contributing.map(c=>`<span class="tag amber">${c}</span>`).join('')||'<span class="tag">—</span>'}</td>
           </tr>`).join('')}
         </tbody>
-      </table>` : '<div style="color:var(--text-3);font-size:0.85rem">No anomalies to detail.</div>';
+      </table>` : '<div style="color:var(--text-3);font-size:0.85rem">No anomalies detected.</div>';
   } catch(e) { loading.textContent = 'Error: '+e.message; }
-}
+};
 
-async function loadLogPatterns() {
+window.showAnomalyDetail = function(d) {
+  document.getElementById('anom-detail-ts').textContent = d.ts.replace('T',' ').slice(0,16);
+  const metricsEl = document.getElementById('anom-detail-metrics');
+  metricsEl.innerHTML = Object.entries(d.metrics||{}).map(([k,v]) => `
+    <div class="stat" style="padding:0.85rem">
+      <div class="stat-label">${k.replace(/_/g,' ')}</div>
+      <div class="stat-value" style="font-size:1.3rem;${d.contributing?.includes(k)?'color:var(--red)':''}">${v!=null?Number(v).toFixed(3):'—'}</div>
+    </div>`).join('');
+  const tracesEl = document.getElementById('anom-detail-traces');
+  tracesEl.innerHTML = d.contributing?.length
+    ? `<div style="font-size:0.78rem;font-weight:700;color:var(--text-3);margin-bottom:0.5rem;text-transform:uppercase">Contributing metrics</div>${d.contributing.map(c=>`<span class="tag amber">${c}</span>`).join('')}`
+    : '<span style="color:var(--text-3)">No contributing factors identified.</span>';
+  document.getElementById('anomaly-detail').style.display = 'block';
+  document.getElementById('anomaly-detail').scrollIntoView({ behavior:'smooth', block:'nearest' });
+};
+
+window.loadLogPatterns = async function() {
   const hours   = document.getElementById('log-hours').value;
   const loading = document.getElementById('log-loading');
   const stats   = document.getElementById('log-stats');
   const tableW  = document.getElementById('log-table-wrap');
-
   loading.textContent = 'Clustering log templates with Drain3...';
-  loading.style.display = 'block'; stats.style.display = 'none';
-  tableW.innerHTML = '';
-
+  loading.style.display = 'block'; stats.style.display = 'none'; tableW.innerHTML = '';
   try {
     const data = await fetch(`${API_BASE}/detective/log-patterns?hours=${hours}`).then(r=>r.json());
     if (data.detail) { loading.textContent = data.detail; return; }
-
     loading.style.display = 'none'; stats.style.display = 'grid';
     document.getElementById('log-total').textContent    = data.total_logs;
     document.getElementById('log-patterns').textContent = data.unique_patterns;
     document.getElementById('log-new').textContent      = data.new_patterns;
     document.getElementById('log-errors').textContent   = data.error_patterns;
-
     tableW.innerHTML = `
       <table class="det-table">
         <thead><tr><th>Pattern template</th><th>Count</th><th>%</th><th>Service</th><th>Severity</th><th>Flags</th></tr></thead>
-        <tbody>${data.patterns.slice(0,15).map(p=>`
+        <tbody>${data.patterns.map(p=>`
           <tr>
             <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;font-size:0.75rem" title="${p.template}">${p.template}</td>
             <td>${p.count}</td>
@@ -931,28 +896,23 @@ async function loadLogPatterns() {
         </tbody>
       </table>`;
   } catch(e) { loading.textContent = 'Error: '+e.message; }
-}
+};
 
-async function loadTraceShapes() {
+window.loadTraceShapes = async function() {
   const hours   = document.getElementById('trace-hours').value;
   const loading = document.getElementById('trace-loading');
   const stats   = document.getElementById('trace-stats');
   const tableW  = document.getElementById('trace-table-wrap');
-
   loading.textContent = 'Fingerprinting trace shapes...';
-  loading.style.display = 'block'; stats.style.display = 'none';
-  tableW.innerHTML = '';
-
+  loading.style.display = 'block'; stats.style.display = 'none'; tableW.innerHTML = '';
   try {
     const data = await fetch(`${API_BASE}/detective/trace-shapes?hours=${hours}`).then(r=>r.json());
     if (data.detail) { loading.textContent = data.detail; return; }
-
     loading.style.display = 'none'; stats.style.display = 'grid';
-    document.getElementById('trace-total').textContent       = data.total_traces;
+    document.getElementById('trace-total').textContent        = data.total_traces;
     document.getElementById('trace-shapes-count').textContent = data.unique_shapes;
-    document.getElementById('trace-anomalous').textContent   = data.anomalous_count;
+    document.getElementById('trace-anomalous').textContent    = data.anomalous_count;
     document.getElementById('trace-baseline-pct').textContent = data.baseline_pct + '%';
-
     tableW.innerHTML = `
       <table class="det-table">
         <thead><tr><th>Shape</th><th>Count</th><th>%</th><th>Deviation</th><th>Example trace IDs</th></tr></thead>
@@ -965,78 +925,277 @@ async function loadTraceShapes() {
             <td>${s.example_traces.map(tid=>`
               <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:3px">
                 <span style="font-family:monospace;font-size:0.72rem;color:var(--text-3)">${tid}</span>
-                <button onclick="copyText('${tid}')" title="Copy trace ID" style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:0.65rem;cursor:pointer;color:var(--text-3);font-family:var(--sans)">copy</button>
-              </div>`).join('') || '—'}
+                <button onclick="copyText('${tid}', this)" title="Copy trace ID" style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 5px;font-size:0.65rem;cursor:pointer;color:var(--text-3);font-family:var(--sans)">copy</button>
+              </div>`).join('')||'—'}
             </td>
           </tr>`).join('')}
         </tbody>
       </table>`;
   } catch(e) { loading.textContent = 'Error: '+e.message; }
-}
+};
 
-checkHealth();
-setInterval(checkHealth, 30000);
+// ── DIAGNOSTIC ───────────────────────────────
+window.loadCausalGraph = async function() {
+  const hours   = document.getElementById('graph-hours').value;
+  const loading = document.getElementById('graph-loading');
+  const wrap    = document.getElementById('graph-wrap');
+  const canvas  = document.getElementById('graph-canvas');
+  const tableW  = document.getElementById('graph-nodes-wrap');
 
-// ── MODULE INFO CONTENT ──────────────────────────────
+  loading.textContent = 'Building dependency graph from traces...';
+  loading.style.display = 'block'; wrap.style.display = 'none';
+
+  try {
+    const data = await fetch(`${API_BASE}/diagnostic/causal-graph?hours=${hours}`).then(r=>r.json());
+    if (data.detail) { loading.textContent = data.detail; return; }
+
+    loading.style.display = 'none'; wrap.style.display = 'block';
+
+    // Draw SVG graph
+    const W = canvas.offsetWidth || 700;
+    const H = 260;
+    const nodes = data.nodes;
+    const edges = data.edges;
+
+    // Position nodes in a row
+    const nodePos = {};
+    const spacing = W / (nodes.length + 1);
+    nodes.forEach((n, i) => {
+      nodePos[n.id] = { x: spacing * (i + 1), y: H / 2 };
+    });
+
+    const colorFor = (status) =>
+      status === 'error' ? '#EB008C' : status === 'degraded' ? '#d4a000' : '#24BCAD';
+
+    let svg = `<svg width="100%" height="${H}" viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+
+    // Draw edges
+    edges.forEach(e => {
+      const s = nodePos[e.source], t = nodePos[e.target];
+      if (!s || !t) return;
+      const color = e.error_rate > 10 ? '#EB008C' : e.error_rate > 2 ? '#d4a000' : '#24BCAD';
+      const mx = (s.x + t.x) / 2, my = (s.y + t.y) / 2 - 30;
+      svg += `<path d="M${s.x},${s.y} Q${mx},${my} ${t.x},${t.y}" fill="none" stroke="${color}" stroke-width="2" stroke-opacity="0.6" marker-end="url(#arr)"/>`;
+      svg += `<text x="${mx}" y="${my - 6}" text-anchor="middle" font-size="10" fill="${color}" font-family="Nunito">${e.avg_duration_ms}ms · ${e.error_rate}% err</text>`;
+    });
+
+    // Arrow marker
+    svg += `<defs><marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5"/></marker></defs>`;
+
+    // Draw nodes
+    nodes.forEach(n => {
+      const p = nodePos[n.id];
+      const color = colorFor(n.status);
+      const isRoot = n.id === data.root_cause;
+      svg += `<circle cx="${p.x}" cy="${p.y}" r="${isRoot ? 36 : 28}" fill="${color}22" stroke="${color}" stroke-width="${isRoot ? 3 : 1.5}"/>`;
+      if (isRoot) svg += `<circle cx="${p.x}" cy="${p.y}" r="42" fill="none" stroke="${color}" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>`;
+      const label = n.id.replace('-service','');
+      svg += `<text x="${p.x}" y="${p.y - 4}" text-anchor="middle" font-size="11" font-weight="700" fill="${color}" font-family="Nunito">${label}</text>`;
+      svg += `<text x="${p.x}" y="${p.y + 11}" text-anchor="middle" font-size="10" fill="${color}" font-family="Nunito">${n.error_rate}% err</text>`;
+      if (isRoot) svg += `<text x="${p.x}" y="${p.y + 58}" text-anchor="middle" font-size="10" font-weight="700" fill="${color}" font-family="Nunito">⚠ root cause</text>`;
+    });
+
+    svg += '</svg>';
+    canvas.innerHTML = svg;
+
+    // Service nodes table
+    tableW.innerHTML = `
+      <table class="det-table" style="margin-top:0.5rem">
+        <thead><tr><th>Service</th><th>Calls</th><th>Errors</th><th>Error rate</th><th>Avg latency</th><th>Status</th></tr></thead>
+        <tbody>${nodes.map(n => `
+          <tr>
+            <td style="font-weight:700">${n.id}</td>
+            <td>${n.calls}</td>
+            <td>${n.errors}</td>
+            <td><span class="tag ${n.error_rate > 10 ? 'red' : n.error_rate > 2 ? 'amber' : 'green'}">${n.error_rate}%</span></td>
+            <td>${n.avg_duration_ms}ms</td>
+            <td><span class="tag ${n.status === 'error' ? 'red' : n.status === 'degraded' ? 'amber' : 'green'}">${n.status}</span>${n.id === data.root_cause ? ' <span class="tag red">root cause</span>' : ''}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+  } catch(e) { loading.textContent = 'Error: ' + e.message; }
+};
+
+window.loadCorrelation = async function() {
+  const hours   = document.getElementById('corr-hours').value;
+  const service = document.getElementById('corr-service').value;
+  const loading = document.getElementById('corr-loading');
+  const wrap    = document.getElementById('corr-wrap');
+
+  loading.textContent = 'Correlating telemetry signals...';
+  loading.style.display = 'block'; wrap.style.display = 'none';
+
+  try {
+    const params = new URLSearchParams({ hours, service });
+    const data   = await fetch(`${API_BASE}/diagnostic/correlate?${params}`).then(r=>r.json());
+    if (data.detail) { loading.textContent = data.detail; return; }
+
+    loading.style.display = 'none'; wrap.style.display = 'block';
+
+    const section = (title, rows, cols, renderRow) => `
+      <div style="margin-bottom:1.25rem">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">${title} (${rows.length})</div>
+        ${rows.length ? `
+        <table class="det-table">
+          <thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+          <tbody>${rows.map(renderRow).join('')}</tbody>
+        </table>` : '<div style="color:var(--text-3);font-size:0.82rem">None found.</div>'}
+      </div>`;
+
+    wrap.innerHTML =
+      section('Slowest traces', data.slow_traces,
+        ['Trace ID', 'Service', 'Span', 'Duration', 'Status'],
+        r => `<tr>
+          <td style="font-family:monospace;font-size:0.72rem">
+            ${r.TraceId.slice(0,16)}…
+            <button onclick="copyText('${r.TraceId}', this)" style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 4px;font-size:0.62rem;cursor:pointer;color:var(--text-3);margin-left:4px">copy</button>
+          </td>
+          <td><span class="tag">${r.ServiceName}</span></td>
+          <td style="font-size:0.78rem">${r.SpanName}</td>
+          <td><span class="tag ${Number(r.Duration)/1e6 > 1000 ? 'red' : 'amber'}">${(Number(r.Duration)/1e6).toFixed(0)}ms</span></td>
+          <td><span class="tag ${r.StatusCode === 'STATUS_CODE_ERROR' ? 'red' : 'green'}">${r.StatusCode === 'STATUS_CODE_ERROR' ? 'error' : 'ok'}</span></td>
+        </tr>`) +
+      section('Error traces', data.error_traces,
+        ['Trace ID', 'Service', 'Span', 'Timestamp'],
+        r => `<tr>
+          <td style="font-family:monospace;font-size:0.72rem">
+            ${r.TraceId.slice(0,16)}…
+            <button onclick="copyText('${r.TraceId}', this)" style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 4px;font-size:0.62rem;cursor:pointer;color:var(--text-3);margin-left:4px">copy</button>
+          </td>
+          <td><span class="tag red">${r.ServiceName}</span></td>
+          <td style="font-size:0.78rem">${r.SpanName}</td>
+          <td style="font-size:0.75rem;color:var(--text-3)">${String(r.Timestamp).slice(0,16)}</td>
+        </tr>`) +
+      section('Error logs', data.error_logs,
+        ['Trace ID', 'Service', 'Message', 'Time'],
+        r => `<tr>
+          <td style="font-family:monospace;font-size:0.72rem">
+            ${r.TraceId ? `
+              <span style="color:var(--text-3)">${r.TraceId.slice(0,16)}…</span>
+              <button onclick="copyText('${r.TraceId}', this)" style="background:none;border:1px solid var(--border);border-radius:4px;padding:1px 4px;font-size:0.62rem;cursor:pointer;color:var(--text-3);margin-left:4px">copy</button>
+            ` : '<span style="color:var(--text-3)">—</span>'}
+          </td>
+          <td><span class="tag red">${r.service_name||'—'}</span></td>
+          <td style="font-size:0.78rem;max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${r.Body}">${r.Body}</td>
+          <td style="font-size:0.75rem;color:var(--text-3);white-space:nowrap">${String(r.Timestamp).slice(0,16)}</td>
+        </tr>`) +
+      section('Metric totals', data.metric_summary,
+        ['Metric', 'Total', 'Avg per min'],
+        r => `<tr>
+          <td><span class="tag">${r.MetricName}</span></td>
+          <td style="font-weight:700">${Number(r.total).toFixed(0)}</td>
+          <td style="color:var(--text-3)">${(Number(r.avg_val)||0).toFixed(2)}</td>
+        </tr>`);
+  } catch(e) { loading.textContent = 'Error: ' + e.message; }
+};
+
+window.loadSummary_rca = async function() {
+  const hours   = document.getElementById('llm-hours').value;
+  const service = document.getElementById('llm-service').value;
+  const loading = document.getElementById('llm-loading');
+  const wrap    = document.getElementById('llm-wrap');
+  const summaryEl = document.getElementById('llm-summary');
+
+  loading.textContent = 'Claude is analysing your telemetry...';
+  loading.style.display = 'block'; wrap.style.display = 'none';
+
+  try {
+    const res  = await fetch(`${API_BASE}/diagnostic/summarize`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ hours: Number(hours), service }),
+    });
+    const data = await res.json();
+    if (data.detail) { loading.textContent = data.detail; return; }
+
+    loading.style.display = 'none'; wrap.style.display = 'block';
+    summaryEl.textContent = data.summary;
+  } catch(e) { loading.textContent = 'Error: ' + e.message; }
+};
+
+window.copyLLMSummary = function(btn) {
+  const text = document.getElementById('llm-summary').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    if (btn) {
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy to clipboard', 1500);
+    }
+  });
+};
+
+// ── MODULE INFO ───────────────────────────────
 const INFO_CONTENT = {
-  'memory': {
-    title: 'Memory Availability Forecast',
-    desc: 'Uses Facebook Prophet (an open-source time-series forecasting algorithm) to analyze historical memory telemetry. It accounts for daily and weekly seasonality to predict future resource availability.',
-    read: 'The solid black line represents actual historical memory availability. The dashed teal line is the forecasted future availability. The lightly shaded teal area around the forecast represents the confidence interval (margin of error). If the forecast approaches 0, a saturation incident is imminent.',
-    sample: `// Array of predicted points returned by the API\n{\n  "ds": "2026-04-30 15:00:00", // Timestamp\n  "y": null,                   // Null because it's in the future\n  "yhat": 14.2,                // Predicted memory available (GB)\n  "yhat_lower": 13.8,          // Lower bound of confidence interval\n  "yhat_upper": 14.6           // Upper bound of confidence interval\n}`
-  },
-  'cpu': {
-    title: 'CPU Usage Forecast',
-    desc: 'Uses Facebook Prophet to analyze historical CPU load. It learns from your daily traffic spikes (e.g., peak business hours) to predict future processor saturation.',
-    read: 'The solid black line is historical CPU usage. The dashed yellow line is the forecast. The shaded area is the margin of error. Approaching 100% indicates likely node starvation.',
-    sample: `{\n  "ds": "2026-04-30 15:00:00",\n  "y": null,\n  "yhat": 85.5, // 85.5% CPU load predicted\n  "yhat_lower": 78.0,\n  "yhat_upper": 92.1\n}`
-  },
-  'traffic': {
-    title: 'Order Traffic Forecast',
-    desc: 'Forecasts business metrics (orders per 5 minutes) using historical patterns. Helps capacity planning by predicting inbound load before it hits the infrastructure.',
-    read: 'The solid black line shows actual orders. The dashed magenta line shows expected future order volume. Large deviations from this forecast in real-time can indicate a business-level outage.',
-    sample: `{\n  "ds": "2026-04-30 15:00:00",\n  "y": null,\n  "yhat": 1200, // Predicted 1200 orders in this 5m window\n  "yhat_lower": 1150,\n  "yhat_upper": 1260\n}`
-  },
-  'anomalies': {
-    title: 'Multivariate Anomaly Detection',
-    desc: 'Uses an Isolation Forest machine learning model. Instead of looking at a single metric crossing a static threshold (like CPU > 80%), it looks at multiple metrics simultaneously. It flags windows where the relationship between metrics is highly unusual.',
-    read: 'The chart shows an anomaly score between 0.0 and 1.0. Bars highlighted in magenta (Score > 0.7) are flagged as anomalies. Click a magenta bar or look at the table below to see which specific metrics (e.g., failure rate, load) deviated the most to trigger the anomaly.',
-    sample: `{\n  "ts": "2026-04-30 08:12:00",\n  "anomaly_score": 0.89,\n  "is_anomaly": true,\n  "metrics": {\n    "payment_duration_ms": 1450,\n    "failure_rate_pct": 45.2,\n    "cache_misses": 8920\n  },\n  "contributing": ["failure_rate", "payment_duration_ms"]\n}`
-  },
-  'logs': {
-    title: 'Log Pattern Clustering',
-    desc: 'Uses the Drain3 algorithm. Raw logs are messy and filled with dynamic variables (like IPs, user IDs, or UUIDs). This engine strips out those variables and groups the remaining text into "Templates", allowing you to see which log structures are occurring most often.',
-    read: 'The table shows the generalized template. Dynamic variables are replaced with wildcards like <*>. Look for patterns tagged as "NEW" or "ERROR" to quickly spot novel failures in your system without reading thousands of individual log lines.',
-    sample: `// Raw Log: "User user-8891 failed to authenticate from IP 192.168.1.5"\n// Raw Log: "User user-1022 failed to authenticate from IP 10.0.0.1"\n\n// Clustered Result:\n{\n  "template": "User <ID> failed to authenticate from IP <IP>",\n  "count": 451,\n  "pct_of_total": 12.4,\n  "top_service": "auth-service",\n  "dominant_severity": "WARNING",\n  "is_new": false\n}`
-  },
-  'traces': {
-    title: 'Trace Shape Anomaly Detection',
-    desc: 'Every distributed trace has a "shape" defined by its parent-child spans (e.g., Service A calls DB B and Cache C). This engine fingerprints those shapes. It learns the "normal" shape for an endpoint and flags traces that suddenly deviate (e.g., missing a cache call, or querying the DB in a loop).',
-    read: 'The "Shape" column shows a hashed fingerprint of the span structure. "Baseline" tags mean this is how the trace normally executes. Red tags like "MISSING_SPAN" or "EXTRA_CALLS" indicate a structural failure in the execution path. Use the Trace IDs to view the exact flow in Jaeger/Zipkin.',
-    sample: `{\n  "fingerprint": "shp_8f92a1b",\n  "count": 12,\n  "pct_of_total": 0.5,\n  "is_baseline": false,\n  "deviation_type": "MISSING_CACHE_SPAN",\n  "example_traces": [\n    "trace-66a7b8",\n    "trace-99f1c2"\n  ]\n}`
-  }
+  memory: { title:'Memory Availability Forecast', desc:'Uses Facebook Prophet (an open-source time-series forecasting algorithm) to analyze historical memory telemetry. It accounts for daily and weekly seasonality to predict future resource availability.', read:'The solid black line represents actual historical memory availability. The dashed teal line is the forecasted future availability. The lightly shaded area represents the confidence interval. If the forecast approaches 0, a saturation incident is imminent.', sample:`{
+  "ds": "2026-04-30 15:00:00",
+  "y": null,
+  "yhat": 14.2,
+  "yhat_lower": 13.8,
+  "yhat_upper": 14.6
+}` },
+  cpu:    { title:'CPU Usage Forecast', desc:'Uses Facebook Prophet to analyze historical CPU load. It learns from your daily traffic spikes to predict future processor saturation.', read:'The solid black line is historical CPU usage. The dashed yellow line is the forecast. Approaching 100% indicates likely node starvation.', sample:`{
+  "ds": "2026-04-30 15:00:00",
+  "yhat": 85.5,
+  "yhat_lower": 78.0,
+  "yhat_upper": 92.1
+}` },
+  traffic:{ title:'Order Traffic Forecast', desc:'Forecasts business metrics (orders per 5 minutes) using historical patterns. Helps capacity planning by predicting inbound load.', read:'The solid black line shows actual orders. The dashed magenta line shows expected future volume. Large deviations in real-time can indicate a business-level outage.', sample:`{
+  "ds": "2026-04-30 15:00:00",
+  "yhat": 1200,
+  "yhat_lower": 1150,
+  "yhat_upper": 1260
+}` },
+  anomalies:{ title:'Multivariate Anomaly Detection', desc:'Uses Isolation Forest ML model. Instead of a single static threshold, it looks at multiple metrics simultaneously and flags windows where the combination of metrics is highly unusual.', read:'Magenta bars are anomalies. Click any bar or table row to see the detail panel showing which metrics deviated the most at that moment.', sample:`{
+  "ts": "2026-04-30 08:12:00",
+  "anomaly_score": 0.89,
+  "is_anomaly": true,
+  "contributing": ["payment_failures", "cache_misses"],
+  "metrics": { "payment_failures": 45.2, "cache_misses": 8920 }
+}` },
+  logs:   { title:'Log Pattern Clustering', desc:'Uses the Drain3 algorithm to strip dynamic variables (IDs, IPs, UUIDs) from log lines and group the remaining structure into templates.', read:'Look for patterns tagged NEW or ERROR. Dynamic variables are replaced with <*>. Hover the template cell to see the full pattern.', sample:`// Raw: "User user-8891 failed from IP 192.168.1.5"
+// Template: "User <*> failed from IP <*>"
+{
+  "template": "User <*> failed from IP <*>",
+  "count": 451,
+  "dominant_severity": "WARNING",
+  "is_new": false
+}` },
+  graph:  { title:'Service Dependency Graph', desc:'Built entirely from your OTel trace data. Every time service A calls service B, a parent-child span relationship is created. This engine reads those relationships and builds a live topology map showing which services talk to which.', read:'Nodes with red borders have high error rates. The node labelled "root cause" is the deepest node in the error chain — the origin of failures propagating upstream. Edges show request rate and error rate per call path.', sample:`{
+  "nodes": [{ "id": "payment-service", "error_rate": 45.2, "status": "error" }],
+  "edges": [{ "source": "order-service", "target": "payment-service", "error_rate": 45.2 }],
+  "root_cause": "payment-service"
+}` },
+  correlate: { title:'Telemetry Correlation Engine', desc:'Queries ClickHouse across all three signal types simultaneously for the selected time window. Surfaces the slowest traces, error traces, error logs, and metric anomalies in one unified view without you having to jump between tools.', read:'The slowest traces table shows the top 10 requests by duration. Use the copy buttons next to trace IDs to paste them into Grafana Tempo for the full waterfall. The error logs section shows raw log messages attached to the same time window.', sample:`{
+  "slow_traces": [{ "TraceId": "a3f9c12d...", "Duration": 2100000000, "ServiceName": "inventory-service" }],
+  "error_logs":  [{ "Body": "Gateway rejected charge", "TraceId": "a3f9c12d..." }]
+}` },
+  llm: { title:'AI Incident Summarization', desc:'Collects error rates, slowest spans, error logs, and metric totals from ClickHouse, then sends them to the Claude API. Claude produces a plain-English incident report with root cause, impact, and recommended actions.', read:'The generated summary is formatted for Slack. Use the Copy button to paste it directly into your incident channel. The quality of the summary improves with more data — run it during or after an incident for best results.', sample:`// Generated output example:
+"Payment failure rate spiked to 45% at 08:12 UTC.
+Root cause: payment-gateway-call span timing out after 2000ms.
+Impact: all checkout flows affected.
+Actions: 1) Check Stripe API status 2) Review payment-service logs 3) Consider circuit breaker"` },
+  traces: { title:'Trace Shape Anomaly Detection', desc:'Every distributed trace has a shape defined by its parent-child spans. This engine fingerprints those shapes and flags deviations — missing spans, extra calls, or N+1 loops.', read:'Green "baseline" tag = normal execution path. Red tags like "extra spans" or "missing spans" indicate structural failures. Copy trace IDs to search in Grafana Tempo.', sample:`{
+  "fingerprint": "POST /orders x1|check-inventory x1|payment-gateway-call x1",
+  "is_baseline": false,
+  "deviation_type": "missing_spans",
+  "example_traces": ["a3f9c12d..."]
+}` },
 };
 
-// Default fallback for unconfigured info panels
-const DEFAULT_INFO = {
-  title: 'Module Information',
-  desc: 'Explanation coming soon.',
-  read: 'Metrics display standard system telemetry.',
-  sample: 'No sample data available.'
-};
-
-function showInfo(moduleId) {
-  const content = INFO_CONTENT[moduleId] || DEFAULT_INFO;
-  document.getElementById('info-title').textContent = content.title;
-  document.getElementById('info-desc').textContent = content.desc;
-  document.getElementById('info-read').textContent = content.read;
-  document.getElementById('info-sample').textContent = content.sample;
+window.showInfo = function(id) {
+  const c = INFO_CONTENT[id] || { title:'Module Info', desc:'—', read:'—', sample:'—' };
+  document.getElementById('info-title').textContent  = c.title;
+  document.getElementById('info-desc').textContent   = c.desc;
+  document.getElementById('info-read').textContent   = c.read;
+  document.getElementById('info-sample').textContent = c.sample;
   document.getElementById('info-overlay').classList.add('open');
-}
+};
 
-function closeInfo() {
+window.closeInfo = function() {
   document.getElementById('info-overlay').classList.remove('open');
-}
+};
+
+window.checkHealth();
+setInterval(window.checkHealth, 30000);
 </script>
 </body>
 </html>

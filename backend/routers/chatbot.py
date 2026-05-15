@@ -51,11 +51,10 @@ async def call_gemini(prompt: str, system: str = "") -> str:
 
 def extract_sql(text: str) -> str | None:
     """Extract SQL from a markdown code block or plain text."""
-    # Try ```sql ... ``` block first
-    match = re.search(r"```(?:sql)?\s*(SELECT[\s\S]+?)```", text, re.IGNORECASE)
+    match = re.search(r"```(?:sql)?\s*(SELECT[\s\S]+?)
+```", text, re.IGNORECASE)
     if match:
         return match.group(1).strip()
-    # Try plain SELECT statement
     match = re.search(r"(SELECT[\s\S]+?;)", text, re.IGNORECASE)
     if match:
         return match.group(1).strip()
@@ -91,9 +90,6 @@ def format_results(rows: list[dict], limit: int = 50) -> str:
 </div>"""
 
 
-# ─────────────────────────────────────────────────────────────
-# SYSTEM PROMPT
-# ─────────────────────────────────────────────────────────────
 def build_system_prompt() -> str:
     return f"""You are an AIOps assistant with access to a ClickHouse database called `otel`.
 Your job is to help engineers query their observability data using natural language.
@@ -106,39 +102,26 @@ RULES:
 3. Keep queries efficient — always include a time filter like: AND TimeUnix >= now() - INTERVAL 1 HOUR
 4. For duration fields in otel_traces, Duration is stored in nanoseconds. Divide by 1e6 for milliseconds.
 5. For p95 latency use: quantile(0.95)(Duration) / 1e6
-6. If the question is conversational (greetings, clarifications), respond naturally without SQL.
-7. After providing SQL, briefly explain what the query does in 1-2 sentences.
-8. If a question is ambiguous, make a reasonable assumption and state it.
-9. Never query more than 10000 rows. Always add LIMIT clauses.
-10. Format numbers nicely in SELECT aliases (e.g. round(avg(Duration)/1e6, 1) AS avg_ms).
+6. If the question is conversational, respond naturally without SQL.
+7. After providing SQL, briefly explain the technical logic of the query in 1-2 sentences (e.g. "This queries the highest node_load1 timestamp...").
+8. Never query more than 10000 rows. Always add LIMIT clauses.
 """
 
 
-# ─────────────────────────────────────────────────────────────
-# REQUEST / RESPONSE MODELS
-# ─────────────────────────────────────────────────────────────
 class ChatMessage(BaseModel):
     role:    str
     content: str
-
 
 class ChatRequest(BaseModel):
     message: str
     history: list[ChatMessage] = []
 
 
-# ─────────────────────────────────────────────────────────────
-# MAIN CHAT ENDPOINT
-# ─────────────────────────────────────────────────────────────
 @router.post("/chat")
 async def chat(req: ChatRequest):
-    """
-    Accepts a natural language message, generates SQL via Gemini,
-    executes it against ClickHouse, and returns the result.
-    """
     system = build_system_prompt()
 
-    # Build conversation context (last 6 messages for context window)
+    # Context window
     context = ""
     for msg in req.history[-6:]:
         role = "User" if msg.role == "user" else "Assistant"
@@ -146,33 +129,63 @@ async def chat(req: ChatRequest):
 
     full_prompt = f"{context}User: {req.message}"
 
-    # Step 1 — Ask Gemini to generate SQL or respond conversationally
+    # Step 1 — Generate SQL and Technical Explanation
     gemini_response = await call_gemini(full_prompt, system)
-
-    # Step 2 — Try to extract and execute SQL
     sql = extract_sql(gemini_response)
 
     if sql:
         try:
-            # Safety check — only allow SELECT statements
             clean = sql.strip().upper()
             if not clean.startswith("SELECT"):
                 return {"response": gemini_response, "sql": sql, "executed": False}
 
+            # Execute SQL
             rows   = query_rows(sql)
             table  = format_results(rows)
 
-            # Build response with explanation + results
-            # Strip the SQL block from the explanation to avoid duplication
-            explanation = re.sub(r"```(?:sql)?[\s\S]+?```", "", gemini_response).strip()
-            if not explanation:
-                explanation = f"Query returned {len(rows)} result{'s' if len(rows) != 1 else ''}."
+            # Extract the technical explanation from the first prompt
+            tech_explanation = re.sub(r"
+```(?:sql)?[\s\S]+?```", "", gemini_response).strip()
+            if not tech_explanation:
+                tech_explanation = "SQL Query executed successfully."
 
-            response_html = f"""<div style="margin-bottom:0.75rem">{explanation}</div>
-<details open>
-  <summary style="cursor:pointer;font-size:0.78rem;color:var(--text-3);font-family:monospace;margin-bottom:0.4rem">▶ SQL query</summary>
-  <pre style="background:#1e1e1e;color:#d4d4d4;padding:0.75rem;border-radius:6px;font-size:0.78rem;overflow-x:auto;margin-top:0.4rem">{sql}</pre>
+            # Step 2 — Generate Business Interpretation based on returned data
+            if rows:
+                # Limit to 10 rows so we don't blow up the LLM token context limit
+                data_subset = rows[:10]
+                interp_prompt = f"""
+The user asked: "{req.message}"
+The database returned this data: {json.dumps(data_subset)}
+
+Provide a concise, 1-2 sentence business-oriented interpretation of this data. 
+Focus on what the numbers mean for the system's health or business. 
+Do NOT explain the SQL query here. Just give the insight.
+"""
+                try:
+                    business_interpretation = await call_gemini(interp_prompt)
+                except Exception:
+                    business_interpretation = "Data retrieved successfully."
+            else:
+                business_interpretation = "The query executed successfully, but no data matched the criteria for this timeframe."
+
+            # Combine into final HTML structure
+            response_html = f"""
+<div style="margin-bottom:1rem; font-size: 0.95rem; color: var(--text); font-weight: 500;">
+    {business_interpretation}
+</div>
+
+<details>
+  <summary style="cursor:pointer;font-size:0.78rem;color:var(--text-3);font-family:monospace;margin-bottom:0.4rem;outline:none;">
+    ▶ View SQL & Technical Details
+  </summary>
+  <div style="background:var(--surface2); padding:0.85rem; border-radius:8px; border:1px solid var(--border); margin-top:0.4rem;">
+      <div style="font-size:0.82rem; color:var(--text-2); margin-bottom:0.75rem; line-height: 1.5;">
+        <em>{tech_explanation}</em>
+      </div>
+      <pre style="background:#1e1e1e;color:#d4d4d4;padding:0.75rem;border-radius:6px;font-size:0.75rem;overflow-x:auto;margin:0;">{sql}</pre>
+  </div>
 </details>
+
 {table}"""
 
             return {
@@ -183,15 +196,18 @@ async def chat(req: ChatRequest):
             }
 
         except Exception as e:
-            # SQL failed — return Gemini's explanation + error
-            error_html = f"""{gemini_response}
-<div style="margin-top:0.75rem;padding:0.75rem;background:var(--red-bg);border-radius:6px;font-size:0.82rem;color:var(--red)">
-  <strong>Query error:</strong> {str(e)[:200]}
+            # Query failed formatting
+            error_html = f"""
+<div style="margin-bottom:0.75rem">{gemini_response}</div>
+<div style="margin-top:0.75rem;padding:0.75rem;background:var(--red-bg);border-radius:6px;font-size:0.82rem;color:var(--red);border:1px solid rgba(235,0,140,0.2)">
+  <strong>Query execution failed:</strong><br>{str(e)[:200]}
 </div>"""
             return {"response": error_html, "sql": sql, "executed": False, "error": str(e)}
 
-    # No SQL — pure conversational response
+    # Pure conversation format
     return {"response": gemini_response, "sql": None, "executed": False}
+
+
 
 
 # ─────────────────────────────────────────────────────────────

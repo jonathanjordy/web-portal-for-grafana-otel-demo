@@ -51,8 +51,7 @@ async def call_gemini(prompt: str, system: str = "") -> str:
 
 def extract_sql(text: str) -> str | None:
     """Extract SQL from a markdown code block or plain text."""
-    match = re.search(r"```(?:sql)?\s*(SELECT[\s\S]+?)
-```", text, re.IGNORECASE)
+    match = re.search(r"```(?:sql)?\s*(SELECT[\s\S]+?)```", text, re.IGNORECASE)
     if match:
         return match.group(1).strip()
     match = re.search(r"(SELECT[\s\S]+?;)", text, re.IGNORECASE)
@@ -144,8 +143,7 @@ async def chat(req: ChatRequest):
             table  = format_results(rows)
 
             # Extract the technical explanation from the first prompt
-            tech_explanation = re.sub(r"
-```(?:sql)?[\s\S]+?```", "", gemini_response).strip()
+            tech_explanation = re.sub(r"```(?:sql)?[\s\S]+?```", "", gemini_response).strip()
             if not tech_explanation:
                 tech_explanation = "SQL Query executed successfully."
 

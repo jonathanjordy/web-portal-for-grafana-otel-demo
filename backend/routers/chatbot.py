@@ -152,13 +152,13 @@ async def chat(req: ChatRequest):
                 # Limit to 10 rows so we don't blow up the LLM token context limit
                 data_subset = rows[:10]
                 interp_prompt = f"""
-The user asked: "{req.message}"
-The database returned this data: {json.dumps(data_subset)}
+                    The user asked: "{req.message}"
+                    The database returned this data: {json.dumps(data_subset, default=str)}
 
-Provide a concise, 1-2 sentence business-oriented interpretation of this data. 
-Focus on what the numbers mean for the system's health or business. 
-Do NOT explain the SQL query here. Just give the insight.
-"""
+                    Provide a concise, 1-2 sentence business-oriented interpretation of this data. 
+                    Focus on what the numbers mean for the system's health or business. 
+                    Do NOT explain the SQL query here. Just give the insight.
+                    """
                 try:
                     business_interpretation = await call_gemini(interp_prompt)
                 except Exception:

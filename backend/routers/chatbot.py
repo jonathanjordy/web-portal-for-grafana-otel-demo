@@ -149,16 +149,20 @@ async def chat(req: ChatRequest):
 
             # Step 2 — Generate Business Interpretation based on returned data
             if rows:
-                # Limit to 10 rows so we don't blow up the LLM token context limit
-                data_subset = rows[:10]
-                interp_prompt = f"""
-                    The user asked: "{req.message}"
-                    The database returned this data: {json.dumps(data_subset, default=str)}
+                # Force every single value into a string to prevent JSON serialization crashes
+                safe_data_subset = []
+                for row in rows[:10]:
+                    safe_row = {key: str(value) for key, value in row.items()}
+                    safe_data_subset.append(safe_row)
 
-                    Provide a concise, 1-2 sentence business-oriented interpretation of this data. 
-                    Focus on what the numbers mean for the system's health or business. 
-                    Do NOT explain the SQL query here. Just give the insight.
-                    """
+                interp_prompt = f"""
+                The user asked: "{req.message}"
+                The database returned this data: {json.dumps(safe_data_subset)}
+
+                Provide a concise, 1-2 sentence business-oriented interpretation of this data. 
+                Focus on what the numbers mean for the system's health or business. 
+                Do NOT explain the SQL query here. Just give the insight.
+                """
                 try:
                     business_interpretation = await call_gemini(interp_prompt)
                 except Exception:
@@ -174,7 +178,7 @@ async def chat(req: ChatRequest):
 
 <details>
   <summary style="cursor:pointer;font-size:0.78rem;color:var(--text-3);font-family:monospace;margin-bottom:0.4rem;outline:none;">
-    ▶ View SQL & Technical Details
+    View SQL & Technical Details
   </summary>
   <div style="background:var(--surface2); padding:0.85rem; border-radius:8px; border:1px solid var(--border); margin-top:0.4rem;">
       <div style="font-size:0.82rem; color:var(--text-2); margin-bottom:0.75rem; line-height: 1.5;">

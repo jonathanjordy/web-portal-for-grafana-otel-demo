@@ -132,16 +132,11 @@ class ChatRequest(BaseModel):
 async def chat(req: ChatRequest):
     system = build_system_prompt()
 
-    # Context window
-    context = ""
-    for msg in req.history[-6:]:
-        role = "User" if msg.role == "user" else "Assistant"
-        context += f"{role}: {msg.content}\n\n"
-
-    full_prompt = f"{context}User: {req.message}"
+    # Pass history as structured list (call_gemini handles formatting now)
+    history = [{"role": msg.role, "content": msg.content} for msg in req.history[-6:]]
 
     # Step 1 — Generate SQL and Technical Explanation
-    gemini_response = await call_gemini(full_prompt, system)
+    gemini_response = await call_gemini(req.message, history=history, system=system)
     sql = extract_sql(gemini_response)
 
     if sql:
@@ -151,30 +146,28 @@ async def chat(req: ChatRequest):
                 return {"response": gemini_response, "sql": sql, "executed": False}
 
             # Execute SQL
-            rows   = query_rows(sql)
-            table  = format_results(rows)
+            rows  = query_rows(sql)
+            table = format_results(rows)
 
-            # Extract the technical explanation from the first prompt
+            # Extract the technical explanation from the first response
             tech_explanation = re.sub(r"```(?:sql)?[\s\S]+?```", "", gemini_response).strip()
             if not tech_explanation:
                 tech_explanation = "SQL Query executed successfully."
 
             # Step 2 — Generate Business Interpretation based on returned data
             if rows:
-                # Force every single value into a string to prevent JSON serialization crashes
-                safe_data_subset = []
-                for row in rows[:10]:
-                    safe_row = {key: str(value) for key, value in row.items()}
-                    safe_data_subset.append(safe_row)
-
+                safe_data_subset = [
+                    {key: str(value) for key, value in row.items()}
+                    for row in rows[:10]
+                ]
                 interp_prompt = f"""
-                The user asked: "{req.message}"
-                The database returned this data: {json.dumps(safe_data_subset)}
+                                The user asked: "{req.message}"
+                                The database returned this data: {json.dumps(safe_data_subset)}
 
-                Provide a concise, 1-2 sentence business-oriented interpretation of this data. 
-                Focus on what the numbers mean for the system's health or business. 
-                Do NOT explain the SQL query here. Just give the insight.
-                """
+                                Provide a concise, 1-2 sentence business-oriented interpretation of this data.
+                                Focus on what the numbers mean for the system's health or business.
+                                Do NOT explain the SQL query here. Just give the insight.
+                                """
                 try:
                     business_interpretation = await call_gemini(interp_prompt)
                 except Exception:
@@ -182,7 +175,6 @@ async def chat(req: ChatRequest):
             else:
                 business_interpretation = "The query executed successfully, but no data matched the criteria for this timeframe."
 
-            # Combine into final HTML structure
             response_html = f"""
 <div style="margin-bottom:1rem; font-size: 0.95rem; color: var(--text); font-weight: 500;">
     {business_interpretation}
@@ -210,7 +202,6 @@ async def chat(req: ChatRequest):
             }
 
         except Exception as e:
-            # Query failed formatting
             error_html = f"""
 <div style="margin-bottom:0.75rem">{gemini_response}</div>
 <div style="margin-top:0.75rem;padding:0.75rem;background:var(--red-bg);border-radius:6px;font-size:0.82rem;color:var(--red);border:1px solid rgba(235,0,140,0.2)">
@@ -218,7 +209,7 @@ async def chat(req: ChatRequest):
 </div>"""
             return {"response": error_html, "sql": sql, "executed": False, "error": str(e)}
 
-    # Pure conversation format
+    # Pure conversation
     return {"response": gemini_response, "sql": None, "executed": False}
 
 

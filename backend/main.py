@@ -16,7 +16,9 @@ app = FastAPI(
 # Allow frontend HTML files to call the API
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    # Explicitly allow the browser's local file origin string
+    allow_origins=["*", "null"], 
+    allow_credentials=False,  # Must be False if using "*" wildcards
     allow_methods=["*"],
     allow_headers=["*"],
 )

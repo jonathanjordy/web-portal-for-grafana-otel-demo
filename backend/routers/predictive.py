@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
+import math
 from fastapi import APIRouter, HTTPException, Query
 from db import query_df
+from query_filters import metric_host_filter, service_trace_filter
 
 router = APIRouter()
 
@@ -65,7 +67,9 @@ def fit_and_forecast(df: pd.DataFrame, periods: int, freq: str = "5min") -> dict
 async def forecast_memory(
     hours_history: int = Query(default=48),
     hours_ahead:   int = Query(default=24),
+    host: str = Query(default=""),
 ):
+    host_filter = metric_host_filter(host)
     sql = f"""
         SELECT
             toStartOfInterval(TimeUnix, INTERVAL 5 MINUTE) AS ds,
@@ -73,6 +77,7 @@ async def forecast_memory(
         FROM otel.otel_metrics_gauge
         WHERE MetricName = 'node_memory_MemAvailable_bytes'
           AND TimeUnix >= now() - INTERVAL {hours_history} HOUR
+          {host_filter}
         GROUP BY ds ORDER BY ds ASC
     """
     df = query_df(sql)
@@ -81,11 +86,12 @@ async def forecast_memory(
 
     df["y"] = df["y"] / (1024 ** 3)
 
-    total_df = query_df("""
+    total_df = query_df(f"""
         SELECT avg(Value) / (1024*1024*1024) AS total_gb
         FROM otel.otel_metrics_gauge
         WHERE MetricName = 'node_memory_MemTotal_bytes'
           AND TimeUnix >= now() - INTERVAL 1 HOUR
+          {host_filter}
     """)
     total_gb = float(total_df.iloc[0]["total_gb"]) if not total_df.empty else None
 
@@ -102,7 +108,9 @@ async def forecast_memory(
 async def forecast_cpu(
     hours_history: int = Query(default=48),
     hours_ahead:   int = Query(default=24),
+    host: str = Query(default=""),
 ):
+    host_filter = metric_host_filter(host)
     sql = f"""
         SELECT
             toStartOfInterval(TimeUnix, INTERVAL 5 MINUTE) AS ds,
@@ -111,6 +119,7 @@ async def forecast_cpu(
         WHERE MetricName = 'node_cpu_seconds_total'
           AND Attributes['mode'] = 'idle'
           AND TimeUnix >= now() - INTERVAL {hours_history} HOUR
+          {host_filter}
         GROUP BY ds ORDER BY ds ASC
     """
     df = query_df(sql)
@@ -134,7 +143,9 @@ async def forecast_cpu(
 async def forecast_traffic(
     hours_history: int = Query(default=48),
     hours_ahead:   int = Query(default=12),
+    service: str = Query(default=""),
 ):
+    service_filter = service_trace_filter(service)
     sql = f"""
         SELECT
             toStartOfInterval(Timestamp, INTERVAL 5 MINUTE) AS ds,
@@ -143,6 +154,7 @@ async def forecast_traffic(
         WHERE SpanName = 'POST /orders'
           AND ParentSpanId = ''
           AND Timestamp >= now() - INTERVAL {hours_history} HOUR
+          {service_filter}
         GROUP BY ds ORDER BY ds ASC
     """
     df = query_df(sql)
@@ -168,46 +180,57 @@ async def forecast_traffic(
 # ENDPOINT 4 — SUMMARY CARDS (no Prophet, fast)
 # ─────────────────────────────────────────────────────────────
 @router.get("/summary")
-async def forecast_summary():
+async def forecast_summary(
+    host: str = Query(default=""),
+    service: str = Query(default=""),
+):
     results = {}
+    host_filter = metric_host_filter(host)
+    service_filter = service_trace_filter(service)
 
     try:
-        mem_df = query_df("""
+        mem_df = query_df(f"""
             SELECT
                 avg(Value) / (1024*1024*1024) AS available_gb,
                 (SELECT avg(Value) / (1024*1024*1024)
                  FROM otel.otel_metrics_gauge
                  WHERE MetricName = 'node_memory_MemTotal_bytes'
-                   AND TimeUnix >= now() - INTERVAL 5 MINUTE) AS total_gb
+                   AND TimeUnix >= now() - INTERVAL 5 MINUTE
+                   {host_filter}) AS total_gb
             FROM otel.otel_metrics_gauge
             WHERE MetricName = 'node_memory_MemAvailable_bytes'
               AND TimeUnix >= now() - INTERVAL 5 MINUTE
+              {host_filter}
         """)
         if not mem_df.empty:
             avail    = float(mem_df.iloc[0]["available_gb"])
             total    = float(mem_df.iloc[0]["total_gb"])
-            used_pct = round((1 - avail / total) * 100, 1) if total > 0 else 0
-            results["memory"] = {
-                "used_pct":     used_pct,
-                "available_gb": round(avail, 2),
-                "total_gb":     round(total, 2),
-            }
+            if math.isfinite(avail) and math.isfinite(total) and total > 0:
+                used_pct = round((1 - avail / total) * 100, 1)
+                results["memory"] = {
+                    "used_pct":     used_pct,
+                    "available_gb": round(avail, 2),
+                    "total_gb":     round(total, 2),
+                }
     except Exception as e:
         results["memory"] = {"error": str(e)}
 
     try:
-        load_df = query_df("""
+        load_df = query_df(f"""
             SELECT avg(Value) AS load1 FROM otel.otel_metrics_gauge
             WHERE MetricName = 'node_load1'
               AND TimeUnix >= now() - INTERVAL 5 MINUTE
+              {host_filter}
         """)
         if not load_df.empty:
-            results["load"] = {"load1": round(float(load_df.iloc[0]["load1"]), 2)}
+            load1 = float(load_df.iloc[0]["load1"])
+            if math.isfinite(load1):
+                results["load"] = {"load1": round(load1, 2)}
     except Exception as e:
         results["load"] = {"error": str(e)}
 
     try:
-        ord_df = query_df("""
+        ord_df = query_df(f"""
             SELECT
                 countIf(Timestamp >= now() - INTERVAL 1 HOUR)  AS last_hour,
                 countIf(Timestamp >= now() - INTERVAL 2 HOUR
@@ -215,6 +238,7 @@ async def forecast_summary():
             FROM otel.otel_traces
             WHERE SpanName = 'POST /orders' AND ParentSpanId = ''
               AND Timestamp >= now() - INTERVAL 2 HOUR
+              {service_filter}
         """)
         if not ord_df.empty:
             last       = int(ord_df.iloc[0]["last_hour"])

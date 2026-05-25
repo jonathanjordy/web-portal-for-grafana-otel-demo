@@ -5,6 +5,7 @@ from collections import defaultdict
 from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 from db import query_df, query_rows, get_clickhouse_schema
+from query_filters import service_log_filter, service_trace_filter, sql_quote
 
 router = APIRouter()
 
@@ -18,12 +19,26 @@ router = APIRouter()
 @router.get("/causal-graph")
 async def get_causal_graph(
     hours: int = Query(default=1, description="Hours of traces to analyse"),
+    service: str = Query(default="", description="Scope graph to traces containing this service"),
 ):
     """
     Returns service nodes and edges with request rate,
     error rate, and p95 latency per edge.
     Also identifies the most likely root cause service.
     """
+    trace_scope_filter = ""
+    if service:
+        quoted_service = sql_quote(service)
+        trace_scope_filter = f"""
+          AND TraceId IN (
+              SELECT DISTINCT TraceId
+              FROM otel.otel_traces
+              WHERE Timestamp >= now() - INTERVAL {hours} HOUR
+                AND ServiceName = '{quoted_service}'
+                AND TraceId != ''
+          )
+        """
+
     # Get all spans with their parent info
     sql = f"""
         SELECT
@@ -37,6 +52,7 @@ async def get_causal_graph(
         FROM otel.otel_traces
         WHERE Timestamp >= now() - INTERVAL {hours} HOUR
           AND TraceId != ''
+          {trace_scope_filter}
         LIMIT 5000
     """
     df = query_df(sql)
@@ -143,8 +159,8 @@ async def correlate_telemetry(
     Returns slowest traces, error logs, and metric summary
     all aligned to the same time window.
     """
-    service_filter = f"AND ServiceName = '{service}'" if service else ""
-    log_service_filter = f"AND ResourceAttributes['service.name'] = '{service}'" if service else ""
+    service_filter = service_trace_filter(service)
+    log_service_filter = service_log_filter(service)
 
     # Slowest traces
     slow_sql = f"""
@@ -262,8 +278,8 @@ async def summarize_incident(req: SummarizeRequest):
         )
 
     # First get the correlated data
-    service_filter    = f"AND ServiceName = '{req.service}'" if req.service else ""
-    log_service_filter = f"AND ResourceAttributes['service.name'] = '{req.service}'" if req.service else ""
+    service_filter = service_trace_filter(req.service)
+    log_service_filter = service_log_filter(req.service)
 
     # Collect key signals
     signals = {}

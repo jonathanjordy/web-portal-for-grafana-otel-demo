@@ -5,6 +5,7 @@ import numpy as np
 from collections import defaultdict
 from fastapi import APIRouter, Query, HTTPException
 from db import query_df, query_rows
+from query_filters import metric_host_filter, service_log_filter, service_trace_filter
 
 router = APIRouter()
 
@@ -19,10 +20,12 @@ router = APIRouter()
 async def detect_anomalies(
     hours: int = Query(default=6,  description="Hours of history to analyse"),
     contamination: float = Query(default=0.05, description="Expected anomaly fraction (0.01–0.2)"),
+    host: str = Query(default="", description="Filter node metrics by host/collector"),
+    service: str = Query(default="", description="Filter application metrics by owning service"),
 ):
     """
     Runs Isolation Forest on:
-    - payment_duration_seconds (p95)
+    - order_duration_seconds (average)
     - payment_failures_total (rate)
     - inventory_cache_misses_total (rate)
     - order_errors_total (rate)
@@ -35,15 +38,24 @@ async def detect_anomalies(
     interval = 1  # 1-minute buckets
 
     metrics = [
-        ("payment_duration",   "otel_metrics_histogram", "order_duration_seconds",       "avg(Sum / nullIf(Count, 0))"),
-        ("payment_failures",   "otel_metrics_sum",       "payment_failures_total",        "sum(Value)"),
-        ("cache_misses",       "otel_metrics_sum",       "inventory_cache_misses_total",  "sum(Value)"),
-        ("order_errors",       "otel_metrics_sum",       "order_errors_total",            "sum(Value)"),
-        ("node_load",          "otel_metrics_gauge",     "node_load1",                    "avg(Value)"),
+        ("order_duration",     "otel_metrics_histogram", "order_duration_seconds",       "avg(Sum / nullIf(Count, 0))", "order-service"),
+        ("payment_failures",   "otel_metrics_sum",       "payment_failures_total",        "sum(Value)",                 "payment-service"),
+        ("cache_misses",       "otel_metrics_sum",       "inventory_cache_misses_total",  "sum(Value)",                 "inventory-service"),
+        ("order_errors",       "otel_metrics_sum",       "order_errors_total",            "sum(Value)",                 "order-service"),
+        ("node_load",          "otel_metrics_gauge",     "node_load1",                    "avg(Value)",                 "infrastructure"),
     ]
 
     dfs = []
-    for col_name, table, metric, agg in metrics:
+    skipped_features = []
+    for col_name, table, metric, agg, owner_service in metrics:
+        if service and owner_service not in (service, "infrastructure"):
+            skipped_features.append({
+                "feature": col_name,
+                "reason": f"belongs to {owner_service}",
+            })
+            continue
+
+        extra_filter = metric_host_filter(host) if col_name == "node_load" else ""
         sql = f"""
             SELECT
                 toStartOfInterval(TimeUnix, INTERVAL {interval} MINUTE) AS ts,
@@ -51,12 +63,18 @@ async def detect_anomalies(
             FROM otel.{table}
             WHERE MetricName = '{metric}'
               AND TimeUnix >= now() - INTERVAL {hours} HOUR
+              {extra_filter}
             GROUP BY ts ORDER BY ts ASC
         """
         df = query_df(sql)
         if not df.empty:
             df = df.rename(columns={"val": col_name})
             dfs.append(df.set_index("ts"))
+        else:
+            skipped_features.append({
+                "feature": col_name,
+                "reason": "no data after filters",
+            })
 
     if len(dfs) < 2:
         raise HTTPException(
@@ -129,6 +147,11 @@ async def detect_anomalies(
         "anomaly_count":  anomaly_count,
         "anomaly_rate":   round(anomaly_count / len(results) * 100, 1),
         "features_used":  feature_cols,
+        "features_skipped": skipped_features,
+        "filters_applied": {
+            "host": host or "all",
+            "service": service or "all",
+        },
         "timeline":       results,
     }
 
@@ -142,6 +165,7 @@ async def detect_anomalies(
 async def cluster_log_patterns(
     hours: int   = Query(default=2,   description="Hours of logs to analyse"),
     limit: int   = Query(default=500, description="Max log lines to process"),
+    service: str = Query(default="",  description="Filter by service name"),
 ):
     """
     Clusters log lines by their template (stripped of variables).
@@ -151,6 +175,7 @@ async def cluster_log_patterns(
     """
     from drain3 import TemplateMiner
     from drain3.template_miner_config import TemplateMinerConfig
+    service_filter = service_log_filter(service)
 
     # Fetch logs
     sql = f"""
@@ -162,6 +187,7 @@ async def cluster_log_patterns(
             ResourceAttributes['service.name'] AS service_name
         FROM otel.otel_logs
         WHERE Timestamp >= now() - INTERVAL {hours} HOUR
+          {service_filter}
         ORDER BY Timestamp DESC
         LIMIT {limit}
     """
@@ -176,6 +202,7 @@ async def cluster_log_patterns(
         FROM otel.otel_logs
         WHERE Timestamp >= now() - INTERVAL {hours * 2} HOUR
           AND Timestamp <  now() - INTERVAL {hours} HOUR
+          {service_filter}
         LIMIT {limit}
     """
     baseline_df = query_df(baseline_sql)
@@ -263,12 +290,14 @@ async def cluster_log_patterns(
 async def detect_trace_shape_anomalies(
     hours: int = Query(default=2,  description="Hours of traces to analyse"),
     limit: int = Query(default=500, description="Max traces to analyse"),
+    service: str = Query(default="", description="Filter by service name"),
 ):
     """
     Groups traces by their span fingerprint.
     The baseline shape is the most common fingerprint.
     Flags traces that deviate — extra spans, missing spans, loops.
     """
+    service_filter = service_trace_filter(service)
     sql = f"""
         SELECT
             TraceId,
@@ -280,6 +309,7 @@ async def detect_trace_shape_anomalies(
         FROM otel.otel_traces
         WHERE Timestamp >= now() - INTERVAL {hours} HOUR
           AND TraceId != ''
+          {service_filter}
         GROUP BY TraceId, SpanName, ServiceName, Duration, StatusCode
         ORDER BY TraceId ASC
         LIMIT {limit}

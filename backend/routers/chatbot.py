@@ -11,8 +11,8 @@ router = APIRouter()
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
 
-async def call_gemini(prompt: str, system: str = "") -> str:
-    """Call Gemini API and return the text response."""
+async def call_gemini(prompt: str, history: list[dict] = None, system: str = "") -> str:
+    """Call Gemini API passing a structured payload with system configuration and conversational history."""
     api_key = os.getenv("GEMINI_API_KEY", "")
     if not api_key:
         raise HTTPException(
@@ -21,9 +21,21 @@ async def call_gemini(prompt: str, system: str = "") -> str:
         )
 
     contents = []
+    
+    # 1. Inject System Prompt Context natively matching Gemini instructions structure
     if system:
-        contents.append({"role": "user",  "parts": [{"text": system}]})
+        contents.append({"role": "user", "parts": [{"text": system}]})
         contents.append({"role": "model", "parts": [{"text": "Understood. I will follow those instructions."}]})
+    
+    # 2. Rehydrate structured conversation turns from conversational history
+    if history:
+        for turn in history:
+            contents.append({
+                "role": turn["role"],
+                "parts": [{"text": turn["content"]}]
+            })
+            
+    # 3. Append the active question turn
     contents.append({"role": "user", "parts": [{"text": prompt}]})
 
     async with httpx.AsyncClient(timeout=30.0) as client:
@@ -33,7 +45,7 @@ async def call_gemini(prompt: str, system: str = "") -> str:
             json={
                 "contents": contents,
                 "generationConfig": {
-                    "temperature":     0.1,
+                    "temperature": 0.1,
                     "maxOutputTokens": 1500,
                 }
             }

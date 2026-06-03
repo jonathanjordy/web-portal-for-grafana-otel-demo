@@ -239,3 +239,12 @@ graph LR
    If Gemini queries or forecasting models encounter missing data or service connectivity issues, backend endpoints are structured to fail gracefully. They return descriptive error blocks with structural fallback states instead of throwing unhandled 500 errors.
 3. **Optimized LLM Prompting**:
    System instructions are designed around Gemini 2.5 Flash's capabilities—using direct Markdown blocks, syntax constraints, and few-shot schemas to prevent SQL injection and hallucinations.
+
+---
+
+## 💻 Environment & Development Specifications
+
+The codebase operates across two principal conda environments:
+- **`playground`**: The Python conda environment used for running backend processes, executing tests, data queries, AI/ML models, and general debugging.
+- **`node`**: The Node.js/frontend conda environment used for compiling, building, and running the Next.js (TypeScript, Tailwind CSS v4) portal.
+

@@ -351,7 +351,7 @@ Based on this telemetry, provide a concise incident summary with:
 Keep the summary concise and actionable. Format it in plain text suitable for a Slack message."""
 
     # Call Gemini API
-    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
+    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
 
     async with httpx.AsyncClient(timeout=30.0) as client:
         response = await client.post(

@@ -31,7 +31,7 @@ graph TD
     end
 
     subgraph LLM ["AI Foundation Layer"]
-        Gemini["Gemini 2.0 Flash API"]
+        Gemini["Gemini 2.5 Flash API"]
     end
 
     %% Connections
@@ -163,7 +163,7 @@ The **Diagnostic Agent** is responsible for root-cause analysis (RCA). When an i
 graph TD
     Traces["Spans / Parent Relationships"] -->|Graph Assembly| Graph["Causal Graph Engine"]
     Graph -->|Deepest Error Path Walk| Root["Pinpointed Root Cause Node"]
-    Root -->|Signals Synthesis| Gemini["Gemini 2.0 Flash"]
+    Root -->|Signals Synthesis| Gemini["Gemini 2.5 Flash"]
     Gemini -->|LLM Synthesis| Summary[" Slack-Ready Incident Summary"]
 ```
 
@@ -181,7 +181,7 @@ graph TD
    - Synthesizes metrics, slowest trace paths, and warning/error logs that occur within the same temporal window into a single correlated dataset.
 
 3. **LLM Incident Summarization (Gemini)**
-   - *Implementation*: Calls the Gemini API (`gemini-2.0-flash`).
+   - *Implementation*: Calls the Gemini API (`gemini-2.5-flash`).
    - *Execution*: Generates an optimized prompt containing:
      - Error rates by service.
      - Latency profiles ($p95$) of the slowest execution spans.
@@ -205,7 +205,7 @@ The **Chatbot Agent** acts as an interface that allows engineers to query raw Cl
 
 ```mermaid
 graph LR
-    NL["'How many orders failed last hour?'"] -->|Gemini 2.0 Flash + Schema| SQL["SELECT ... FROM otel_metrics_sum ..."]
+    NL["'How many orders failed last hour?'"] -->|Gemini 2.5 Flash + Schema| SQL["SELECT ... FROM otel_metrics_sum ..."]
     SQL -->|Execution| Results["ClickHouse Dataset Rows"]
     Results -->|Formatting| UI["HTML Table / Interactive Dashboard View"]
     Results -->|Context Passage| GeminiInterpretation["LLM Business Insight"]
@@ -238,4 +238,4 @@ graph LR
 2. **Robust Error Resilience**:
    If Gemini queries or forecasting models encounter missing data or service connectivity issues, backend endpoints are structured to fail gracefully. They return descriptive error blocks with structural fallback states instead of throwing unhandled 500 errors.
 3. **Optimized LLM Prompting**:
-   System instructions are designed around Gemini 2.0 Flash's capabilities—using direct Markdown blocks, syntax constraints, and few-shot schemas to prevent SQL injection and hallucinations.
+   System instructions are designed around Gemini 2.5 Flash's capabilities—using direct Markdown blocks, syntax constraints, and few-shot schemas to prevent SQL injection and hallucinations.

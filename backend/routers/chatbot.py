@@ -8,7 +8,7 @@ from db import query_rows, get_clickhouse_schema
 
 router = APIRouter()
 
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
 
 
 async def call_gemini(prompt: str, history: list[dict] = None, system: str = "") -> str:

@@ -3,6 +3,7 @@ import InfoButton from '../components/InfoButton.jsx';
 import { FilterSelect, useFilters } from '../hooks/useFilters.jsx';
 import { apiGet, apiPost } from '../services/api.js';
 import { copyText } from '../utils/copyText.js';
+import { traceExploreUrl } from '../utils/traceUrl.js';
 
 export default function DiagnosticPage({ onOpenInfo }) {
   const filters = useFilters();
@@ -230,7 +231,15 @@ function ResultSection({ title, rows, headers, renderRow }) {
 function TraceCopy({ traceId, copied, onCopy }) {
   return (
     <>
-      <span style={{ color: 'var(--text-3)' }}>{String(traceId).slice(0, 16)}...</span>
+      <a
+        href={traceExploreUrl(traceId)}
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Open trace in Grafana Tempo"
+        className="trace-link"
+      >
+        {String(traceId).slice(0, 16)}...
+      </a>
       <button onClick={() => onCopy(traceId)} style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 4, padding: '1px 4px', fontSize: '0.62rem', cursor: 'pointer', color: copied === traceId ? 'var(--green)' : 'var(--text-3)', marginLeft: 4 }} type="button">
         {copied === traceId ? 'copied!' : 'copy'}
       </button>

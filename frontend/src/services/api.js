@@ -30,3 +30,21 @@ export async function apiPost(path, body, options = {}) {
   });
   return res.json();
 }
+
+export async function apiPatch(path, body, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+    ...options,
+  });
+  return res.json();
+}
+
+export async function apiDelete(path, options = {}) {
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'DELETE',
+    ...options,
+  });
+  return res.json();
+}

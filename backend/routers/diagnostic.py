@@ -1,11 +1,10 @@
-import os
 import json
-import httpx
 from collections import defaultdict
 from fastapi import APIRouter, Query, HTTPException
 from pydantic import BaseModel
 from db import query_df, query_rows, get_clickhouse_schema
 from query_filters import service_log_filter, service_trace_filter, sql_quote
+from llm import generate
 
 router = APIRouter()
 
@@ -266,17 +265,10 @@ class SummarizeRequest(BaseModel):
 @router.post("/summarize")
 async def summarize_incident(req: SummarizeRequest):
     """
-    Calls the Anthropic Claude API with correlated telemetry
+    Calls Gemini (via Pydantic AI) with correlated telemetry
     data and returns a human-readable incident summary with
     root cause, impact, and recommended next steps.
     """
-    api_key = os.getenv("GEMINI_API_KEY", "")
-    if not api_key:
-        raise HTTPException(
-            status_code=503,
-            detail="GEMINI_API_KEY not set in .env. Add it to enable LLM summarization."
-        )
-
     # First get the correlated data
     service_filter = service_trace_filter(req.service)
     log_service_filter = service_log_filter(req.service)
@@ -366,30 +358,8 @@ Based on this telemetry, provide a concise incident summary with:
 
 Keep the summary concise and actionable. Format it in plain text suitable for a Slack message."""
 
-    # Call Gemini API
-    gemini_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={api_key}"
-
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(
-            gemini_url,
-            headers={"content-type": "application/json"},
-            json={
-                "contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {
-                    "temperature":     0.3,
-                    "maxOutputTokens": 1000,
-                }
-            }
-        )
-
-    if response.status_code != 200:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Gemini API error: {response.status_code} — {response.text[:200]}"
-        )
-
-    result  = response.json()
-    summary = result["candidates"][0]["content"]["parts"][0]["text"]
+    # Call Gemini (via Pydantic AI)
+    summary = await generate(prompt, temperature=0.3, max_tokens=1000)
 
     return {
         "summary":  summary,

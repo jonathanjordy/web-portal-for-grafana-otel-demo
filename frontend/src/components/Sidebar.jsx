@@ -1,26 +1,27 @@
 import { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { apiGet } from '../services/api.js';
 
 const navGroups = [
   {
     label: 'Analytics',
     items: [
-      { id: 'predictive', label: 'Predictive', icon: <PredictiveIcon /> },
-      { id: 'detective', label: 'Detective', icon: <DetectiveIcon /> },
-      { id: 'diagnostic', label: 'Diagnostic', icon: <DiagnosticIcon /> },
+      { to: '/predictive', label: 'Predictive', icon: <PredictiveIcon /> },
+      { to: '/detective', label: 'Detective', icon: <DetectiveIcon /> },
+      { to: '/diagnostic', label: 'Diagnostic', icon: <DiagnosticIcon /> },
     ],
   },
   {
     label: 'Assistant',
-    items: [{ id: 'chatbot', label: 'AIOps Chat', icon: <ChatIcon /> }],
+    items: [{ to: '/chat', label: 'AIOps Chat', icon: <ChatIcon /> }],
   },
   {
     label: 'Operations',
-    items: [{ id: 'incidents', label: 'Incident Registry', icon: <IncidentIcon /> }],
+    items: [{ to: '/incidents', label: 'Incident Registry', icon: <IncidentIcon /> }],
   },
 ];
 
-export default function Sidebar({ activePage, onNavigate }) {
+export default function Sidebar() {
   const [health, setHealth] = useState({ className: 'dot', text: 'Checking...' });
 
   useEffect(() => {
@@ -55,16 +56,14 @@ export default function Sidebar({ activePage, onNavigate }) {
         <div className="nav-group" key={group.label}>
           <div className="nav-label">{group.label}</div>
           {group.items.map((item) => (
-            <button
-              className={`nav-item ${activePage === item.id ? 'active' : ''}`}
-              data-page={item.id}
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              type="button"
+            <NavLink
+              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+              key={item.to}
+              to={item.to}
             >
               {item.icon}
               {item.label}
-            </button>
+            </NavLink>
           ))}
         </div>
       ))}

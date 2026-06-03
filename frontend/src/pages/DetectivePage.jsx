@@ -5,6 +5,7 @@ import { Chart } from '../components/charts.js';
 import { FilterSelect, useFilters } from '../hooks/useFilters.jsx';
 import { apiGet } from '../services/api.js';
 import { copyText } from '../utils/copyText.js';
+import { traceExploreUrl } from '../utils/traceUrl.js';
 
 export default function DetectivePage({ onOpenInfo }) {
   const [host, setHost] = useState('');
@@ -319,7 +320,7 @@ function TraceShapesPanel({ onOpenInfo, service }) {
                   <td>{shape.is_baseline ? <span className="tag green">baseline</span> : shape.deviation_type ? <span className="tag red">{shape.deviation_type.replace(/_/g, ' ')}</span> : <span className="tag">-</span>}</td>
                   <td>{shape.example_traces.length ? shape.example_traces.map((traceId) => (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: 3 }} key={traceId}>
-                      <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'var(--text-3)' }}>{traceId}</span>
+                      <a href={traceExploreUrl(traceId)} target="_blank" rel="noopener noreferrer" title="Open trace in Grafana Tempo" className="trace-link" style={{ fontSize: '0.72rem' }}>{traceId}</a>
                       <button onClick={() => copyTraceId(traceId)} title="Copy trace ID" style={{ background: 'none', border: '1px solid var(--border)', borderRadius: 4, padding: '1px 5px', fontSize: '0.65rem', cursor: 'pointer', color: copied === traceId ? 'var(--green)' : 'var(--text-3)', fontFamily: 'var(--sans)' }} type="button">{copied === traceId ? 'copied!' : 'copy'}</button>
                     </div>
                   )) : '-'}</td>

@@ -1,75 +1,29 @@
-import os
 import json
-import re
-import httpx
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from db import query_rows, get_clickhouse_schema
+from llm import generate, generate_structured
+import session_store
 
 router = APIRouter()
 
-GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
 
-
-async def call_gemini(prompt: str, history: list[dict] = None, system: str = "") -> str:
-    """Call Gemini API passing a structured payload with system configuration and conversational history."""
-    api_key = os.getenv("GEMINI_API_KEY", "")
-    if not api_key:
-        raise HTTPException(
-            status_code=503,
-            detail="GEMINI_API_KEY not set in .env."
-        )
-
-    contents = []
-    
-    # 1. Inject System Prompt Context natively matching Gemini instructions structure
-    if system:
-        contents.append({"role": "user", "parts": [{"text": system}]})
-        contents.append({"role": "model", "parts": [{"text": "Understood. I will follow those instructions."}]})
-    
-    # 2. Rehydrate structured conversation turns from conversational history
-    if history:
-        for turn in history:
-            contents.append({
-                "role": turn["role"],
-                "parts": [{"text": turn["content"]}]
-            })
-            
-    # 3. Append the active question turn
-    contents.append({"role": "user", "parts": [{"text": prompt}]})
-
-    async with httpx.AsyncClient(timeout=30.0) as client:
-        response = await client.post(
-            f"{GEMINI_URL}?key={api_key}",
-            headers={"content-type": "application/json"},
-            json={
-                "contents": contents,
-                "generationConfig": {
-                    "temperature": 0.1,
-                    "maxOutputTokens": 1500,
-                }
-            }
-        )
-
-    if response.status_code != 200:
-        raise HTTPException(
-            status_code=502,
-            detail=f"Gemini API error: {response.status_code} — {response.text[:200]}"
-        )
-
-    result = response.json()
-    return result["candidates"][0]["content"]["parts"][0]["text"]
-
-
-def extract_sql(text: str) -> str | None:
-    """Extract SQL from a markdown code block or plain text."""
-    match = re.search(r"```(?:sql)?\s*(SELECT[\s\S]+?)```", text, re.IGNORECASE)
-    if match:
-        return match.group(1).strip()
-    match = re.search(r"(SELECT[\s\S]+?;)", text, re.IGNORECASE)
-    if match:
-        return match.group(1).strip()
-    return None
+class ChatAnswer(BaseModel):
+    """Structured answer the model must return for every chat turn."""
+    sql: str | None = Field(
+        default=None,
+        description=(
+            "A single valid ClickHouse SELECT query that answers the user's data "
+            "question, with NO markdown fences. Set to null if the question is "
+            "purely conversational and needs no data."
+        ),
+    )
+    message: str = Field(
+        description=(
+            "If `sql` is provided: a 1-2 sentence technical explanation of what the "
+            "query does. If `sql` is null: a natural-language reply to the user."
+        ),
+    )
 
 
 def format_results(rows: list[dict], limit: int = 50) -> str:
@@ -108,51 +62,67 @@ Your job is to help engineers query their observability data using natural langu
 {get_clickhouse_schema()}
 
 RULES:
-1. When the user asks a data question, respond with a valid ClickHouse SQL query inside a ```sql code block.
+1. When the user asks a data question, put a single valid ClickHouse SELECT query in the `sql` field (plain SQL, NO markdown code fences) and a 1-2 sentence technical explanation in the `message` field.
 2. Always use proper ClickHouse syntax (e.g. toStartOfInterval, quantile(), countIf()).
 3. Keep queries efficient — always include a time filter like: AND TimeUnix >= now() - INTERVAL 1 HOUR
 4. For duration fields in otel_traces, Duration is stored in nanoseconds. Divide by 1e6 for milliseconds.
 5. For p95 latency use: quantile(0.95)(Duration) / 1e6
-6. If the question is conversational, respond naturally without SQL.
-7. After providing SQL, briefly explain the technical logic of the query in 1-2 sentences (e.g. "This queries the highest node_load1 timestamp...").
-8. Never query more than 10000 rows. Always add LIMIT clauses.
+6. If the question is purely conversational, set `sql` to null and put your natural-language reply in `message`.
+7. Never query more than 10000 rows. Always add LIMIT clauses.
 """
 
 
-class ChatMessage(BaseModel):
-    role:    str
-    content: str
-
 class ChatRequest(BaseModel):
-    message: str
-    history: list[ChatMessage] = []
+    message:    str
+    session_id: str | None = None
+
+
+async def _generate_title(user_message: str, assistant_summary: str) -> str:
+    """Ask the model for a short 3-5 word session title."""
+    prompt = (
+        "Summarize the topic of this conversation as a short title of 3-5 words. "
+        "Respond with ONLY the title — no quotes, no trailing punctuation.\n\n"
+        f"User: {user_message}\n"
+        f"Assistant: {assistant_summary}\n"
+        "Title:"
+    )
+    title = await generate(prompt, temperature=0.2, max_tokens=512)
+    title = title.strip().strip('"').splitlines()[0].strip() if title.strip() else ""
+    return title[:60] or session_store.DEFAULT_TITLE
 
 
 @router.post("/chat")
 async def chat(req: ChatRequest):
+    # Resolve the session; create a fresh one if the id is missing or stale so a
+    # client with an unknown id never 500s — it just gets a new session back.
+    session = session_store.get(req.session_id) if req.session_id else None
+    if not session:
+        session = session_store.create()
+    session_id = session["id"]
+    is_first_exchange = len(session["turns"]) == 0
+
     system = build_system_prompt()
 
-    # Pass history as structured list (call_gemini handles formatting now)
-    history = [{"role": msg.role, "content": msg.content} for msg in req.history[-6:]]
+    # Build LLM history from the session's stored turns (backend owns history now)
+    history = [{"role": t["role"], "content": t["content"]} for t in session["turns"][-6:]]
 
-    # Step 1 — Generate SQL and Technical Explanation
-    gemini_response = await call_gemini(req.message, history=history, system=system)
-    sql = extract_sql(gemini_response)
+    # Step 1 — Generate structured SQL + technical explanation
+    answer = await generate_structured(req.message, ChatAnswer, history=history, system=system)
+    sql = answer.sql.strip() if answer.sql else None
 
-    if sql:
+    # plain_summary is the plain-text the assistant "said" — stored for LLM context.
+    plain_summary = answer.message
+
+    if sql and not sql.upper().startswith("SELECT"):
+        result = {"response": answer.message, "sql": sql, "executed": False}
+
+    elif sql:
         try:
-            clean = sql.strip().upper()
-            if not clean.startswith("SELECT"):
-                return {"response": gemini_response, "sql": sql, "executed": False}
-
             # Execute SQL
             rows  = query_rows(sql)
             table = format_results(rows)
 
-            # Extract the technical explanation from the first response
-            tech_explanation = re.sub(r"```(?:sql)?[\s\S]+?```", "", gemini_response).strip()
-            if not tech_explanation:
-                tech_explanation = "SQL Query executed successfully."
+            tech_explanation = answer.message or "SQL Query executed successfully."
 
             # Step 2 — Generate Business Interpretation based on returned data
             if rows:
@@ -169,7 +139,7 @@ async def chat(req: ChatRequest):
                                 Do NOT explain the SQL query here. Just give the insight.
                                 """
                 try:
-                    business_interpretation = await call_gemini(interp_prompt)
+                    business_interpretation = await generate(interp_prompt)
                 except Exception:
                     business_interpretation = "Data retrieved successfully."
             else:
@@ -194,7 +164,8 @@ async def chat(req: ChatRequest):
 
 {table}"""
 
-            return {
+            plain_summary = business_interpretation
+            result = {
                 "response": response_html,
                 "sql":      sql,
                 "executed": True,
@@ -203,14 +174,77 @@ async def chat(req: ChatRequest):
 
         except Exception as e:
             error_html = f"""
-<div style="margin-bottom:0.75rem">{gemini_response}</div>
+<div style="margin-bottom:0.75rem">{answer.message}</div>
 <div style="margin-top:0.75rem;padding:0.75rem;background:var(--red-bg);border-radius:6px;font-size:0.82rem;color:var(--red);border:1px solid rgba(235,0,140,0.2)">
   <strong>Query execution failed:</strong><br>{str(e)[:200]}
 </div>"""
-            return {"response": error_html, "sql": sql, "executed": False, "error": str(e)}
+            result = {"response": error_html, "sql": sql, "executed": False, "error": str(e)}
 
-    # Pure conversation
-    return {"response": gemini_response, "sql": None, "executed": False}
+    else:
+        # Pure conversation
+        result = {"response": answer.message, "sql": None, "executed": False}
+
+    # Persist this exchange to the session
+    session_store.append_turn(session_id, "user", req.message)
+    session_store.append_turn(session_id, "assistant", plain_summary, html=result["response"])
+
+    # Title the session on its first exchange (unless the user already renamed it)
+    if is_first_exchange and session["title"] == session_store.DEFAULT_TITLE:
+        try:
+            session_store.set_title(session_id, await _generate_title(req.message, plain_summary))
+        except Exception:
+            pass  # keep the default title if titling fails
+
+    updated = session_store.get(session_id)
+    result["session_id"] = session_id
+    result["title"] = updated["title"] if updated else None
+    return result
+
+
+# ─────────────────────────────────────────────────────────────
+# SESSION HISTORY (in-memory)
+# ─────────────────────────────────────────────────────────────
+class RenameRequest(BaseModel):
+    title: str
+
+
+@router.get("/sessions")
+async def list_sessions():
+    return {"sessions": session_store.list_summaries()}
+
+
+@router.post("/sessions")
+async def create_session():
+    session = session_store.create()
+    return {
+        "id":            session["id"],
+        "title":         session["title"],
+        "message_count": 0,
+        "updated_at":    session["updated_at"],
+    }
+
+
+@router.get("/sessions/{session_id}")
+async def get_session(session_id: str):
+    session = session_store.get(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return session
+
+
+@router.patch("/sessions/{session_id}")
+async def rename_session(session_id: str, req: RenameRequest):
+    summary = session_store.rename(session_id, req.title.strip() or session_store.DEFAULT_TITLE)
+    if not summary:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return summary
+
+
+@router.delete("/sessions/{session_id}")
+async def delete_session(session_id: str):
+    if not session_store.delete(session_id):
+        raise HTTPException(status_code=404, detail="Session not found")
+    return {"deleted": True}
 
 
 

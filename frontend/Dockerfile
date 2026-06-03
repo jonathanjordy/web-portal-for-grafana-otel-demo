@@ -1,5 +1,5 @@
 # Stage 1: Scaffolding and building Next.js static files
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy dependency files

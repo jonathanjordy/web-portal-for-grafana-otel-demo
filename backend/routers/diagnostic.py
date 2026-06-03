@@ -367,9 +367,11 @@ Keep the summary concise and actionable. Format it in plain text suitable for a 
         )
 
     if response.status_code != 200:
+        error_detail = f"Gemini API error: {response.status_code} — {response.text}"
+        print(error_detail, flush=True)  # Print to container stdout so user can see it in docker logs
         raise HTTPException(
             status_code=502,
-            detail=f"Gemini API error: {response.status_code} — {response.text[:200]}"
+            detail=error_detail[:200]
         )
 
     result  = response.json()

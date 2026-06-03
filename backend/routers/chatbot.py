@@ -30,8 +30,10 @@ async def call_gemini(prompt: str, history: list[dict] = None, system: str = "")
     # 2. Rehydrate structured conversation turns from conversational history
     if history:
         for turn in history:
+            # Map frontend 'assistant' role to Gemini's expected 'model' role
+            role = "model" if turn.get("role") == "assistant" else turn.get("role", "user")
             contents.append({
-                "role": turn["role"],
+                "role": role,
                 "parts": [{"text": turn["content"]}]
             })
             
@@ -52,9 +54,11 @@ async def call_gemini(prompt: str, history: list[dict] = None, system: str = "")
         )
 
     if response.status_code != 200:
+        error_detail = f"Gemini API error: {response.status_code} — {response.text}"
+        print(error_detail, flush=True)  # Print to container stdout so user can see it in docker logs
         raise HTTPException(
             status_code=502,
-            detail=f"Gemini API error: {response.status_code} — {response.text[:200]}"
+            detail=error_detail[:200]
         )
 
     result = response.json()

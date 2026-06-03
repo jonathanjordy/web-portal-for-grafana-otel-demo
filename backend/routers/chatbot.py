@@ -66,13 +66,22 @@ async def call_gemini(prompt: str, history: list[dict] = None, system: str = "")
 
 
 def extract_sql(text: str) -> str | None:
-    """Extract SQL from a markdown code block or plain text."""
+    """Extract SQL from a markdown code block or plain text, stripping any trailing semicolons."""
+    # Priority 1: SQL inside markdown code blocks
     match = re.search(r"```(?:sql)?\s*(SELECT[\s\S]+?)```", text, re.IGNORECASE)
     if match:
-        return match.group(1).strip()
+        return match.group(1).strip().rstrip(';')
+        
+    # Priority 2: SELECT query ending with a semicolon
     match = re.search(r"(SELECT[\s\S]+?;)", text, re.IGNORECASE)
     if match:
-        return match.group(1).strip()
+        return match.group(1).strip().rstrip(';')
+        
+    # Priority 3: Loose SELECT query to end of text
+    match = re.search(r"(SELECT[\s\S]+)", text, re.IGNORECASE)
+    if match:
+        return match.group(1).strip().rstrip(';')
+        
     return None
 
 

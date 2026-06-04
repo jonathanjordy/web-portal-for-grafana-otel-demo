@@ -1,6 +1,5 @@
 "use client";
 import React from 'react';
-import { X, HelpCircle, FileJson, Info, BookOpen } from 'lucide-react';
 
 export interface InfoModule {
   title: string;
@@ -127,74 +126,25 @@ export default function InfoOverlay({ moduleId, onClose }: InfoOverlayProps) {
   };
 
   return (
-    <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-fade"
-      onClick={onClose}
-    >
-      <div 
-        className="w-full max-w-[650px] bg-surface-card border border-border-medium rounded-2xl shadow-xl overflow-hidden animate-fade-slide-up"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border-subtle bg-surface-hover/30">
-          <div className="flex items-center gap-3">
-            <HelpCircle className="w-6 h-6 text-indosat-magenta" />
-            <h3 className="font-sans text-lg font-extrabold text-text-primary">
-              {content.title}
-            </h3>
-          </div>
-          <button 
-            onClick={onClose}
-            className="w-8 h-8 rounded-lg bg-surface-hover hover:bg-border-subtle flex items-center justify-center text-text-secondary hover:text-text-primary transition-all cursor-pointer border-none"
-          >
-            <X className="w-4 h-4" />
-          </button>
+    <div className="modal-overlay open" onClick={onClose}>
+      <div className="modal" style={{ maxWidth: '650px' }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-head">
+          <span className="modal-title">{content.title}</span>
+          <button className="modal-close" onClick={onClose}>✕</button>
         </div>
-
-        {/* Content Body */}
-        <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-          {/* How it works */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-xs text-indosat-teal uppercase tracking-wider">
-              <Info className="w-4 h-4" />
-              <span>How it works</span>
-            </div>
-            <p className="text-sm text-text-primary leading-relaxed">
-              {content.desc}
-            </p>
+        <div className="modal-body" style={{ gap: '1.25rem', maxHeight: '75vh', overflowY: 'auto' }}>
+          <div className="detail-field">
+            <div className="detail-label">How it works</div>
+            <div className="detail-desc">{content.desc}</div>
           </div>
-
-          {/* How to read the data */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-xs text-indosat-teal uppercase tracking-wider">
-              <BookOpen className="w-4 h-4" />
-              <span>How to read the data</span>
-            </div>
-            <p className="text-sm text-text-secondary leading-relaxed bg-surface-hover/30 p-4 rounded-xl border border-border-subtle">
-              {content.read}
-            </p>
+          <div className="detail-field">
+            <div className="detail-label">How to read the data</div>
+            <div className="detail-desc">{content.read}</div>
           </div>
-
-          {/* Sample Data */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 font-bold text-xs text-indosat-teal uppercase tracking-wider">
-              <FileJson className="w-4 h-4" />
-              <span>Sample Data / Format</span>
-            </div>
-            <pre className="text-xs bg-text-primary text-slate-100 p-4 rounded-xl font-mono leading-relaxed overflow-x-auto border border-border-medium max-h-[220px]">
-              {content.sample}
-            </pre>
+          <div className="detail-field">
+            <div className="detail-label">Sample Data (JSON / Format)</div>
+            <div className="code-block" style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', maxHeight: '250px', overflowY: 'auto' }}>{content.sample}</div>
           </div>
-        </div>
-
-        {/* Footer */}
-        <div className="px-6 py-4 border-t border-border-subtle bg-surface-hover/30 flex justify-end">
-          <button
-            onClick={onClose}
-            className="px-5 py-2 rounded-lg bg-indosat-teal text-white hover:bg-indosat-teal/95 font-bold text-xs tracking-wider uppercase transition-all shadow-md shadow-status-ok/10 cursor-pointer border-none"
-          >
-            Got it
-          </button>
         </div>
       </div>
     </div>

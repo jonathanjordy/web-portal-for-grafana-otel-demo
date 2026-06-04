@@ -1,19 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  ShieldAlert, 
-  Plus, 
-  User, 
-  Clock, 
-  FileText, 
-  X, 
-  CheckCircle2, 
-  AlertTriangle 
-} from 'lucide-react';
-import { Incident, ActivityLog } from '../types/otel';
+import { Incident } from '../types/otel';
 
-// Original static incident seeds from the codebase
 const INITIAL_INCIDENTS: Incident[] = [
   { 
     id: 'INC-001', 
@@ -157,19 +146,13 @@ const INITIAL_INCIDENTS: Incident[] = [
   }
 ];
 
-interface IncidentRegistryProps {
-  apiBase: string;
-}
-
-export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
+export default function IncidentRegistry() {
   const [incidents, setIncidents] = useState<Incident[]>(INITIAL_INCIDENTS);
-  const [filter, setFilter] = useState<'all' | 'active' | 'investigating' | 'resolved'>('all');
-  
-  // Modals visibility state
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [currentFilter, setCurrentFilter] = useState('all');
   const [selectedInc, setSelectedInc] = useState<Incident | null>(null);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // Form Fields State
+  // Form states
   const [formTitle, setFormTitle] = useState('');
   const [formService, setFormService] = useState('order-service');
   const [formSeverity, setFormSeverity] = useState<'critical' | 'high' | 'medium' | 'low'>('medium');
@@ -177,7 +160,10 @@ export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
   const [formDesc, setFormDesc] = useState('');
   const [formTitleError, setFormTitleError] = useState(false);
 
-  // Calculation Stats
+  const filteredIncidents = currentFilter === 'all' 
+    ? incidents 
+    : incidents.filter(i => i.status === currentFilter);
+
   const activeCount = incidents.filter(i => i.status === 'active').length;
   const investigatingCount = incidents.filter(i => i.status === 'investigating').length;
   const resolvedCount = incidents.filter(i => i.status === 'resolved').length;
@@ -187,24 +173,19 @@ export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
       if (inc.id === id) {
         const now = new Date();
         const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-        const updatedActivity = [
-          ...inc.activity,
-          { time: timeStr, dot: 'green' as const, text: 'Marked as resolved' }
-        ];
         return {
           ...inc,
-          status: 'resolved' as const,
-          opened: `${inc.opened} → resolved ${timeStr}`,
-          activity: updatedActivity
+          status: 'resolved',
+          opened: inc.opened.includes('→ resolved') ? inc.opened : `${inc.opened} → resolved ${timeStr}`
         };
       }
       return inc;
     }));
-    
-    // Auto-update selected incident detail if currently open
-    if (selectedInc?.id === id) {
-      setSelectedInc(prev => prev ? { ...prev, status: 'resolved', activity: [...prev.activity, { time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }), dot: 'green', text: 'Marked as resolved' }] } : null);
-    }
+  };
+
+  const handleResolveFromDetail = (id: string) => {
+    handleResolve(id);
+    setSelectedInc(null);
   };
 
   const handleCreateIncident = () => {
@@ -212,11 +193,11 @@ export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
       setFormTitleError(true);
       return;
     }
-    
+
     const now = new Date();
     const dateStr = now.toLocaleDateString('id-ID', { year: 'numeric', month: '2-digit', day: '2-digit' }).split('/').reverse().join('-');
     const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-    const timestamp = `${dateStr} ${timeStr}`;
+    const ts = `${dateStr} ${timeStr}`;
 
     const newId = `INC-${String(incidents.length + 1).padStart(3, '0')}`;
     const newInc: Incident = {
@@ -225,166 +206,122 @@ export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
       service: formService,
       severity: formSeverity,
       status: 'active',
-      opened: timestamp,
+      opened: ts,
       assignee: formAssignee.trim() || 'Unassigned',
       desc: formDesc.trim(),
-      activity: [
-        { time: timeStr, dot: 'red', text: 'Incident opened manually' }
-      ]
+      activity: []
     };
 
     setIncidents(prev => [newInc, ...prev]);
-    
-    // Clear Form & Close
+    setIsCreateOpen(false);
+    setCurrentFilter('all');
+
+    // Reset Form
     setFormTitle('');
+    setFormService('order-service');
+    setFormSeverity('medium');
     setFormAssignee('');
     setFormDesc('');
     setFormTitleError(false);
-    setIsCreateOpen(false);
-    setFilter('all');
-  };
-
-  const filteredIncidents = filter === 'all' 
-    ? incidents 
-    : incidents.filter(i => i.status === filter);
-
-  const getSeverityBadgeColor = (sev: string) => {
-    switch (sev) {
-      case 'critical': return 'bg-status-error-bg text-indosat-magenta border border-indosat-magenta/20';
-      case 'high': return 'bg-status-warning-bg text-status-warning border border-status-warning/40';
-      case 'medium': return 'bg-status-ok-bg text-indosat-teal';
-      case 'low': default: return 'bg-surface-hover text-text-secondary';
-    }
-  };
-
-  const getStatusBadgeColor = (stat: string) => {
-    switch (stat) {
-      case 'active': return 'bg-status-error-bg text-indosat-magenta';
-      case 'investigating': return 'bg-status-warning-bg text-status-warning';
-      case 'resolved': default: return 'bg-status-ok-bg text-indosat-teal';
-    }
-  };
-
-  const getTimelineDotColor = (dot: string) => {
-    switch (dot) {
-      case 'red': return 'bg-indosat-magenta shadow-[0_0_6px_var(--color-indosat-magenta)]';
-      case 'amber': return 'bg-status-warning';
-      case 'green': return 'bg-indosat-teal shadow-[0_0_6px_var(--color-indosat-teal)]';
-      case 'blue': default: return 'bg-indosat-teal';
-    }
   };
 
   return (
-    <div className="space-y-5 animate-fade select-none">
-      {/* Filters & Trigger */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex gap-2">
-          {(['all', 'active', 'investigating', 'resolved'] as const).map((opt) => (
-            <button
-              key={opt}
-              onClick={() => setFilter(opt)}
-              className={`px-4 py-1.5 rounded-lg text-xs font-bold border transition-all cursor-pointer capitalize ${
-                filter === opt
-                  ? 'bg-indosat-magenta border-indosat-magenta text-white shadow-sm shadow-status-error/15'
-                  : 'bg-surface-card border-border-subtle text-text-secondary hover:bg-surface-hover hover:text-text-primary'
-              }`}
-            >
-              {opt}
-            </button>
-          ))}
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', gap: '1rem', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '0.6rem' }}>
+          <button 
+            className={`filter-btn ${currentFilter === 'all' ? 'active' : ''}`}
+            onClick={() => setCurrentFilter('all')}
+          >
+            All
+          </button>
+          <button 
+            className={`filter-btn ${currentFilter === 'active' ? 'active' : ''}`}
+            onClick={() => setCurrentFilter('active')}
+          >
+            Active
+          </button>
+          <button 
+            className={`filter-btn ${currentFilter === 'investigating' ? 'active' : ''}`}
+            onClick={() => setCurrentFilter('investigating')}
+          >
+            Investigating
+          </button>
+          <button 
+            className={`filter-btn ${currentFilter === 'resolved' ? 'active' : ''}`}
+            onClick={() => setCurrentFilter('resolved')}
+          >
+            Resolved
+          </button>
         </div>
-        <button
-          onClick={() => setIsCreateOpen(true)}
-          className="px-4 py-2 bg-indosat-teal text-white hover:bg-indosat-teal/90 rounded-lg text-xs font-bold flex items-center gap-2 cursor-pointer hover:-translate-y-[1px] shadow-sm transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          New Incident
-        </button>
+        <button className="btn" onClick={() => setIsCreateOpen(true)}>+ New Incident</button>
       </div>
 
-      {/* Summary Row */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 select-none">
-        <div className="glass-panel p-4.5 bg-surface-card">
-          <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Active</span>
-          <span className="text-2xl font-extrabold text-indosat-magenta">{activeCount}</span>
-          <span className="text-[11px] font-semibold text-text-tertiary block mt-1">require SRE triage</span>
+      <div className="stat-row" style={{ marginBottom: '1.5rem' }}>
+        <div className="stat">
+          <div className="stat-label">Active</div>
+          <div className="stat-value red">{activeCount}</div>
+          <div className="stat-sub">require attention</div>
         </div>
-        <div className="glass-panel p-4.5 bg-surface-card">
-          <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Investigating</span>
-          <span className="text-2xl font-extrabold text-status-warning">{investigatingCount}</span>
-          <span className="text-[11px] font-semibold text-text-tertiary block mt-1">active taskforce</span>
+        <div className="stat">
+          <div className="stat-label">Investigating</div>
+          <div className="stat-value amber">{investigatingCount}</div>
+          <div className="stat-sub">in progress</div>
         </div>
-        <div className="glass-panel p-4.5 bg-surface-card">
-          <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Resolved Today</span>
-          <span className="text-2xl font-extrabold text-indosat-teal">{resolvedCount}</span>
-          <span className="text-[11px] font-semibold text-text-tertiary block mt-1">closed cases</span>
+        <div className="stat">
+          <div className="stat-label">Resolved today</div>
+          <div className="stat-value green">{resolvedCount}</div>
+          <div className="stat-sub">closed incidents</div>
         </div>
-        <div className="glass-panel p-4.5 bg-surface-card">
-          <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Avg MTTR</span>
-          <span className="text-2xl font-extrabold text-text-primary">42m</span>
-          <span className="text-[11px] font-semibold text-text-tertiary block mt-1">last 7 days SLA</span>
+        <div className="stat">
+          <div className="stat-label">Avg resolution time</div>
+          <div className="stat-value">42m</div>
+          <div className="stat-sub">last 7 days</div>
         </div>
       </div>
 
-      {/* Registry Incidents Panel */}
-      <div className="glass-panel">
-        <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between bg-surface-hover/20 select-none">
-          <span className="font-bold text-sm text-text-primary">All Registered Incidents</span>
-          <span className="text-xs font-bold text-text-tertiary">
-            Showing {filteredIncidents.length} incident{filteredIncidents.length !== 1 ? 's' : ''}
-          </span>
+      <div className="panel">
+        <div className="panel-head">
+          <span className="panel-title">All incidents</span>
+          <span className="panel-meta">Showing {filteredIncidents.length} incident{filteredIncidents.length !== 1 ? 's' : ''}</span>
         </div>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-            <thead className="bg-surface-hover/30 text-text-tertiary uppercase select-none">
+        <div style={{ overflowX: 'auto' }}>
+          <table className="inc-table">
+            <thead>
               <tr>
-                <th className="px-4 py-2.5 text-left tracking-wider">ID</th>
-                <th className="px-4 py-2.5 text-left tracking-wider">Incident Title</th>
-                <th className="px-4 py-2.5 text-left tracking-wider">Service Scope</th>
-                <th className="px-4 py-2.5 text-left tracking-wider">Severity</th>
-                <th className="px-4 py-2.5 text-left tracking-wider">Status</th>
-                <th className="px-4 py-2.5 text-left tracking-wider">Opened</th>
-                <th className="px-4 py-2.5 text-left tracking-wider">Assignee</th>
-                <th className="px-4 py-2.5 text-right tracking-wider">Action</th>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Service</th>
+                <th>Severity</th>
+                <th>Status</th>
+                <th>Opened</th>
+                <th>Assignee</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary">
-              {filteredIncidents.map((inc) => (
-                <tr
-                  key={inc.id}
-                  onClick={() => setSelectedInc(inc)}
-                  className="hover:bg-surface-hover/40 cursor-pointer transition-colors"
-                >
-                  <td className="px-4 py-3.5 font-mono text-text-tertiary">{inc.id}</td>
-                  <td className="px-4 py-3.5 font-bold text-text-primary text-[12.5px] truncate max-w-[220px]">
-                    {inc.title}
-                  </td>
-                  <td className="px-4 py-3.5">Scope: {inc.service}</td>
-                  <td className="px-4 py-3.5 select-none">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${getSeverityBadgeColor(inc.severity)}`}>
-                      {inc.severity}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 select-none">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${getStatusBadgeColor(inc.status)}`}>
-                      {inc.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 text-text-tertiary whitespace-nowrap font-mono">{inc.opened}</td>
-                  <td className={`px-4 py-3.5 ${inc.assignee === 'Unassigned' ? 'text-text-tertiary' : 'text-text-secondary'}`}>
-                    {inc.assignee}
-                  </td>
-                  <td className="px-4 py-3.5 text-right select-none" onClick={(e) => e.stopPropagation()}>
+            <tbody>
+              {filteredIncidents.map(inc => (
+                <tr key={inc.id} style={{ cursor: 'pointer' }} onClick={() => setSelectedInc(inc)}>
+                  <td><span className="inc-id">{inc.id}</span></td>
+                  <td><span className="inc-title">{inc.title}</span></td>
+                  <td>{inc.service}</td>
+                  <td><span className={`sev-badge sev-${inc.severity}`}>{inc.severity}</span></td>
+                  <td><span className={`status-badge-sm status-${inc.status}`}>{inc.status}</span></td>
+                  <td style={{ whiteSpace: 'nowrap', color: 'var(--text-3)', fontSize: '0.8rem' }}>{inc.opened}</td>
+                  <td style={{ color: inc.assignee === 'Unassigned' ? 'var(--text-3)' : 'var(--text-2)' }}>{inc.assignee}</td>
+                  <td>
                     {inc.status !== 'resolved' ? (
-                      <button
-                        onClick={() => handleResolve(inc.id)}
-                        className="text-indosat-teal hover:text-indosat-teal/80 font-extrabold underline underline-offset-4 cursor-pointer text-xs"
+                      <button 
+                        className="inc-action" 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleResolve(inc.id);
+                        }}
                       >
                         Resolve
                       </button>
                     ) : (
-                      <span className="text-text-tertiary">Closed</span>
+                      <span style={{ color: 'var(--text-3)', fontSize: '0.8rem' }}>Closed</span>
                     )}
                   </td>
                 </tr>
@@ -394,63 +331,116 @@ export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
         </div>
       </div>
 
-      {/* MODAL 1: CREATE NEW INCIDENT */}
-      {isCreateOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-          <div className="bg-surface-card border border-border-subtle rounded-2xl shadow-xl w-full max-w-[500px] overflow-hidden animate-fade">
-            {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
-              <span className="font-extrabold text-sm text-text-primary flex items-center gap-1.5">
-                <ShieldAlert className="w-5 h-5 text-indosat-magenta" />
-                Report New Operational Incident
-              </span>
-              <button
-                onClick={() => setIsCreateOpen(false)}
-                className="w-7 h-7 rounded-full bg-surface-hover hover:bg-border-medium text-text-secondary hover:text-text-primary flex items-center justify-center cursor-pointer transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+      {/* modal detail */}
+      {selectedInc && (
+        <div className="modal-overlay open" onClick={() => setSelectedInc(null)}>
+          <div className="modal" style={{ maxWidth: '580px' }} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span className="inc-id" style={{ fontSize: '0.85rem' }}>{selectedInc.id}</span>
+                <span className="modal-title">{selectedInc.title}</span>
+              </div>
+              <button className="modal-close" onClick={() => setSelectedInc(null)}>✕</button>
             </div>
+            <div className="modal-body" style={{ gap: '1.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                <div className="detail-field">
+                  <div className="detail-label">Service</div>
+                  <div className="detail-value">{selectedInc.service}</div>
+                </div>
+                <div className="detail-field">
+                  <div className="detail-label">Severity</div>
+                  <div><span className={`sev-badge sev-${selectedInc.severity}`}>{selectedInc.severity}</span></div>
+                </div>
+                <div className="detail-field">
+                  <div className="detail-label">Status</div>
+                  <div><span className={`status-badge-sm status-${selectedInc.status}`}>{selectedInc.status}</span></div>
+                </div>
+                <div className="detail-field">
+                  <div className="detail-label">Assignee</div>
+                  <div className="detail-value">{selectedInc.assignee}</div>
+                </div>
+                <div className="detail-field" style={{ gridColumn: 'span 2' }}>
+                  <div className="detail-label">Opened</div>
+                  <div className="detail-value">{selectedInc.opened}</div>
+                </div>
+              </div>
+              <div className="detail-field">
+                <div className="detail-label">Description</div>
+                <div className="detail-desc">{selectedInc.desc || 'No description provided.'}</div>
+              </div>
+              <div className="detail-field">
+                <div className="detail-label">Activity log</div>
+                <div className="activity-log">
+                  {selectedInc.activity && selectedInc.activity.length > 0 ? (
+                    selectedInc.activity.map((a, i) => (
+                      <div className="activity-item" key={i}>
+                        <span className="activity-time">{a.time}</span>
+                        <div className={`activity-dot ${a.dot}`}></div>
+                        <span>{a.text}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <span style={{ color: 'var(--text-3)', fontSize: '0.85rem' }}>No activity yet.</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="modal-foot">
+              {selectedInc.status !== 'resolved' ? (
+                <>
+                  <button className="btn btn-ghost" onClick={() => setSelectedInc(null)}>Close</button>
+                  <button className="btn" onClick={() => handleResolveFromDetail(selectedInc.id)}>Mark as resolved</button>
+                </>
+              ) : (
+                <button className="btn" onClick={() => setSelectedInc(null)}>Close</button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
-            {/* Modal Body */}
-            <div className="p-5 space-y-4 text-xs font-semibold">
-              <div className="flex flex-col gap-1.5">
-                <label className="text-text-secondary">Incident Title</label>
-                <input
-                  type="text"
+      {/* modal create */}
+      {isCreateOpen && (
+        <div className="modal-overlay open" onClick={() => setIsCreateOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-head">
+              <span className="modal-title">New Incident</span>
+              <button className="modal-close" onClick={() => setIsCreateOpen(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <div className="form-group">
+                <label>Title</label>
+                <input 
+                  type="text" 
                   value={formTitle}
                   onChange={(e) => {
                     setFormTitle(e.target.value);
                     if (e.target.value) setFormTitleError(false);
                   }}
-                  placeholder="e.g. Stripe checkout gateway rejecting API requests"
-                  className={`px-3 py-2 border rounded-lg bg-bg-main outline-none focus:border-indosat-teal transition-all text-text-primary ${
-                    formTitleError ? 'border-indosat-magenta' : 'border-border-medium'
-                  }`}
+                  style={{ borderColor: formTitleError ? 'var(--red)' : '' }}
+                  placeholder="Brief description of the incident"
                 />
               </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-text-secondary">Service Scope</label>
-                  <select
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Service</label>
+                  <select 
                     value={formService}
                     onChange={(e) => setFormService(e.target.value)}
-                    className="px-3 py-2 border border-border-medium rounded-lg bg-bg-main outline-none focus:border-indosat-teal text-text-secondary"
                   >
                     <option value="order-service">order-service</option>
                     <option value="inventory-service">inventory-service</option>
                     <option value="payment-service">payment-service</option>
-                    <option value="node / infrastructure">node / infrastructure Scope</option>
+                    <option value="node / infrastructure">node / infrastructure</option>
                     <option value="multiple services">multiple services</option>
                   </select>
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-text-secondary">Severity Code</label>
-                  <select
+                <div className="form-group">
+                  <label>Severity</label>
+                  <select 
                     value={formSeverity}
-                    onChange={(e) => setFormSeverity(e.target.value as any)}
-                    className="px-3 py-2 border border-border-medium rounded-lg bg-bg-main outline-none focus:border-indosat-teal text-text-secondary"
+                    onChange={(e) => setFormSeverity(e.target.value as 'critical' | 'high' | 'medium' | 'low')}
                   >
                     <option value="critical">Critical</option>
                     <option value="high">High</option>
@@ -459,160 +449,28 @@ export default function IncidentRegistry({ apiBase }: IncidentRegistryProps) {
                   </select>
                 </div>
               </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-text-secondary">Assignee Operator</label>
-                <input
-                  type="text"
+              <div className="form-group">
+                <label>Assignee</label>
+                <input 
+                  type="text" 
                   value={formAssignee}
                   onChange={(e) => setFormAssignee(e.target.value)}
-                  placeholder="e.g. Siti N."
-                  className="px-3 py-2 border border-border-medium rounded-lg bg-bg-main outline-none focus:border-indosat-teal text-text-primary"
+                  placeholder="Who is handling this?"
                 />
               </div>
-
-              <div className="flex flex-col gap-1.5">
-                <label className="text-text-secondary">Brief Description</label>
-                <textarea
+              <div className="form-group">
+                <label>Description</label>
+                <textarea 
+                  rows={3} 
                   value={formDesc}
                   onChange={(e) => setFormDesc(e.target.value)}
-                  rows={3}
-                  placeholder="Identify telemetry findings, metric anomalies, or error payloads..."
-                  className="px-3 py-2 border border-border-medium rounded-lg bg-bg-main outline-none focus:border-indosat-teal text-text-primary resize-none font-medium"
+                  placeholder="What is happening? Any initial findings?"
                 />
               </div>
             </div>
-
-            {/* Modal Footer */}
-            <div className="px-5 py-4 border-t border-border-subtle bg-surface-hover/20 flex justify-end gap-3 select-none">
-              <button
-                onClick={() => setIsCreateOpen(false)}
-                className="px-4 py-2 border border-border-medium rounded-lg hover:bg-surface-hover text-text-secondary cursor-pointer font-bold"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCreateIncident}
-                className="px-4 py-2 bg-indosat-teal text-white hover:bg-indosat-teal/90 rounded-lg cursor-pointer font-bold"
-              >
-                Create Incident
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 2: VIEW INCIDENT DETAIL & TIMELINE */}
-      {selectedInc && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4">
-          <div className="bg-surface-card border border-border-subtle rounded-2xl shadow-xl w-full max-w-[580px] overflow-hidden animate-fade">
-            {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="font-mono text-xs font-bold text-text-tertiary bg-bg-main px-2 py-0.5 border border-border-subtle rounded">
-                  {selectedInc.id}
-                </span>
-                <span className="font-extrabold text-sm text-text-primary leading-tight max-w-[340px] truncate" title={selectedInc.title}>
-                  {selectedInc.title}
-                </span>
-              </div>
-              <button
-                onClick={() => setSelectedInc(null)}
-                className="w-7 h-7 rounded-full bg-surface-hover hover:bg-border-medium text-text-secondary hover:text-text-primary flex items-center justify-center cursor-pointer transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Modal Body */}
-            <div className="p-5 space-y-4 max-h-[65vh] overflow-y-auto text-xs font-semibold select-text">
-              {/* Grid Meta Details */}
-              <div className="grid grid-cols-2 gap-x-4 gap-y-3 pb-3 border-b border-border-subtle">
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Service Scope</span>
-                  <span className="text-text-secondary text-xs">{selectedInc.service}</span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Assignee Operator</span>
-                  <span className="text-text-secondary text-xs flex items-center gap-1">
-                    <User className="w-3.5 h-3.5 text-text-tertiary" />
-                    {selectedInc.assignee}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Severity Code</span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase w-fit select-none ${getSeverityBadgeColor(selectedInc.severity)}`}>
-                    {selectedInc.severity}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-0.5">
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Status Scope</span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase w-fit select-none ${getStatusBadgeColor(selectedInc.status)}`}>
-                    {selectedInc.status}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-0.5 col-span-2">
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider">Opened Lifecycle</span>
-                  <span className="text-text-secondary font-mono text-xs flex items-center gap-1 select-none">
-                    <Clock className="w-3.5 h-3.5 text-text-tertiary" />
-                    {selectedInc.opened}
-                  </span>
-                </div>
-              </div>
-
-              {/* Description Panel */}
-              <div className="flex flex-col gap-1 bg-surface-hover/35 border border-border-subtle p-3.5 rounded-xl">
-                <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider flex items-center gap-1 select-none">
-                  <FileText className="w-3.5 h-3.5 text-text-tertiary" />
-                  Incident Log Description
-                </span>
-                <span className="text-text-secondary text-xs font-medium leading-relaxed">
-                  {selectedInc.desc || 'No description logged.'}
-                </span>
-              </div>
-
-              {/* Activity Timeline */}
-              <div className="flex flex-col gap-2.5">
-                <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider select-none">
-                  SRE Activity Audit Log
-                </span>
-                
-                {selectedInc.activity && selectedInc.activity.length > 0 ? (
-                  <div className="relative border-l border-border-medium pl-4 ml-2.5 py-1.5 space-y-4">
-                    {selectedInc.activity.map((act, idx) => (
-                      <div key={idx} className="relative flex items-start gap-3">
-                        {/* Timeline Node Dot */}
-                        <span className={`absolute -left-[20.5px] top-1 w-2.5 h-2.5 rounded-full select-none ${getTimelineDotColor(act.dot)}`} />
-                        <span className="text-[10px] font-extrabold text-text-tertiary font-mono pt-0.5 select-none">{act.time}</span>
-                        <span className="text-text-secondary font-medium leading-relaxed">{act.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-text-tertiary text-xs italic select-none">No timeline audit events logged yet.</span>
-                )}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="px-5 py-4 border-t border-border-subtle bg-surface-hover/20 flex justify-end gap-3 select-none">
-              <button
-                onClick={() => setSelectedInc(null)}
-                className="px-4 py-2 border border-border-medium rounded-lg hover:bg-surface-hover text-text-secondary cursor-pointer font-bold"
-              >
-                Close Window
-              </button>
-              {selectedInc.status !== 'resolved' && (
-                <button
-                  onClick={() => {
-                    handleResolve(selectedInc.id);
-                  }}
-                  className="px-4 py-2 bg-indosat-teal hover:bg-indosat-teal/90 text-white rounded-lg cursor-pointer font-bold flex items-center gap-1.5"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  Mark Resolved
-                </button>
-              )}
+            <div className="modal-foot">
+              <button className="btn btn-ghost" onClick={() => setIsCreateOpen(false)}>Cancel</button>
+              <button className="btn" onClick={handleCreateIncident}>Create incident</button>
             </div>
           </div>
         </div>

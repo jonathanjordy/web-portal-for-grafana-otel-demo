@@ -1,11 +1,11 @@
 import React from 'react';
 
-export type StatCardColor = 'default' | 'teal' | 'yellow' | 'magenta' | 'green' | 'amber' | 'red';
+export type StatCardColor = 'default' | 'teal' | 'yellow' | 'magenta' | 'green' | 'amber' | 'red' | 'blue';
 
 interface StatCardProps {
   label: string;
   value: string | number;
-  subText: string;
+  subText: string | React.ReactNode;
   color?: StatCardColor;
 }
 
@@ -14,32 +14,27 @@ export default function StatCard({ label, value, subText, color = 'default' }: S
     switch (color) {
       case 'teal':
       case 'green':
-        return 'text-indosat-teal';
+      case 'blue':
+        return 'green'; // both map to var(--green)
       case 'magenta':
       case 'red':
-        return 'text-indosat-magenta';
+        return 'red'; // maps to var(--red)
       case 'yellow':
       case 'amber':
-        return 'text-status-warning';
+        return 'amber'; // maps to var(--amber)
       case 'default':
       default:
-        return 'text-text-primary';
+        return '';
     }
   };
 
+  const valClass = getColorClass();
+
   return (
-    <div className="glass-panel p-5 hover:border-border-medium hover:shadow-md transition-all duration-150 flex flex-col justify-between select-none">
-      <div>
-        <div className="text-[10px] font-bold text-text-tertiary tracking-wider uppercase mb-1">
-          {label}
-        </div>
-        <div className={`font-sans text-3xl font-extrabold tracking-tight ${getColorClass()}`}>
-          {value}
-        </div>
-      </div>
-      <div className="text-xs font-semibold text-text-tertiary mt-2">
-        {subText}
-      </div>
+    <div className="stat">
+      <div className="stat-label">{label}</div>
+      <div className={`stat-value ${valClass}`}>{value}</div>
+      <div className="stat-sub">{subText}</div>
     </div>
   );
 }

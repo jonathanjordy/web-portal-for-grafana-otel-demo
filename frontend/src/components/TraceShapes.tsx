@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Info, Cpu, Network, CheckCircle2, Copy } from 'lucide-react';
 import { TraceShapeResponse } from '../types/otel';
 
 interface TraceShapesProps {
@@ -44,20 +43,17 @@ export default function TraceShapes({ apiBase, onShowInfo }: TraceShapesProps) {
   };
 
   return (
-    <div className="glass-panel mb-5">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border-subtle flex flex-wrap items-center justify-between gap-4 bg-surface-hover/20 select-none">
+    <div className="panel">
+      <div className="panel-head">
         <div>
-          <span className="font-bold text-sm text-text-primary block">Trace Shape Anomaly Detection</span>
-          <span className="text-[11px] font-semibold text-text-tertiary">
-            Fingerprints each trace&apos;s span structure — flags deviations (loops, omissions) from baseline
-          </span>
+          <div className="panel-title">Trace shape anomaly detection</div>
+          <div className="panel-meta">Fingerprints each trace&apos;s span structure — flags deviations from baseline</div>
         </div>
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <select
             value={hours}
             onChange={(e) => setHours(e.target.value)}
-            className="text-xs px-2.5 py-1.5 border border-border-medium rounded-md font-semibold bg-bg-main text-text-secondary outline-none focus:border-indosat-teal transition-all"
+            className="select-sm"
           >
             <option value="1">Last 1h</option>
             <option value="2">Last 2h</option>
@@ -66,135 +62,130 @@ export default function TraceShapes({ apiBase, onShowInfo }: TraceShapesProps) {
           <button
             onClick={fetchTraceShapes}
             disabled={loading}
-            className="px-3 py-1.5 rounded-md text-xs font-bold bg-indosat-teal text-white hover:bg-indosat-teal/90 disabled:opacity-50 hover:-translate-y-[1px] transition-all cursor-pointer shadow-sm"
+            className="btn-sm"
           >
             {loading ? 'Analyzing...' : 'Analyse traces'}
           </button>
           <button
             onClick={() => onShowInfo('traces')}
-            className="w-6 h-6 rounded-full border border-border-medium bg-surface-card hover:bg-indosat-teal hover:border-indosat-teal hover:text-white flex items-center justify-center cursor-pointer transition-all duration-150"
+            className="btn-info"
             title="How this works"
           >
-            <Info className="w-3.5 h-3.5" />
+            i
           </button>
         </div>
       </div>
-
-      {/* Body */}
-      <div className="p-5">
-        {errorText ? (
-          <div className="text-center text-status-error font-semibold text-sm py-4">{errorText}</div>
-        ) : loading ? (
-          <div className="flex flex-col items-center justify-center py-12 select-none">
-            <div className="w-8 h-8 border-4 border-indosat-teal border-t-transparent rounded-full animate-spin mb-3" />
-            <div className="text-xs font-bold text-text-secondary">
-              Mapping child trace relationships and computing topological structural signatures...
-            </div>
+      <div className="panel-body">
+        {loading && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            Fingerprinting trace shapes...
           </div>
-        ) : data ? (
-          <div className="animate-fade">
-            {/* Summary Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5 select-none">
-              <div className="glass-panel p-3.5 bg-bg-main/50 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-surface-card border border-border-subtle text-text-secondary">
-                  <Network className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Total Traces</span>
-                  <span className="text-lg font-extrabold text-text-primary">{data.total_traces}</span>
-                </div>
+        )}
+
+        {!loading && errorText && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none', color: 'var(--red)' }}>
+            {errorText}
+          </div>
+        )}
+
+        {!loading && !errorText && !data && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            Click &quot;Analyse traces&quot; to fingerprint trace shapes.
+          </div>
+        )}
+
+        {!loading && !errorText && data && (
+          <div>
+            <div className="stat-row" style={{ marginBottom: '1rem' }}>
+              <div className="stat">
+                <div className="stat-label">Total traces</div>
+                <div className="stat-value">{data.total_traces}</div>
               </div>
-              <div className="glass-panel p-3.5 bg-bg-main/50 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-surface-card border border-border-subtle text-indosat-teal bg-status-ok-bg">
-                  <Cpu className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Unique Shapes</span>
-                  <span className="text-lg font-extrabold text-indosat-teal">{data.unique_shapes}</span>
-                </div>
+              <div className="stat">
+                <div className="stat-label">Unique shapes</div>
+                <div className="stat-value blue">{data.unique_shapes}</div>
               </div>
-              <div className="glass-panel p-3.5 bg-bg-main/50 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-surface-card border border-border-subtle text-indosat-magenta bg-status-error-bg">
-                  <span className="text-xs font-bold">⚠</span>
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Anomalous Traces</span>
-                  <span className={`text-lg font-extrabold ${data.anomalous_count > 0 ? 'text-indosat-magenta' : 'text-text-primary'}`}>
-                    {data.anomalous_count}
-                  </span>
-                </div>
+              <div className="stat">
+                <div className="stat-label">Anomalous traces</div>
+                <div className="stat-value red">{data.anomalous_count}</div>
               </div>
-              <div className="glass-panel p-3.5 bg-bg-main/50 flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-surface-card border border-border-subtle text-indosat-teal bg-status-ok-bg">
-                  <CheckCircle2 className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-bold text-text-tertiary uppercase tracking-wider block">Baseline Coverage</span>
-                  <span className="text-lg font-extrabold text-indosat-teal">{data.baseline_pct}%</span>
-                </div>
+              <div className="stat">
+                <div className="stat-label">Baseline coverage</div>
+                <div className="stat-value green">{data.baseline_pct}%</div>
               </div>
             </div>
 
-            {/* Shape table */}
-            <div className="overflow-x-auto border border-border-subtle rounded-lg">
-              <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-                <thead className="bg-surface-hover/30 text-text-tertiary select-none">
+            <div style={{ overflowX: 'auto' }}>
+              <table className="det-table">
+                <thead>
                   <tr>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Topology Shape (Spans x Call Counts)</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Count</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">%</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Deviation Type</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Example Trace IDs</th>
+                    <th>Shape</th>
+                    <th>Count</th>
+                    <th>%</th>
+                    <th>Deviation</th>
+                    <th>Example trace IDs</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary">
-                  {data.shape_summary.slice(0, 10).map((shape, idx) => (
-                    <tr key={idx} className="hover:bg-surface-hover/30 transition-colors">
-                      <td className="px-4 py-3 max-w-[280px] font-mono text-text-primary text-[11px] truncate cursor-help select-all" title={shape.fingerprint}>
-                        {shape.fingerprint}
+                <tbody>
+                  {data.shape_summary.slice(0, 10).map((s, idx) => (
+                    <tr key={idx}>
+                      <td
+                        style={{
+                          maxWidth: '260px',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          fontFamily: 'monospace',
+                          fontSize: '0.72rem',
+                          cursor: 'help'
+                        }}
+                        title={s.fingerprint}
+                      >
+                        {s.fingerprint}
                       </td>
-                      <td className="px-4 py-3 font-bold select-none">{shape.count}</td>
-                      <td className="px-4 py-3 text-text-tertiary select-none">{shape.pct_of_total}%</td>
-                      <td className="px-4 py-3 select-none">
-                        {shape.is_baseline ? (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-status-ok-bg text-indosat-teal border border-indosat-teal/10">
-                            baseline
-                          </span>
-                        ) : shape.deviation_type ? (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-status-error-bg text-indosat-magenta border border-indosat-magenta/10">
-                            {shape.deviation_type.replace(/_/g, ' ')}
-                          </span>
+                      <td>{s.count}</td>
+                      <td style={{ color: 'var(--text-3)' }}>{s.pct_of_total}%</td>
+                      <td>
+                        {s.is_baseline ? (
+                          <span className="tag green">baseline</span>
+                        ) : s.deviation_type ? (
+                          <span className="tag red">{s.deviation_type.replace(/_/g, ' ')}</span>
                         ) : (
-                          <span className="text-text-tertiary">—</span>
+                          <span className="tag">—</span>
                         )}
                       </td>
-                      <td className="px-4 py-3 select-none">
-                        <div className="flex flex-col gap-1.5">
-                          {shape.example_traces.map((tid, tIdx) => (
-                            <div key={tIdx} className="flex items-center gap-2">
-                              <span className="font-mono text-[10px] text-text-tertiary">{tid}</span>
+                      <td>
+                        {s.example_traces && s.example_traces.length > 0 ? (
+                          s.example_traces.map((tid, tIdx) => (
+                            <div key={tIdx} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '3px' }}>
+                              <span style={{ fontFamily: 'monospace', fontSize: '0.72rem', color: 'var(--text-3)' }}>{tid}</span>
                               <button
                                 onClick={() => handleCopyText(tid)}
-                                className={`px-1.5 py-0.5 rounded border border-border-subtle text-[9px] font-bold transition-all flex items-center gap-1 cursor-pointer hover:bg-surface-hover ${
-                                  copiedId === tid ? 'text-indosat-teal border-indosat-teal/30 bg-status-ok-bg' : 'text-text-tertiary'
-                                }`}
+                                title="Copy trace ID"
+                                style={{
+                                  background: 'none',
+                                  border: '1px solid var(--border)',
+                                  borderRadius: '4px',
+                                  padding: '1px 5px',
+                                  fontSize: '0.65rem',
+                                  cursor: 'pointer',
+                                  color: 'var(--text-3)',
+                                  fontFamily: 'var(--sans)'
+                                }}
                               >
-                                <Copy className="w-2.5 h-2.5" />
                                 {copiedId === tid ? 'copied' : 'copy'}
                               </button>
                             </div>
-                          ))}
-                        </div>
+                          ))
+                        ) : (
+                          <span>—</span>
+                        )}
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
-          </div>
-        ) : (
-          <div className="border-2 border-dashed border-border-medium rounded-xl py-10 text-center text-text-tertiary font-semibold text-xs select-none">
-            Click &quot;Analyse traces&quot; to fingerprint span topological shapes.
           </div>
         )}
       </div>

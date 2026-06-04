@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Info, Network, AlertCircle, ShieldAlert } from 'lucide-react';
 import { CausalGraphResponse } from '../types/otel';
 
 interface DependencyGraphProps {
@@ -83,20 +82,17 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
   };
 
   return (
-    <div className="glass-panel mb-5">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border-subtle flex flex-wrap items-center justify-between gap-4 bg-surface-hover/20 select-none">
+    <div className="panel">
+      <div className="panel-head">
         <div>
-          <span className="font-bold text-sm text-text-primary block">Service Dependency Graph</span>
-          <span className="text-[11px] font-semibold text-text-tertiary">
-            Constructed from distributed trace parenting topologies — pinpointing root cause propagation origins
-          </span>
+          <div className="panel-title">Service dependency graph</div>
+          <div className="panel-meta">Built from trace parent-child relationships — highlights root cause service</div>
         </div>
-        <div className="flex items-center gap-3">
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <select
             value={hours}
             onChange={(e) => setHours(e.target.value)}
-            className="text-xs px-2.5 py-1.5 border border-border-medium rounded-md font-semibold bg-bg-main text-text-secondary outline-none focus:border-indosat-teal transition-all"
+            className="select-sm"
           >
             <option value="1">Last 1h</option>
             <option value="3">Last 3h</option>
@@ -105,48 +101,71 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
           <button
             onClick={fetchGraph}
             disabled={loading}
-            className="px-3 py-1.5 rounded-md text-xs font-bold bg-indosat-teal text-white hover:bg-indosat-teal/90 disabled:opacity-50 hover:-translate-y-[1px] transition-all cursor-pointer shadow-sm"
+            className="btn-sm"
           >
             {loading ? 'Building map...' : 'Build graph'}
           </button>
           <button
             onClick={() => onShowInfo('graph')}
-            className="w-6 h-6 rounded-full border border-border-medium bg-surface-card hover:bg-indosat-teal hover:border-indosat-teal hover:text-white flex items-center justify-center cursor-pointer transition-all duration-150"
+            className="btn-info"
             title="How this works"
           >
-            <Info className="w-3.5 h-3.5" />
+            i
           </button>
         </div>
       </div>
 
-      {/* Body */}
-      <div className="p-5">
-        {errorText ? (
-          <div className="text-center text-status-error font-semibold text-sm py-4">{errorText}</div>
-        ) : loading ? (
-          <div className="flex flex-col items-center justify-center py-12 select-none">
-            <div className="w-8 h-8 border-4 border-indosat-teal border-t-transparent rounded-full animate-spin mb-3" />
-            <div className="text-xs font-bold text-text-secondary">
-              Querying distributed trace graphs & assembling causal dependency matrices...
-            </div>
+      <div className="panel-body">
+        {loading && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            Building dependency graph from traces...
           </div>
-        ) : data ? (
-          <div className="animate-fade">
-            {/* SVG Visualizer */}
-            <div ref={containerRef} className="w-full bg-surface-hover/30 rounded-xl mb-5 overflow-hidden border border-border-subtle relative h-[260px]">
-              <svg width="100%" height={dimensions.height} viewBox={`0 0 ${dimensions.width} ${dimensions.height}`} xmlns="http://www.w3.org/2000/svg" className="absolute top-0 left-0">
+        )}
+
+        {!loading && errorText && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none', color: 'var(--red)' }}>
+            {errorText}
+          </div>
+        )}
+
+        {!loading && !errorText && !data && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            Click &quot;Build graph&quot; to generate the live service dependency map.
+          </div>
+        )}
+
+        {!loading && !errorText && data && (
+          <div id="graph-wrap">
+            <div
+              id="graph-canvas"
+              style={{
+                background: 'var(--surface2)',
+                borderRadius: '10px',
+                minHeight: '260px',
+                position: 'relative',
+                overflow: 'hidden',
+                marginBottom: '1rem'
+              }}
+              ref={containerRef}
+            >
+              <svg
+                width="100%"
+                height={dimensions.height}
+                viewBox={`0 0 ${dimensions.width} ${dimensions.height}`}
+                xmlns="http://www.w3.org/2000/svg"
+              >
                 {/* Defs for arrow markers */}
                 <defs>
                   <marker
                     id="arr"
                     viewBox="0 0 10 10"
-                    refX="22" // Offset slightly to stop on edge of circle
+                    refX="8"
                     refY="5"
-                    markerWidth="5"
-                    markerHeight="5"
+                    markerWidth="6"
+                    markerHeight="6"
                     orient="auto-start-reverse"
                   >
-                    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" strokeWidth="2" />
+                    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" strokeWidth="1.5" />
                   </marker>
                 </defs>
 
@@ -158,7 +177,7 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
                   
                   const strokeColor = getEdgeColor(edge.error_rate);
                   const mx = (s.x + t.x) / 2;
-                  const my = (s.y + t.y) / 2 - 35; // Curve height
+                  const my = (s.y + t.y) / 2 - 30; // Curve height
 
                   return (
                     <g key={`edge-${idx}`}>
@@ -167,15 +186,14 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
                         fill="none"
                         stroke={strokeColor}
                         strokeWidth="2"
-                        strokeOpacity="0.75"
+                        strokeOpacity="0.6"
                         markerEnd="url(#arr)"
                       />
                       <text
                         x={mx}
-                        y={my - 8}
+                        y={my - 6}
                         textAnchor="middle"
                         fontSize="10"
-                        fontWeight="bold"
                         fill={strokeColor}
                         fontFamily="Nunito"
                       >
@@ -192,54 +210,39 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
 
                   const color = getStatusColor(node.status);
                   const isRoot = node.id === data.root_cause;
-                  const radius = isRoot ? 34 : 26;
+                  const radius = isRoot ? 36 : 28;
 
                   return (
                     <g key={node.id} className="select-none pointer-events-none">
                       {/* Outer concentric pulsing ring for root cause */}
-                      {isRoot && (
-                        <>
-                          <circle
-                            cx={p.x}
-                            cy={p.y}
-                            r={40}
-                            fill="none"
-                            stroke={color}
-                            strokeWidth="1.5"
-                            strokeDasharray="4 3"
-                            className="animate-pulse"
-                            opacity="0.6"
-                          />
-                          <circle
-                            cx={p.x}
-                            cy={p.y}
-                            r={46}
-                            fill="none"
-                            stroke={color}
-                            strokeWidth="0.75"
-                            strokeDasharray="2 4"
-                            opacity="0.3"
-                          />
-                        </>
-                      )}
-
-                      {/* Main Circle */}
                       <circle
                         cx={p.x}
                         cy={p.y}
                         r={radius}
-                        fill={`${color}12`}
+                        fill={`${color}22`}
                         stroke={color}
                         strokeWidth={isRoot ? 3 : 1.5}
                       />
+                      {isRoot && (
+                        <circle
+                          cx={p.x}
+                          cy={p.y}
+                          r={42}
+                          fill="none"
+                          stroke={color}
+                          strokeWidth="1"
+                          strokeDasharray="4 3"
+                          opacity="0.5"
+                        />
+                      )}
 
                       {/* Text details */}
                       <text
                         x={p.x}
-                        y={p.y - 3}
+                        y={p.y - 4}
                         textAnchor="middle"
-                        fontSize="10.5"
-                        fontWeight="800"
+                        fontSize="11"
+                        fontWeight="700"
                         fill={color}
                         fontFamily="Nunito"
                       >
@@ -247,10 +250,9 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
                       </text>
                       <text
                         x={p.x}
-                        y={p.y + 10}
+                        y={p.y + 11}
                         textAnchor="middle"
-                        fontSize="9.5"
-                        fontWeight="bold"
+                        fontSize="10"
                         fill={color}
                         fontFamily="Nunito"
                       >
@@ -261,15 +263,14 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
                       {isRoot && (
                         <text
                           x={p.x}
-                          y={p.y + 55}
+                          y={p.y + 58}
                           textAnchor="middle"
-                          fontSize="9.5"
-                          fontWeight="800"
+                          fontSize="10"
+                          fontWeight="700"
                           fill={color}
                           fontFamily="Nunito"
-                          className="uppercase tracking-widest animate-pulse"
                         >
-                          ⚠ Root Cause
+                          ⚠ root cause
                         </text>
                       )}
                     </g>
@@ -279,43 +280,38 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
             </div>
 
             {/* Nodes metrics table */}
-            <div className="overflow-x-auto border border-border-subtle rounded-lg">
-              <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-                <thead className="bg-surface-hover/30 text-text-tertiary select-none">
+            <div id="graph-nodes-wrap" style={{ overflowX: 'auto' }}>
+              <table className="det-table" style={{ marginTop: '0.5rem' }}>
+                <thead>
                   <tr>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Service Node</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Calls</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Errors</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Error Rate</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">Avg Latency</th>
-                    <th className="px-4 py-2.5 text-left uppercase tracking-wider">System Status</th>
+                    <th>Service</th>
+                    <th>Calls</th>
+                    <th>Errors</th>
+                    <th>Error rate</th>
+                    <th>Avg latency</th>
+                    <th>Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary">
+                <tbody>
                   {data.nodes.map((node) => {
                     const isRoot = node.id === data.root_cause;
                     return (
-                      <tr key={node.id} className="hover:bg-surface-hover/30 transition-colors">
-                        <td className="px-4 py-3 font-bold text-text-primary flex items-center gap-1.5">
-                          {isRoot && <ShieldAlert className="w-4 h-4 text-indosat-magenta animate-pulse" />}
-                          {node.id}
-                        </td>
-                        <td className="px-4 py-3 select-none">{node.calls}</td>
-                        <td className="px-4 py-3 select-none">{node.errors}</td>
-                        <td className="px-4 py-3 select-none">
-                          <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${node.error_rate > 10 ? 'bg-status-error-bg text-indosat-magenta' : node.error_rate > 2 ? 'bg-status-warning-bg text-status-warning' : 'bg-status-ok-bg text-indosat-teal'}`}>
+                      <tr key={node.id}>
+                        <td style={{ fontWeight: 700 }}>{node.id}</td>
+                        <td>{node.calls}</td>
+                        <td>{node.errors}</td>
+                        <td>
+                          <span className={`tag ${node.error_rate > 10 ? 'red' : node.error_rate > 2 ? 'amber' : 'green'}`}>
                             {node.error_rate}%
                           </span>
                         </td>
-                        <td className="px-4 py-3 select-none">{node.avg_duration_ms.toFixed(1)}ms</td>
-                        <td className="px-4 py-3 flex items-center gap-1.5 select-none">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${node.status === 'error' ? 'bg-status-error-bg text-indosat-magenta' : node.status === 'degraded' ? 'bg-status-warning-bg text-status-warning' : 'bg-status-ok-bg text-indosat-teal'}`}>
+                        <td>{node.avg_duration_ms.toFixed(0)}ms</td>
+                        <td>
+                          <span className={`tag ${node.status === 'error' ? 'red' : node.status === 'degraded' ? 'amber' : 'green'}`}>
                             {node.status}
                           </span>
                           {isRoot && (
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-status-error-bg text-indosat-magenta border border-indosat-magenta/10 font-extrabold uppercase animate-pulse">
-                              root cause
-                            </span>
+                            <span className="tag red">root cause</span>
                           )}
                         </td>
                       </tr>
@@ -324,10 +320,6 @@ export default function DependencyGraph({ apiBase, onShowInfo }: DependencyGraph
                 </tbody>
               </table>
             </div>
-          </div>
-        ) : (
-          <div className="border-2 border-dashed border-border-medium rounded-xl py-10 text-center text-text-tertiary font-semibold text-xs select-none">
-            Click &quot;Build graph&quot; to compile and generate the live distributed service dependency map.
           </div>
         )}
       </div>

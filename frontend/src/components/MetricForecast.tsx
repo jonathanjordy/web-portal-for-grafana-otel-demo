@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import { Info } from 'lucide-react';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -133,7 +132,7 @@ export default function MetricForecast({
         display: true,
         position: 'top',
         labels: {
-          font: { family: 'Nunito', size: 11, weight: 'bold' },
+          font: { family: 'Nunito', size: 11 },
           color: '#8f8f8f',
           boxWidth: 10
         }
@@ -159,68 +158,83 @@ export default function MetricForecast({
         },
         ticks: {
           color: '#8f8f8f',
-          font: { family: 'Nunito', size: 11, weight: 'bold' },
+          font: { family: 'Nunito', size: 10 },
           maxRotation: 0
         },
-        grid: { color: 'rgba(0,0,0,0.03)' }
+        grid: { color: 'rgba(0,0,0,0.04)' }
       },
       y: {
         title: {
           display: true,
           text: yAxisLabel,
           color: '#8f8f8f',
-          font: { family: 'Nunito', size: 11, weight: 'bold' }
+          font: { family: 'Nunito', size: 11 }
         },
         ticks: {
           color: '#8f8f8f',
-          font: { family: 'Nunito', size: 11, weight: 'bold' }
+          font: { family: 'Nunito', size: 11 }
         },
-        grid: { color: 'rgba(0,0,0,0.03)' }
+        grid: { color: 'rgba(0,0,0,0.04)' }
       }
     }
   };
 
   return (
-    <div className="glass-panel mb-5">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border-subtle flex items-center justify-between gap-4 bg-surface-hover/20 select-none">
-        <span className="font-bold text-sm text-text-primary">{title}</span>
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-text-tertiary">{statusText}</span>
-          <button
-            onClick={fetchForecast}
+    <div className="panel">
+      <div className="panel-head">
+        <span className="panel-title">{title}</span>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+          <span className="panel-meta">{statusText}</span>
+          <button 
+            className="btn-sm" 
+            onClick={fetchForecast} 
             disabled={loading}
-            className="px-3 py-1.5 rounded-md text-xs font-bold bg-indosat-teal text-white hover:bg-indosat-teal/90 disabled:opacity-50 hover:-translate-y-[1px] transition-all cursor-pointer shadow-sm active:translate-y-0"
           >
             {loading ? 'Running...' : 'Run forecast'}
           </button>
-          <button
-            onClick={() => onShowInfo(type)}
-            className="w-6 h-6 rounded-full border border-border-medium bg-surface-card hover:bg-indosat-teal hover:border-indosat-teal hover:text-white flex items-center justify-center cursor-pointer transition-all duration-150"
+          <button 
+            className="btn-info" 
+            onClick={() => onShowInfo(type)} 
             title="How this works"
           >
-            <Info className="w-3.5 h-3.5" />
+            i
           </button>
         </div>
       </div>
-
-      {/* Body */}
-      <div className="p-5 min-h-[180px] flex flex-col justify-center">
+      <div className="panel-body">
         {errorText ? (
-          <div className="text-center text-status-error font-semibold text-sm py-4">{errorText}</div>
+          <div className="empty" style={{ padding: '1.5rem', border: 'none', color: 'var(--red)' }}>
+            {errorText}
+          </div>
         ) : loading ? (
-          <div className="flex flex-col items-center justify-center py-10 select-none">
-            <div className="w-8 h-8 border-4 border-indosat-teal border-t-transparent rounded-full animate-spin mb-3" />
-            <div className="text-xs font-bold text-text-secondary">
-              Fitting Prophet time-series model on ClickHouse history...
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+              <div 
+                style={{ 
+                  border: '4px solid rgba(36, 188, 173, 0.2)', 
+                  borderTop: '4px solid var(--indosat-teal)', 
+                  borderRadius: '50%', 
+                  width: '32px', 
+                  height: '32px',
+                  animation: 'spin 1s linear infinite',
+                  marginBottom: '12px'
+                }} 
+              />
+              <style jsx global>{`
+                @keyframes spin {
+                  0% { transform: rotate(0deg); }
+                  100% { transform: rotate(360deg); }
+                }
+              `}</style>
+              <div>Fitting Prophet time-series model on ClickHouse history...</div>
             </div>
           </div>
         ) : data && chartData ? (
-          <div className="h-[220px] w-full">
+          <div style={{ height: '260px', maxHeight: '260px', width: '100%' }}>
             <Line data={chartData as any} options={chartOptions as any} />
           </div>
         ) : (
-          <div className="border-2 border-dashed border-border-medium rounded-xl py-10 text-center text-text-tertiary font-semibold text-xs select-none">
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
             {placeholderText}
           </div>
         )}

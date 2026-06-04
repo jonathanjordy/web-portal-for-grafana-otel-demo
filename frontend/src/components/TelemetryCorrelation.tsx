@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Info, Copy, Clock, AlertTriangle, AlertCircle, BarChart3 } from 'lucide-react';
 import { TelemetryCorrelationResponse } from '../types/otel';
 
 interface TelemetryCorrelationProps {
@@ -45,21 +44,49 @@ export default function TelemetryCorrelation({ apiBase, onShowInfo }: TelemetryC
     });
   };
 
+  const renderSection = (title: string, rows: any[], cols: string[], renderRow: (r: any, i: number) => React.ReactNode) => (
+    <div style={{ marginBottom: '1.25rem' }}>
+      <div
+        style={{
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          color: 'var(--text-3)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          marginBottom: '0.5rem'
+        }}
+      >
+        {title} ({rows.length})
+      </div>
+      {rows.length > 0 ? (
+        <table className="det-table">
+          <thead>
+            <tr>
+              {cols.map((c, i) => (
+                <th key={i}>{c}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>{rows.map(renderRow)}</tbody>
+        </table>
+      ) : (
+        <div style={{ color: 'var(--text-3)', fontSize: '0.82rem' }}>None found.</div>
+      )}
+    </div>
+  );
+
   return (
-    <div className="glass-panel mb-5">
-      {/* Header */}
-      <div className="px-5 py-4 border-b border-border-subtle flex flex-wrap items-center justify-between gap-4 bg-surface-hover/20 select-none">
+    <div className="panel">
+      <div className="panel-head">
         <div>
-          <span className="font-bold text-sm text-text-primary block">Telemetry Correlation Engine</span>
-          <span className="text-[11px] font-semibold text-text-tertiary">
-            Correlates slowest execution spans, application error logs, and metric totals in a single temporal window
-          </span>
+          <div className="panel-title">Telemetry correlation engine</div>
+          <div className="panel-meta">Slowest traces · error logs · metric spikes — all in one view</div>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <select
             value={service}
             onChange={(e) => setService(e.target.value)}
-            className="text-xs px-2.5 py-1.5 border border-border-medium rounded-md font-semibold bg-bg-main text-text-secondary outline-none focus:border-indosat-teal transition-all"
+            className="select-sm"
           >
             <option value="">All services</option>
             <option value="order-service">order-service</option>
@@ -69,7 +96,7 @@ export default function TelemetryCorrelation({ apiBase, onShowInfo }: TelemetryC
           <select
             value={hours}
             onChange={(e) => setHours(e.target.value)}
-            className="text-xs px-2.5 py-1.5 border border-border-medium rounded-md font-semibold bg-bg-main text-text-secondary outline-none focus:border-indosat-teal transition-all"
+            className="select-sm"
           >
             <option value="1">Last 1h</option>
             <option value="3">Last 3h</option>
@@ -78,242 +105,183 @@ export default function TelemetryCorrelation({ apiBase, onShowInfo }: TelemetryC
           <button
             onClick={fetchCorrelation}
             disabled={loading}
-            className="px-3 py-1.5 rounded-md text-xs font-bold bg-indosat-teal text-white hover:bg-indosat-teal/90 disabled:opacity-50 hover:-translate-y-[1px] transition-all cursor-pointer shadow-sm"
+            className="btn-sm"
           >
             {loading ? 'Correlating...' : 'Correlate'}
           </button>
           <button
             onClick={() => onShowInfo('correlate')}
-            className="w-6 h-6 rounded-full border border-border-medium bg-surface-card hover:bg-indosat-teal hover:border-indosat-teal hover:text-white flex items-center justify-center cursor-pointer transition-all duration-150"
+            className="btn-info"
             title="How this works"
           >
-            <Info className="w-3.5 h-3.5" />
+            i
           </button>
         </div>
       </div>
 
-      {/* Body */}
-      <div className="p-5">
-        {errorText ? (
-          <div className="text-center text-status-error font-semibold text-sm py-4">{errorText}</div>
-        ) : loading ? (
-          <div className="flex flex-col items-center justify-center py-12 select-none">
-            <div className="w-8 h-8 border-4 border-indosat-teal border-t-transparent rounded-full animate-spin mb-3" />
-            <div className="text-xs font-bold text-text-secondary">
-              Querying traces, metrics, and logs in ClickHouse for aligned temporal bounds...
-            </div>
+      <div className="panel-body">
+        {loading && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            Correlating telemetry signals...
           </div>
-        ) : data ? (
-          <div className="space-y-6 animate-fade">
-            {/* 1. Slowest Traces */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 select-none text-text-primary">
-                <Clock className="w-4 h-4 text-text-tertiary" />
-                <span className="text-xs font-bold uppercase tracking-wider">Slowest Spans ({data.slow_traces.length})</span>
-              </div>
-              {data.slow_traces.length > 0 ? (
-                <div className="overflow-x-auto border border-border-subtle rounded-lg">
-                  <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-                    <thead className="bg-surface-hover/30 text-text-tertiary select-none">
-                      <tr>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Trace ID</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Service</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Span Name</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Duration</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">OTel Status</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary">
-                      {data.slow_traces.map((trace, idx) => (
-                        <tr key={idx} className="hover:bg-surface-hover/30 transition-colors">
-                          <td className="px-4 py-2 font-mono text-[10px] text-text-tertiary">
-                            <div className="flex items-center gap-1.5">
-                              <span>{trace.TraceId.slice(0, 16)}…</span>
-                              <button
-                                onClick={() => handleCopyText(trace.TraceId)}
-                                className={`px-1 py-0.5 rounded border border-border-subtle text-[8px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                                  copiedId === trace.TraceId ? 'text-indosat-teal border-indosat-teal/30 bg-status-ok-bg' : 'text-text-tertiary'
-                                }`}
-                              >
-                                {copiedId === trace.TraceId ? 'copied' : 'copy'}
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2">
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-bg-main border border-border-subtle font-bold">
-                              {trace.ServiceName}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 font-mono text-text-primary text-[11px]">{trace.SpanName}</td>
-                          <td className="px-4 py-2 select-none">
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${Number(trace.Duration) / 1e6 > 1000 ? 'bg-status-error-bg text-indosat-magenta' : 'bg-status-warning-bg text-status-warning'}`}>
-                              {(Number(trace.Duration) / 1e6).toFixed(0)}ms
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 select-none">
-                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${trace.StatusCode === 'STATUS_CODE_ERROR' ? 'bg-status-error-bg text-indosat-magenta' : 'bg-status-ok-bg text-indosat-teal'}`}>
-                              {trace.StatusCode === 'STATUS_CODE_ERROR' ? 'error' : 'ok'}
-                            </span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-xs font-bold text-text-tertiary py-1 text-center border-b border-border-subtle pb-3">None found.</div>
-              )}
-            </div>
+        )}
 
-            {/* 2. Error Traces */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 select-none text-text-primary">
-                <AlertTriangle className="w-4 h-4 text-indosat-magenta" />
-                <span className="text-xs font-bold uppercase tracking-wider">Error Traces ({data.error_traces.length})</span>
-              </div>
-              {data.error_traces.length > 0 ? (
-                <div className="overflow-x-auto border border-border-subtle rounded-lg">
-                  <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-                    <thead className="bg-surface-hover/30 text-text-tertiary select-none">
-                      <tr>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Trace ID</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Service</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Failed Span</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Timestamp</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary">
-                      {data.error_traces.map((trace, idx) => (
-                        <tr key={idx} className="hover:bg-surface-hover/30 transition-colors">
-                          <td className="px-4 py-2 font-mono text-[10px] text-text-tertiary">
-                            <div className="flex items-center gap-1.5">
-                              <span>{trace.TraceId.slice(0, 16)}…</span>
-                              <button
-                                onClick={() => handleCopyText(trace.TraceId)}
-                                className={`px-1 py-0.5 rounded border border-border-subtle text-[8px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                                  copiedId === trace.TraceId ? 'text-indosat-teal border-indosat-teal/30 bg-status-ok-bg' : 'text-text-tertiary'
-                                }`}
-                              >
-                                {copiedId === trace.TraceId ? 'copied' : 'copy'}
-                              </button>
-                            </div>
-                          </td>
-                          <td className="px-4 py-2">
-                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-status-error-bg text-indosat-magenta border border-indosat-magenta/10 font-bold">
-                              {trace.ServiceName}
-                            </span>
-                          </td>
-                          <td className="px-4 py-2 font-mono text-text-primary text-[11px]">{trace.SpanName}</td>
-                          <td className="px-4 py-2 text-text-tertiary select-none font-mono">
-                            {String(trace.Timestamp).replace('T', ' ').slice(0, 16)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-xs font-bold text-text-tertiary py-1 text-center border-b border-border-subtle pb-3">None found.</div>
-              )}
-            </div>
-
-            {/* 3. Error Logs */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 select-none text-text-primary">
-                <AlertCircle className="w-4 h-4 text-indosat-magenta" />
-                <span className="text-xs font-bold uppercase tracking-wider">Error Logs ({data.error_logs.length})</span>
-              </div>
-              {data.error_logs.length > 0 ? (
-                <div className="overflow-x-auto border border-border-subtle rounded-lg">
-                  <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-                    <thead className="bg-surface-hover/30 text-text-tertiary select-none">
-                      <tr>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Trace Link</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Service</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Log Message (Body)</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Time</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary font-semibold">
-                      {data.error_logs.map((log, idx) => (
-                        <tr key={idx} className="hover:bg-surface-hover/30 transition-colors">
-                          <td className="px-4 py-2 font-mono text-[10px] text-text-tertiary">
-                            {log.TraceId ? (
-                              <div className="flex items-center gap-1.5">
-                                <span>{log.TraceId.slice(0, 16)}…</span>
-                                <button
-                                  onClick={() => handleCopyText(log.TraceId!)}
-                                  className={`px-1 py-0.5 rounded border border-border-subtle text-[8px] font-bold transition-all flex items-center gap-1 cursor-pointer ${
-                                    copiedId === log.TraceId ? 'text-indosat-teal border-indosat-teal/30 bg-status-ok-bg' : 'text-text-tertiary'
-                                  }`}
-                                >
-                                  {copiedId === log.TraceId ? 'copied' : 'copy'}
-                                </button>
-                              </div>
-                            ) : (
-                              <span className="text-text-tertiary">—</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-2">
-                            {log.service_name ? (
-                              <span className="px-1.5 py-0.5 rounded text-[10px] bg-status-error-bg text-indosat-magenta border border-indosat-magenta/10 font-bold">
-                                {log.service_name}
-                              </span>
-                            ) : (
-                              <span className="text-text-tertiary">—</span>
-                            )}
-                          </td>
-                          <td className="px-4 py-2 text-text-primary text-[11px] max-w-[320px] truncate select-all" title={log.Body}>
-                            {log.Body}
-                          </td>
-                          <td className="px-4 py-2 text-text-tertiary select-none font-mono whitespace-nowrap">
-                            {String(log.Timestamp).replace('T', ' ').slice(0, 16)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-xs font-bold text-text-tertiary py-1 text-center border-b border-border-subtle pb-3">None found.</div>
-              )}
-            </div>
-
-            {/* 4. Metric Totals */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 select-none text-text-primary">
-                <BarChart3 className="w-4 h-4 text-text-tertiary" />
-                <span className="text-xs font-bold uppercase tracking-wider">Metric Totals ({data.metric_summary.length})</span>
-              </div>
-              {data.metric_summary.length > 0 ? (
-                <div className="overflow-x-auto border border-border-subtle rounded-lg">
-                  <table className="min-w-full divide-y divide-border-subtle text-xs font-semibold">
-                    <thead className="bg-surface-hover/30 text-text-tertiary select-none">
-                      <tr>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Metric Name</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Total Sum / Count</th>
-                        <th className="px-4 py-2 text-left uppercase tracking-wider">Avg Rate Per Minute</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-border-subtle bg-surface-card text-text-secondary">
-                      {data.metric_summary.map((metric, idx) => (
-                        <tr key={idx} className="hover:bg-surface-hover/30 transition-colors">
-                          <td className="px-4 py-2 font-mono text-text-primary text-[11.5px]">{metric.MetricName}</td>
-                          <td className="px-4 py-2 font-bold text-text-primary select-none">{Number(metric.total).toFixed(0)}</td>
-                          <td className="px-4 py-2 text-text-tertiary select-none">{(Number(metric.avg_val) || 0).toFixed(2)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-xs font-bold text-text-tertiary py-1 text-center border-b border-border-subtle pb-3">None found.</div>
-              )}
-            </div>
+        {!loading && errorText && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none', color: 'var(--red)' }}>
+            {errorText}
           </div>
-        ) : (
-          <div className="border-2 border-dashed border-border-medium rounded-xl py-10 text-center text-text-tertiary font-semibold text-xs select-none">
-            Click &quot;Correlate&quot; to surface aligned traces, error logs, and metric anomalies side-by-side.
+        )}
+
+        {!loading && !errorText && !data && (
+          <div className="empty" style={{ padding: '1.5rem', border: 'none' }}>
+            Click &quot;Correlate&quot; to surface the slowest traces, error logs, and metric anomalies side by side.
+          </div>
+        )}
+
+        {!loading && !errorText && data && (
+          <div id="corr-wrap">
+            {renderSection(
+              'Slowest traces',
+              data.slow_traces,
+              ['Trace ID', 'Service', 'Span', 'Duration', 'Status'],
+              (r, idx) => (
+                <tr key={idx}>
+                  <td style={{ fontFamily: 'monospace', fontSize: '0.72rem' }}>
+                    {r.TraceId.slice(0, 16)}…
+                    <button
+                      onClick={() => handleCopyText(r.TraceId)}
+                      style={{
+                        background: 'none',
+                        border: '1px solid var(--border)',
+                        borderRadius: '4px',
+                        padding: '1px 4px',
+                        fontSize: '0.62rem',
+                        cursor: 'pointer',
+                        color: 'var(--text-3)',
+                        marginLeft: '4px'
+                      }}
+                    >
+                      {copiedId === r.TraceId ? 'copied' : 'copy'}
+                    </button>
+                  </td>
+                  <td>
+                    <span className="tag">{r.ServiceName}</span>
+                  </td>
+                  <td style={{ fontSize: '0.78rem' }}>{r.SpanName}</td>
+                  <td>
+                    <span className={`tag ${Number(r.Duration) / 1e6 > 1000 ? 'red' : 'amber'}`}>
+                      {(Number(r.Duration) / 1e6).toFixed(0)}ms
+                    </span>
+                  </td>
+                  <td>
+                    <span className={`tag ${r.StatusCode === 'STATUS_CODE_ERROR' ? 'red' : 'green'}`}>
+                      {r.StatusCode === 'STATUS_CODE_ERROR' ? 'error' : 'ok'}
+                    </span>
+                  </td>
+                </tr>
+              )
+            )}
+
+            {renderSection(
+              'Error traces',
+              data.error_traces,
+              ['Trace ID', 'Service', 'Span', 'Timestamp'],
+              (r, idx) => (
+                <tr key={idx}>
+                  <td style={{ fontFamily: 'monospace', fontSize: '0.72rem' }}>
+                    {r.TraceId.slice(0, 16)}…
+                    <button
+                      onClick={() => handleCopyText(r.TraceId)}
+                      style={{
+                        background: 'none',
+                        border: '1px solid var(--border)',
+                        borderRadius: '4px',
+                        padding: '1px 4px',
+                        fontSize: '0.62rem',
+                        cursor: 'pointer',
+                        color: 'var(--text-3)',
+                        marginLeft: '4px'
+                      }}
+                    >
+                      {copiedId === r.TraceId ? 'copied' : 'copy'}
+                    </button>
+                  </td>
+                  <td>
+                    <span className="tag red">{r.ServiceName}</span>
+                  </td>
+                  <td style={{ fontSize: '0.78rem' }}>{r.SpanName}</td>
+                  <td style={{ fontSize: '0.75rem', color: 'var(--text-3)' }}>
+                    {String(r.Timestamp).slice(0, 16)}
+                  </td>
+                </tr>
+              )
+            )}
+
+            {renderSection(
+              'Error logs',
+              data.error_logs,
+              ['Trace ID', 'Service', 'Message', 'Time'],
+              (r, idx) => (
+                <tr key={idx}>
+                  <td style={{ fontFamily: 'monospace', fontSize: '0.72rem' }}>
+                    {r.TraceId ? (
+                      <>
+                        <span style={{ color: 'var(--text-3)' }}>{r.TraceId.slice(0, 16)}…</span>
+                        <button
+                          onClick={() => handleCopyText(r.TraceId)}
+                          style={{
+                            background: 'none',
+                            border: '1px solid var(--border)',
+                            borderRadius: '4px',
+                            padding: '1px 4px',
+                            cursor: 'pointer',
+                            color: 'var(--text-3)',
+                            marginLeft: '4px'
+                          }}
+                        >
+                          {copiedId === r.TraceId ? 'copied' : 'copy'}
+                        </button>
+                      </>
+                    ) : (
+                      <span style={{ color: 'var(--text-3)' }}>—</span>
+                    )}
+                  </td>
+                  <td>
+                    <span className="tag red">{r.service_name || '—'}</span>
+                  </td>
+                  <td
+                    style={{
+                      fontSize: '0.78rem',
+                      maxWidth: '300px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                    title={r.Body}
+                  >
+                    {r.Body}
+                  </td>
+                  <td style={{ fontSize: '0.75rem', color: 'var(--text-3)', whiteSpace: 'nowrap' }}>
+                    {String(r.Timestamp).slice(0, 16)}
+                  </td>
+                </tr>
+              )
+            )}
+
+            {renderSection(
+              'Metric totals',
+              data.metric_summary,
+              ['Metric', 'Total', 'Avg per min'],
+              (r, idx) => (
+                <tr key={idx}>
+                  <td>
+                    <span className="tag">{r.MetricName}</span>
+                  </td>
+                  <td style={{ fontWeight: 700 }}>{Number(r.total).toFixed(0)}</td>
+                  <td style={{ color: 'var(--text-3)' }}>{(Number(r.avg_val) || 0).toFixed(2)}</td>
+                </tr>
+              )
+            )}
           </div>
         )}
       </div>

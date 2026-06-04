@@ -1,11 +1,6 @@
+"use client";
+
 import React from 'react';
-import { 
-  TrendingUp, 
-  Search, 
-  Activity, 
-  MessageSquareCode, 
-  ShieldAlert 
-} from 'lucide-react';
 import { HealthState } from '../hooks/useHealthCheck';
 
 interface SidebarProps {
@@ -15,17 +10,6 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ currentPage, onPageChange, health }: SidebarProps) {
-  const navItems = [
-    { id: 'predictive', label: 'Predictive', group: 'Analytics', icon: TrendingUp },
-    { id: 'detective', label: 'Detective', group: 'Analytics', icon: Search },
-    { id: 'diagnostic', label: 'Diagnostic', group: 'Analytics', icon: Activity },
-    { id: 'chatbot', label: 'AIOps Chat', group: 'Assistant', icon: MessageSquareCode },
-    { id: 'incidents', label: 'Incident Registry', group: 'Operations', icon: ShieldAlert },
-  ];
-
-  // Group items
-  const groups = Array.from(new Set(navItems.map(item => item.group)));
-
   const getHealthText = () => {
     switch (health) {
       case 'ok': return 'ClickHouse connected';
@@ -35,65 +19,97 @@ export default function Sidebar({ currentPage, onPageChange, health }: SidebarPr
     }
   };
 
-  const getHealthDotColor = () => {
+  const getHealthDotClass = () => {
     switch (health) {
-      case 'ok': return 'bg-status-ok shadow-[0_0_8px_var(--color-indosat-teal)]';
-      case 'error': return 'bg-status-error shadow-[0_0_8px_var(--color-indosat-magenta)]';
-      case 'unreachable': return 'bg-status-error shadow-[0_0_8px_var(--color-indosat-magenta)]';
-      case 'checking': default: return 'bg-text-tertiary animate-pulse';
+      case 'ok': return 'dot ok';
+      case 'error': return 'dot error';
+      case 'unreachable': return 'dot error';
+      case 'checking': default: return 'dot';
     }
   };
 
   return (
-    <aside className="w-[260px] bg-surface-card border-r border-border-subtle flex flex-col h-full flex-shrink-0">
-      {/* Brand Wordmark */}
-      <div className="p-7 border-b border-border-subtle">
-        <div className="font-sans text-2xl font-extrabold text-indosat-magenta tracking-tight leading-none select-none">
+    <aside>
+      <div className="sidebar-top">
+        <div className="wordmark">
           AIOps Portal
-          <span className="block text-xs font-semibold text-text-tertiary tracking-wider mt-1.5 uppercase">
-            Observability Intelligence
-          </span>
+          <span>Observability Intelligence</span>
         </div>
       </div>
-
-      {/* Navigation Groups */}
-      <div className="flex-1 overflow-y-auto py-4">
-        {groups.map(group => (
-          <div key={group} className="mb-6 px-4">
-            <div className="text-[10px] font-bold text-text-tertiary tracking-widest uppercase px-3 mb-2">
-              {group}
-            </div>
-            <nav className="space-y-1">
-              {navItems
-                .filter(item => item.group === group)
-                .map(item => {
-                  const Icon = item.icon;
-                  const isActive = currentPage === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => onPageChange(item.id)}
-                      className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-150 text-left cursor-pointer select-none ${
-                        isActive
-                          ? 'bg-indosat-magenta text-white shadow-md shadow-status-error/15'
-                          : 'text-text-secondary hover:bg-surface-hover hover:text-text-primary'
-                      }`}
-                    >
-                      <Icon className={`w-4.5 h-4.5 flex-shrink-0 transition-opacity ${isActive ? 'opacity-100' : 'opacity-70'}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-            </nav>
-          </div>
-        ))}
+      
+      <div className="nav-group">
+        <div className="nav-label">Analytics</div>
+        <button 
+          className={`nav-item ${currentPage === 'predictive' ? 'active' : ''}`}
+          onClick={() => onPageChange('predictive')}
+          data-page="predictive"
+        >
+          <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="1,12 5,7 8,9 12,4 15,5" />
+            <line x1="15" y1="2" x2="15" y2="8" />
+            <line x1="12" y1="8" x2="15" y2="8" />
+          </svg>
+          Predictive
+        </button>
+        <button 
+          className={`nav-item ${currentPage === 'detective' ? 'active' : ''}`}
+          onClick={() => onPageChange('detective')}
+          data-page="detective"
+        >
+          <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="6.5" cy="6.5" r="4.5" />
+            <line x1="10" y1="10" x2="14" y2="14" />
+          </svg>
+          Detective
+        </button>
+        <button 
+          className={`nav-item ${currentPage === 'diagnostic' ? 'active' : ''}`}
+          onClick={() => onPageChange('diagnostic')}
+          data-page="diagnostic"
+        >
+          <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="8" cy="8" r="6.5" />
+            <line x1="8" y1="5" x2="8" y2="8" />
+            <circle cx="8" cy="11" r="0.5" fill="currentColor" />
+          </svg>
+          Diagnostic
+        </button>
       </div>
 
-      {/* Health Status Indicator */}
-      <div className="p-5 border-t border-border-subtle bg-surface-hover/30">
-        <div className="flex items-center gap-2.5 font-semibold text-xs text-text-secondary select-none">
-          <span className={`w-2.5 h-2.5 rounded-full ${getHealthDotColor()}`} />
-          <span>{getHealthText()}</span>
+      <div className="nav-group">
+        <div className="nav-label">Assistant</div>
+        <button 
+          className={`nav-item ${currentPage === 'chatbot' ? 'active' : ''}`}
+          onClick={() => onPageChange('chatbot')}
+          data-page="chatbot"
+        >
+          <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M14 10.5c0 .8-.7 1.5-1.5 1.5H4l-2.5 2.5V3.5C1.5 2.7 2.2 2 3 2h9.5c.8 0 1.5.7 1.5 1.5v7z" />
+          </svg>
+          AIOps Chat
+        </button>
+      </div>
+
+      <div className="nav-group">
+        <div className="nav-label">Operations</div>
+        <button 
+          className={`nav-item ${currentPage === 'incidents' ? 'active' : ''}`}
+          onClick={() => onPageChange('incidents')}
+          data-page="incidents"
+        >
+          <svg className="nav-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <rect x="2" y="2" width="12" height="12" rx="2" />
+            <line x1="5" y1="6" x2="11" y2="6" />
+            <line x1="5" y1="9" x2="9" y2="9" />
+          </svg>
+          Incident Registry
+        </button>
+      </div>
+
+      <div className="sidebar-footer">
+        <div className="health-row">
+          <div className={getHealthDotClass()} id="health-dot" />
+          <span id="health-text">{getHealthText()}</span>
         </div>
       </div>
     </aside>
